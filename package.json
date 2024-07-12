@@ -1,0 +1,41 @@
+{
+	"name": "exec-wiki-bgm",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check .",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^3.2.2",
+		"@sveltejs/adapter-vercel": "^5.4.1",
+		"@sveltejs/kit": "^2.5.18",
+		"@sveltejs/vite-plugin-svelte": "^3.1.1",
+		"@unocss/extractor-svelte": "^0.61.3",
+		"prettier": "^3.3.2",
+		"prettier-plugin-svelte": "^3.2.5",
+		"svelte": "^5.0.0-next.1",
+		"svelte-check": "^3.8.4",
+		"tslib": "^2.6.3",
+		"typescript": "^5.5.3",
+		"unocss": "^0.61.3",
+		"vite": "^5.3.3"
+	},
+	"type": "module",
+	"dependencies": {
+		"@codemirror/autocomplete": "^6.17.0",
+		"@codemirror/commands": "^6.6.0",
+		"@codemirror/language": "^6.10.2",
+		"@codemirror/lint": "^6.8.1",
+		"@codemirror/search": "^6.5.6",
+		"@codemirror/state": "^6.4.1",
+		"@codemirror/view": "^6.28.4",
+		"dexie": "^4.0.7",
+		"web-tree-sitter": "^0.22.6"
+	}
+}

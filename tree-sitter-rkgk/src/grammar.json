@@ -1,0 +1,783 @@
+{
+  "name": "rkgk",
+  "rules": {
+    "source_file": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "credit_block"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "song"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "song"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_song"
+              },
+              "named": true,
+              "value": "song"
+            }
+          ]
+        }
+      ]
+    },
+    "_song": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "《"
+            },
+            {
+              "type": "FIELD",
+              "name": "title",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_song_title"
+              }
+            },
+            {
+              "type": "STRING",
+              "value": "》"
+            }
+          ]
+        },
+        {
+          "type": "FIELD",
+          "name": "title",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_song_title"
+          }
+        }
+      ]
+    },
+    "song": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_song"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "credit_block"
+            },
+            {
+              "type": "STRING",
+              "value": "@"
+            }
+          ]
+        }
+      ]
+    },
+    "credit_block": {
+      "type": "PREC",
+      "value": -1,
+      "content": {
+        "type": "REPEAT1",
+        "content": {
+          "type": "SYMBOL",
+          "name": "credit_field"
+        }
+      }
+    },
+    "credit_field": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "role"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_sep"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "creator",
+          "content": {
+            "type": "SYMBOL",
+            "name": "creator_name"
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "creatorSeparator",
+                "content": {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_sep"
+                  },
+                  "named": true,
+                  "value": "creator_sep"
+                }
+              },
+              {
+                "type": "FIELD",
+                "name": "creator",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "creator_name"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_sep"
+            },
+            {
+              "type": "STRING",
+              "value": "\n"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_sep"
+                },
+                {
+                  "type": "STRING",
+                  "value": "\n"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_sep"
+                },
+                {
+                  "type": "STRING",
+                  "value": "\n"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_sep"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "_song_title": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "song_title"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "feat_field"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "song_title": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "PATTERN",
+        "value": "."
+      }
+    },
+    "feat_field": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "feat\\. ?"
+            }
+          },
+          "named": true,
+          "value": "feat"
+        },
+        {
+          "type": "FIELD",
+          "name": "creator",
+          "content": {
+            "type": "SYMBOL",
+            "name": "creator_name"
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "creatorSeparator",
+                "content": {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_sep"
+                  },
+                  "named": true,
+                  "value": "creator_sep"
+                }
+              },
+              {
+                "type": "FIELD",
+                "name": "creator",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "creator_name"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "creator_name": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[^ 　\t&＆:：/・、；,》\\n]+"
+      }
+    },
+    "role": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Music"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "music"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Composition"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "composition"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Composer"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "composer"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Compose"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "compose"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Lyrics"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "lyrics"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Lyricist"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "lyricist"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Lyric"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "lyric"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Arrangement"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "arrangement"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Arranger"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "arranger"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Arrange"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "arrange"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Vocal"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "vocal"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Vo"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "vo"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Performer"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "performer"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Illustration"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "illustration"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Illust"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "illust"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Label"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "label"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Circle"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "circle"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Producer"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "producer"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Recording"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "recording"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "ボーカル"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "アレンジ"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "イラスト"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "レーベル"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "歌唱"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作詞作編曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作詞作曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作詞曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作編曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "編曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作詞"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "厂牌"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "脚本"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "插图"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "制作人"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "出版方"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "录音"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "原作"
+          }
+        }
+      ]
+    },
+    "_sep": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[ 　\t&＆:：/・、；,]+"
+      }
+    }
+  },
+  "extras": [
+    {
+      "type": "PATTERN",
+      "value": "\\s"
+    }
+  ],
+  "conflicts": [],
+  "precedences": [],
+  "externals": [],
+  "inline": [],
+  "supertypes": []
+}

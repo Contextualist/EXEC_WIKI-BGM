@@ -1,0 +1,183 @@
+
+===
+pre-credit, multi-line title, quoting
+===
+
+Vocal：さとうみるく
+おとぎ話の
+ように（作詞・作編曲：猫羽なろろ
+《pomme d'amour vocal》作編曲：凪音　作詞：さとうみるく
+
+---
+
+(source_file
+  (credit_block
+    (credit_field
+      (role)
+      creator: (creator_name)))
+  (song
+    title: (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        (role)
+        creator: (creator_name))))
+  (song
+    title: (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        creator: (creator_name))
+      (credit_field
+        (role)
+        creator: (creator_name)))))
+
+===
+multiple creators, creator w/ space
+===
+
+6.
+魔法なんてない世界で
+Music:&Lyrics:Neko Hacker、U-ske、かめりあ
+
+---
+
+(source_file
+  (song
+    title: (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        (role)
+        creator: (creator_name)
+	creatorSeparator: (creator_sep)
+        creator: (creator_name)
+	creatorSeparator: (creator_sep)
+        creator: (creator_name)
+	creatorSeparator: (creator_sep)
+        creator: (creator_name)))))
+
+===
+title w/ separator, creator w/ space
+===
+
+5.
+惑星、君を教えて
+Music&Lyrics:Ryunosuke K
+1.
+I’m a Messenger for U
+Music&Lyrics:Akki
+
+---
+
+(source_file
+  (song
+    (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        (role)
+        (creator_name)
+	(creator_sep)
+        (creator_name))))
+  (song
+    (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        (role)
+        (creator_name)))))
+
+===
+credit field newline, credit field indent, creator w/ space
+===
+
+01 絶品☆みこみこミラクル昇天レシピ！
+  歌唱：MOSAIC.WAV & miko(Alternative ending)
+  作詞：夕野ヨシミ(IOSYS)
+  作編曲：MOSAIC.WAV
+
+02 ガッチャ・マッワス　怒りの課金道
+  歌唱：96(IOSYS)
+  作詞：七条レタス(IOSYS)
+
+---
+
+(source_file
+  (song
+    (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name)
+        (creator_sep)
+        (creator_name)
+        (creator_sep)
+        (creator_name))
+      (credit_field
+        (role)
+        (creator_name))
+      (credit_field
+        (role)
+        (creator_name))))
+  (song
+    (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name))
+      (credit_field
+        (role)
+        (creator_name)))))
+
+===
+no per-track credit
+===
+
+Vocal・test
+Sleep
+
+---
+
+(source_file
+  (credit_block
+    (credit_field
+      (role)
+      (creator_name)))
+  (song
+    (song_title)))
+
+===
+feat-field
+===
+
+2	吸って、吐く（feat. 安次嶺希和子）
+@
+3	曖昧サイボーグ feat. うごくちゃん & JungMato
+@
+《1 un@ngelic.(feat. つぐ,るる)》
+@
+
+---
+
+(source_file
+  (song
+    (song_title)
+    (feat_field
+      (feat)
+      (creator_name)))
+  (song
+    (song_title)
+    (feat_field
+      (feat)
+      (creator_name)
+      (creator_sep)
+      (creator_name)))
+  (song
+    (song_title)
+    (feat_field
+      (feat)
+      (creator_name)
+      (creator_sep)
+      (creator_name))))
+

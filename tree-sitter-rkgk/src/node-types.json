@@ -1,0 +1,639 @@
+[
+  {
+    "type": "credit_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "credit_field",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "credit_field",
+    "named": true,
+    "fields": {
+      "creator": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "creator_name",
+            "named": true
+          }
+        ]
+      },
+      "creatorSeparator": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "creator_sep",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "role",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "feat_field",
+    "named": true,
+    "fields": {
+      "creator": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "creator_name",
+            "named": true
+          }
+        ]
+      },
+      "creatorSeparator": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "creator_sep",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "feat",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "role",
+    "named": true,
+    "fields": {
+      "role": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "Arrange",
+            "named": false
+          },
+          {
+            "type": "Arrangement",
+            "named": false
+          },
+          {
+            "type": "Arranger",
+            "named": false
+          },
+          {
+            "type": "Circle",
+            "named": false
+          },
+          {
+            "type": "Compose",
+            "named": false
+          },
+          {
+            "type": "Composer",
+            "named": false
+          },
+          {
+            "type": "Composition",
+            "named": false
+          },
+          {
+            "type": "Illust",
+            "named": false
+          },
+          {
+            "type": "Illustration",
+            "named": false
+          },
+          {
+            "type": "Label",
+            "named": false
+          },
+          {
+            "type": "Lyric",
+            "named": false
+          },
+          {
+            "type": "Lyricist",
+            "named": false
+          },
+          {
+            "type": "Lyrics",
+            "named": false
+          },
+          {
+            "type": "Music",
+            "named": false
+          },
+          {
+            "type": "Performer",
+            "named": false
+          },
+          {
+            "type": "Producer",
+            "named": false
+          },
+          {
+            "type": "Recording",
+            "named": false
+          },
+          {
+            "type": "Vo",
+            "named": false
+          },
+          {
+            "type": "Vocal",
+            "named": false
+          },
+          {
+            "type": "arrange",
+            "named": false
+          },
+          {
+            "type": "arrangement",
+            "named": false
+          },
+          {
+            "type": "arranger",
+            "named": false
+          },
+          {
+            "type": "circle",
+            "named": false
+          },
+          {
+            "type": "compose",
+            "named": false
+          },
+          {
+            "type": "composer",
+            "named": false
+          },
+          {
+            "type": "composition",
+            "named": false
+          },
+          {
+            "type": "illust",
+            "named": false
+          },
+          {
+            "type": "illustration",
+            "named": false
+          },
+          {
+            "type": "label",
+            "named": false
+          },
+          {
+            "type": "lyric",
+            "named": false
+          },
+          {
+            "type": "lyricist",
+            "named": false
+          },
+          {
+            "type": "lyrics",
+            "named": false
+          },
+          {
+            "type": "music",
+            "named": false
+          },
+          {
+            "type": "performer",
+            "named": false
+          },
+          {
+            "type": "producer",
+            "named": false
+          },
+          {
+            "type": "recording",
+            "named": false
+          },
+          {
+            "type": "vo",
+            "named": false
+          },
+          {
+            "type": "vocal",
+            "named": false
+          },
+          {
+            "type": "アレンジ",
+            "named": false
+          },
+          {
+            "type": "イラスト",
+            "named": false
+          },
+          {
+            "type": "ボーカル",
+            "named": false
+          },
+          {
+            "type": "レーベル",
+            "named": false
+          },
+          {
+            "type": "作曲",
+            "named": false
+          },
+          {
+            "type": "作編曲",
+            "named": false
+          },
+          {
+            "type": "作詞",
+            "named": false
+          },
+          {
+            "type": "作詞作曲",
+            "named": false
+          },
+          {
+            "type": "作詞作編曲",
+            "named": false
+          },
+          {
+            "type": "作詞曲",
+            "named": false
+          },
+          {
+            "type": "出版方",
+            "named": false
+          },
+          {
+            "type": "制作人",
+            "named": false
+          },
+          {
+            "type": "厂牌",
+            "named": false
+          },
+          {
+            "type": "原作",
+            "named": false
+          },
+          {
+            "type": "录音",
+            "named": false
+          },
+          {
+            "type": "插图",
+            "named": false
+          },
+          {
+            "type": "歌唱",
+            "named": false
+          },
+          {
+            "type": "編曲",
+            "named": false
+          },
+          {
+            "type": "脚本",
+            "named": false
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "song",
+    "named": true,
+    "fields": {
+      "title": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "feat_field",
+            "named": true
+          },
+          {
+            "type": "song_title",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "credit_block",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "song_title",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "credit_block",
+          "named": true
+        },
+        {
+          "type": "song",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "\n",
+    "named": false
+  },
+  {
+    "type": "@",
+    "named": false
+  },
+  {
+    "type": "Arrange",
+    "named": false
+  },
+  {
+    "type": "Arrangement",
+    "named": false
+  },
+  {
+    "type": "Arranger",
+    "named": false
+  },
+  {
+    "type": "Circle",
+    "named": false
+  },
+  {
+    "type": "Compose",
+    "named": false
+  },
+  {
+    "type": "Composer",
+    "named": false
+  },
+  {
+    "type": "Composition",
+    "named": false
+  },
+  {
+    "type": "Illust",
+    "named": false
+  },
+  {
+    "type": "Illustration",
+    "named": false
+  },
+  {
+    "type": "Label",
+    "named": false
+  },
+  {
+    "type": "Lyric",
+    "named": false
+  },
+  {
+    "type": "Lyricist",
+    "named": false
+  },
+  {
+    "type": "Lyrics",
+    "named": false
+  },
+  {
+    "type": "Music",
+    "named": false
+  },
+  {
+    "type": "Performer",
+    "named": false
+  },
+  {
+    "type": "Producer",
+    "named": false
+  },
+  {
+    "type": "Recording",
+    "named": false
+  },
+  {
+    "type": "Vo",
+    "named": false
+  },
+  {
+    "type": "Vocal",
+    "named": false
+  },
+  {
+    "type": "arrange",
+    "named": false
+  },
+  {
+    "type": "arrangement",
+    "named": false
+  },
+  {
+    "type": "arranger",
+    "named": false
+  },
+  {
+    "type": "circle",
+    "named": false
+  },
+  {
+    "type": "compose",
+    "named": false
+  },
+  {
+    "type": "composer",
+    "named": false
+  },
+  {
+    "type": "composition",
+    "named": false
+  },
+  {
+    "type": "creator_name",
+    "named": true
+  },
+  {
+    "type": "creator_sep",
+    "named": true
+  },
+  {
+    "type": "feat",
+    "named": true
+  },
+  {
+    "type": "illust",
+    "named": false
+  },
+  {
+    "type": "illustration",
+    "named": false
+  },
+  {
+    "type": "label",
+    "named": false
+  },
+  {
+    "type": "lyric",
+    "named": false
+  },
+  {
+    "type": "lyricist",
+    "named": false
+  },
+  {
+    "type": "lyrics",
+    "named": false
+  },
+  {
+    "type": "music",
+    "named": false
+  },
+  {
+    "type": "performer",
+    "named": false
+  },
+  {
+    "type": "producer",
+    "named": false
+  },
+  {
+    "type": "recording",
+    "named": false
+  },
+  {
+    "type": "vo",
+    "named": false
+  },
+  {
+    "type": "vocal",
+    "named": false
+  },
+  {
+    "type": "《",
+    "named": false
+  },
+  {
+    "type": "》",
+    "named": false
+  },
+  {
+    "type": "アレンジ",
+    "named": false
+  },
+  {
+    "type": "イラスト",
+    "named": false
+  },
+  {
+    "type": "ボーカル",
+    "named": false
+  },
+  {
+    "type": "レーベル",
+    "named": false
+  },
+  {
+    "type": "作曲",
+    "named": false
+  },
+  {
+    "type": "作編曲",
+    "named": false
+  },
+  {
+    "type": "作詞",
+    "named": false
+  },
+  {
+    "type": "作詞作曲",
+    "named": false
+  },
+  {
+    "type": "作詞作編曲",
+    "named": false
+  },
+  {
+    "type": "作詞曲",
+    "named": false
+  },
+  {
+    "type": "出版方",
+    "named": false
+  },
+  {
+    "type": "制作人",
+    "named": false
+  },
+  {
+    "type": "厂牌",
+    "named": false
+  },
+  {
+    "type": "原作",
+    "named": false
+  },
+  {
+    "type": "录音",
+    "named": false
+  },
+  {
+    "type": "插图",
+    "named": false
+  },
+  {
+    "type": "歌唱",
+    "named": false
+  },
+  {
+    "type": "編曲",
+    "named": false
+  },
+  {
+    "type": "脚本",
+    "named": false
+  }
+]
