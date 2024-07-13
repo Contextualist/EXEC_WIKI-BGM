@@ -62,7 +62,7 @@
 </script>
 
 <div class="{class_} flex flex-col flex-wrap-reverse flex-justify-end">
-	{#each relaEntries as { name, m, pfp } (name)}
+	{#each relaEntries as { name, m, pfp } ([name, m])}
 		<div class="relative">
 			<button
 				class={'p-0 border-none bg-transparent text-size-base ' +
