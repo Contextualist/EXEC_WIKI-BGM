@@ -89,7 +89,7 @@ function intoRawDisc(leaves: LeafInfo[]): RawDisc {
             currentTrack.credits.push({ type: "role", value: "vocal" });
             while (true) {
                 leaf = leaves[++i];
-                if (leaf.type !== "creator" && leaf.type !== "creatorSeparator") {
+                if (!leaf || (leaf.type !== "creator" && leaf.type !== "creatorSeparator")) {
                     i--;
                     break;
                 }
