@@ -13,7 +13,7 @@
 	<div class="h-full w-30 flex justify-around flex-self-end">
 		<a href="https://EXEC-0001.hya.moe">{@render globeSVG()}</a>
 		<a href="https://github.com/Contextualist/EXEC_WIKI-BGM">{@render githubSVG()}</a>
-		<a href="https://bgm.tv/group/topic/4428">{@render bgmSVG()}</a>
+		<a href="https://bgm.tv/group/topic/401907">{@render bgmSVG()}</a>
 	</div>
 </Header>
 <article>
@@ -26,7 +26,13 @@
 			</summary>
 			<p>
 				在 <a href="https://bgm.tv">Bangumi</a> 上，用户可以记录和评论感兴趣的动漫、音乐、游戏等作品。而这些作品的条目都是由大家自发创建且完善的，也就是说这是一个维基社区。
+				依我拙见，班古米现成的维基编辑主要有两个痛点：
 			</p>
+			<p><b>难以快速精确地匹配人物</b></p>
+			<p>
+				维基条目里有大量的链接。创建条目时就需要找出相关人物的链接来添加进去，而这一步骤伴随着大量对人名和别名/艺名的检索。班古米通用的全文搜索并不是针对这个场景的，我们需要的是对人名和别名的批量精确匹配。
+			</p>
+			<p><b>信息记录方式的差异</b></p>
 			<p>
 				班古米的维基数据是以作品和人物为中心的：例如<i>某音乐专辑</i>的作词人有……作曲人有……；<i
 					>某创作者</i
@@ -76,9 +82,8 @@
 				{@render pic('/docs/tutorial-1.webp', 'Booth 上找到的制作人员信息')}
 				<li>复制粘贴到左侧的编辑器里，根据高亮和右侧的生成预览做调整：</li>
 				<blockquote>
-					什么样的信息可以被识别呢？简单来说：<b>可关联的职位</b>和后面跟着的<b>人名</b>，然后就是<b
-						>曲目名</b
-					>。<br />
+					什么样的信息可以被识别呢？简单来说：<b>可关联的职位</b>和后面跟着的<b>人名</b
+					>，剩余的部分会被作为<b>曲目名</b>。<br />
 					其余的信息需要手动删掉，要不然就会被当成曲目名的一部分。
 				</blockquote>
 				{@render pic('/docs/tutorial-2.webp', '复制制作人员信息到编辑器')}
