@@ -26,6 +26,8 @@
 				.replace(/(^|\n)(　+)/g, (_, nl, sp) => nl + ' '.repeat(sp.length))
 				// Remove trailing whitespace
 				.replace(/\s+$/g, '')
+				// Unicode normalization
+				.normalize('NFKC')
 		);
 	}
 </script>

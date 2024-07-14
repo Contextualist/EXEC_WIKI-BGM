@@ -11,7 +11,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { EditorView, placeholder as placeholderExt } from '@codemirror/view';
-	import { EditorState, StateEffect, type Extension } from '@codemirror/state';
+	import { EditorSelection, EditorState, StateEffect, type Extension } from '@codemirror/state';
 	import { HighlightStyle, type LanguageSupport } from '@codemirror/language';
 	import { tags } from '@lezer/highlight';
 
@@ -221,11 +221,17 @@
 							text += inserted;
 						});
 						text = filterPaste(text);
+						let selection = tr.selection;
+						if (selection) {
+							selection = EditorSelection.create([
+								EditorSelection.range(ranges.from + text.length, ranges.from + text.length)
+							]);
+						}
 						return [
 							{
 								changes: { from: ranges.from, to: ranges.to, insert: text },
 								scrollIntoView: true,
-								selection: tr.selection
+								selection: selection
 							}
 						];
 					}
