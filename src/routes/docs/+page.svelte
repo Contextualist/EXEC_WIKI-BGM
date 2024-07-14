@@ -2,7 +2,7 @@
 	import 'uno.css';
 
 	import Header from '$lib/Header.svelte';
-	import { tooltip } from '$lib/Tooltip.svelte';
+	import Tooltip from '$lib/Tooltip.svelte';
 </script>
 
 <head>
@@ -82,8 +82,13 @@
 				{@render pic('/docs/tutorial-1.webp', 'Booth 上找到的制作人员信息')}
 				<li>复制粘贴到左侧的编辑器里，根据高亮和右侧的生成预览做调整：</li>
 				<blockquote>
-					什么样的信息可以被识别呢？简单来说：<b>可关联的职位</b>和后面跟着的<b>人名</b
-					>，剩余的部分会被作为<b>曲目名</b>。<br />
+					什么样的信息可以被识别呢？简单来说：<b>可关联的职位</b><sup
+						><Tooltip
+							title={`目前班古米对音乐专辑支持的可关联职位有：
+						艺术家、制作人、作曲、作词、编曲、插图、脚本、录音、厂牌、出版方、原作
+						`}
+						/></sup
+					>和后面跟着的<b>人名</b>，剩余的部分会被作为<b>曲目名</b>。<br />
 					其余的信息需要手动删掉，要不然就会被当成曲目名的一部分。
 				</blockquote>
 				{@render pic('/docs/tutorial-2.webp', '复制制作人员信息到编辑器')}
