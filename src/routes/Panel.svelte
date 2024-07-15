@@ -27,7 +27,7 @@
 	{#if shown}
 		<div
 			id="menu"
-			class="fixed z-2 top-0 right-0 w-100 h-svh bg-bgm-beige border border-gray-200 shadow-xl overflow-y-scroll"
+			class="fixed z-2 top-0 right-0 w-100 h-svh bg-bgm-beige border border-gray-200 shadow-xl overflow-y-auto"
 			transition:fly={{ x: 500, opacity: 1 }}
 			bind:this={node}
 		>

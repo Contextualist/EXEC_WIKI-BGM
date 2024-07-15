@@ -61,7 +61,7 @@
 	let currentDisambiguation: string | undefined = $state();
 </script>
 
-<div class="{class_} flex flex-col flex-wrap-reverse flex-justify-end">
+<div class="{class_} flex flex-col flex-wrap-reverse flex-justify-end overflow-auto pl-5">
 	{#each relaEntries as { name, m, pfp } ([name, m])}
 		<div class="relative">
 			<button
