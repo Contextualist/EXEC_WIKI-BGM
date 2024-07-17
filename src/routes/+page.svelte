@@ -18,6 +18,7 @@
 	import Scenario from '$lib/vn/Scenario.svelte';
 	import { importPersonCreated, importRelaHistory } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
+	import { getRandomTip } from './dailyTips.ts';
 	import { localStorage$state } from './utils.svelte.ts';
 
 	let currentRawDisc: Readonly<RawDisc> = $state.frozen({ tracks: [] });
@@ -35,6 +36,9 @@
 		}, 10);
 		descState.val = '';
 		dupResolution.clear();
+		setTimeout(() => {
+			toast(`<b>嗯……？</b><br/>${getRandomTip()}`, { duration: 8000 });
+		}, 400);
 	}
 	async function pack() {
 		let text;
