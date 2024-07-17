@@ -154,7 +154,7 @@ export class Disc {
             .filter(([staff, _1]) => staff)
             .map(([staff, rtm]) => {
                 let rts = Array.from(rtm.entries())
-                    .map(([roleID, tr]) => tr.length > 0 ? `${roleID}#${tr.join(",")}` : roleID);
+                    .map(([roleID, tr]) => tr.length > 0 ? `${roleID}#${pagenoJoin(tr)}` : roleID);
                 return [staff!.id, rts];
             });
     }
@@ -236,4 +236,18 @@ function normalizeTitles(titles: string[]): string[] {
         titles = titles.map(title => title.slice(0, -lcf));
     }
     return titles;
+}
+
+/// e.g. [1, 2, 3, 5, 6, 7, 9, 10] => "1-3,5-7,9,10"
+function pagenoJoin(arr: number[]): string {
+    let a = [...arr, Infinity];
+    let r = [];
+    let start = a[0];
+    for (let i = 1; i < a.length; i++) {
+        if (a[i] - a[i - 1] === 1) { continue; }
+        const rlen = a[i - 1] - start + 1;
+        r.push(rlen === 1 ? start : rlen === 2 ? `${start},${a[i - 1]}` : `${start}-${a[i - 1]}`);
+        start = a[i];
+    }
+    return r.join(",");
 }
