@@ -148,7 +148,7 @@ Sleep
     (song_title)))
 
 ===
-feat-field
+feat-field, quoting
 ===
 
 2	吸って、吐く（feat. 安次嶺希和子）
@@ -180,4 +180,25 @@ feat-field
       (creator_name)
       (creator_sep)
       (creator_name))))
+
+===
+creator name quoting
+===
+
+01
+のんねむ逃避行
+music : 《ちろ:D》　lyric : もちうつね
+
+---
+
+(source_file
+  (song
+    (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name))
+      (credit_field
+        (role)
+        (creator_name)))))
 

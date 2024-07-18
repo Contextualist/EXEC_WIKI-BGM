@@ -111,95 +111,19 @@
       }
     },
     "credit_field": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "REPEAT1",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "role"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_sep"
-              }
-            ]
-          }
-        },
-        {
-          "type": "FIELD",
-          "name": "creator",
-          "content": {
-            "type": "SYMBOL",
-            "name": "creator_name"
-          }
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "FIELD",
-                "name": "creatorSeparator",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_sep"
-                  },
-                  "named": true,
-                  "value": "creator_sep"
-                }
-              },
-              {
-                "type": "FIELD",
-                "name": "creator",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "creator_name"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_sep"
-            },
-            {
-              "type": "STRING",
-              "value": "\n"
-            },
-            {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "REPEAT1",
+            "content": {
               "type": "SEQ",
               "members": [
                 {
                   "type": "SYMBOL",
-                  "name": "_sep"
-                },
-                {
-                  "type": "STRING",
-                  "value": "\n"
-                }
-              ]
-            },
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "_sep"
-                },
-                {
-                  "type": "STRING",
-                  "value": "\n"
+                  "name": "role"
                 },
                 {
                   "type": "SYMBOL",
@@ -207,9 +131,81 @@
                 }
               ]
             }
-          ]
-        }
-      ]
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_creator"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "FIELD",
+                  "name": "creatorSeparator",
+                  "content": {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_sep"
+                    },
+                    "named": true,
+                    "value": "creator_sep"
+                  }
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_creator"
+                }
+              ]
+            }
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_sep"
+              },
+              {
+                "type": "STRING",
+                "value": "\n"
+              },
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_sep"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "\n"
+                  }
+                ]
+              },
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_sep"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "\n"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_sep"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     },
     "_song_title": {
       "type": "SEQ",
@@ -255,12 +251,8 @@
           "value": "feat"
         },
         {
-          "type": "FIELD",
-          "name": "creator",
-          "content": {
-            "type": "SYMBOL",
-            "name": "creator_name"
-          }
+          "type": "SYMBOL",
+          "name": "_creator"
         },
         {
           "type": "REPEAT",
@@ -281,14 +273,52 @@
                 }
               },
               {
-                "type": "FIELD",
-                "name": "creator",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "creator_name"
-                }
+                "type": "SYMBOL",
+                "name": "_creator"
               }
             ]
+          }
+        }
+      ]
+    },
+    "_creator": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "《"
+            },
+            {
+              "type": "FIELD",
+              "name": "creator",
+              "content": {
+                "type": "ALIAS",
+                "content": {
+                  "type": "REPEAT1",
+                  "content": {
+                    "type": "PATTERN",
+                    "value": "."
+                  }
+                },
+                "named": true,
+                "value": "creator_name"
+              }
+            },
+            {
+              "type": "STRING",
+              "value": "》"
+            }
+          ]
+        },
+        {
+          "type": "FIELD",
+          "name": "creator",
+          "content": {
+            "type": "SYMBOL",
+            "name": "creator_name"
           }
         }
       ]
@@ -297,7 +327,7 @@
       "type": "IMMEDIATE_TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[^ 　\t&＆:：/・、；,》\\n]+"
+        "value": "[^ 　\t&＆:：/・、；,《》\\n]+"
       }
     },
     "role": {

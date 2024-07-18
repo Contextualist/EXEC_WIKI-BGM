@@ -1,5 +1,10 @@
 [
   {
+    "type": "creator_name",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "credit_block",
     "named": true,
     "fields": {},
@@ -491,10 +496,6 @@
   {
     "type": "composition",
     "named": false
-  },
-  {
-    "type": "creator_name",
-    "named": true
   },
   {
     "type": "creator_sep",

@@ -141,10 +141,12 @@
 			</p>
 		</section>
 		<section>
-			<h3 id="faq-titlekeyword">曲目名里有关键字</h3>
-			<p>用书名号把曲目名括起来。</p>
+			<h3 id="faq-titlekeyword">曲目名/人名里有关键字/分隔符</h3>
+			<p>用书名号把曲目名/人名括起来。</p>
 			<pre><span class="text-bgm-pink">《</span>室内系なら作曲家<span class="text-bgm-pink">》</span
 				> 作編曲：Yunomi　作詞：Yunomi & nicamoq</pre>
+			<pre>music : <span class="text-bgm-pink">《</span>ちろ:D<span class="text-bgm-pink">》</span
+				> lyric : もちうつね</pre>
 		</section>
 	</section>
 

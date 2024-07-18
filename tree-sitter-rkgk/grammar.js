@@ -86,18 +86,18 @@ module.exports = grammar({
     ),
 
     credit_block: $ => prec(-1, repeat1($.credit_field)),
-    credit_field: $ => seq(
+    credit_field: $ => prec.left(seq(
       repeat1(seq(
         $.role,
         $._sep,
       )),
-      field('creator', $.creator_name),
+      $._creator,
       repeat(seq(
         field('creatorSeparator', alias($._sep, $.creator_sep)),
-        field('creator', $.creator_name),
+        $._creator,
       )),
       choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep))
-    ),
+    )),
 
     _song_title: $ => seq(
       $.song_title,
@@ -106,14 +106,18 @@ module.exports = grammar({
     song_title: _ => repeat1(/./),
     feat_field: $ => seq(
       alias(token(/feat\. ?/), $.feat),
-      field('creator', $.creator_name),  // CAVEAT: might also match trailing char like ')'
+      $._creator,  // CAVEAT: might also match trailing char like ')'
       repeat(seq(
         field('creatorSeparator', alias($._sep, $.creator_sep)),
-        field('creator', $.creator_name),
+        $._creator,
       )),
     ),
 
-    creator_name: _ => token.immediate(new RegExp(`[^${separators}》\n]+`)),
+    _creator: $ => choice(
+      seq('《', field('creator', alias(repeat1(/./), $.creator_name)), '》'),  // quoting
+      field('creator', $.creator_name),
+    ),
+    creator_name: _ => token.immediate(new RegExp(`[^${separators}《》\n]+`)),
     role: _ => choice(...roles.map(r => field('role', r))),
     _sep: _ => token.immediate(new RegExp(`[${separators}]+`)),
   }
