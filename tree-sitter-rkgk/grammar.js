@@ -69,16 +69,12 @@ module.exports = grammar({
       repeat($.song),
       choice(
         $.song,
-        alias($._song, $.song),
+        alias($._quotable_song_title_maybefeat, $.song),
       ),
     ),
 
-    _song: $ => choice(
-      seq('《', field('title', $._song_title), '》'),  // quoting
-      field('title', $._song_title),
-    ),
     song: $ => seq(
-      $._song,
+      $._quotable_song_title_maybefeat,
       choice(
         $.credit_block,
         '@',  // empty credit
@@ -91,29 +87,33 @@ module.exports = grammar({
         $.role,
         $._sep,
       )),
-      $._creator,
+      $._quotable_creator_name,
       repeat(seq(
         field('creatorSeparator', alias($._sep, $.creator_sep)),
-        $._creator,
+        $._quotable_creator_name,
       )),
       choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep))
     )),
 
-    _song_title: $ => seq(
+    _quotable_song_title_maybefeat: $ => choice(
+      seq('《', field('title', $._song_title_maybefeat), '》'),  // quoting
+      field('title', $._song_title_maybefeat),
+    ),
+    _song_title_maybefeat: $ => seq(
       $.song_title,
       optional($.feat_field),
     ),
     song_title: _ => repeat1(/./),
     feat_field: $ => seq(
       alias(token(/feat\. ?/), $.feat),
-      $._creator,  // CAVEAT: might also match trailing char like ')'
+      $._quotable_creator_name,  // CAVEAT: might also match trailing char like ')'
       repeat(seq(
         field('creatorSeparator', alias($._sep, $.creator_sep)),
-        $._creator,
+        $._quotable_creator_name,
       )),
     ),
 
-    _creator: $ => choice(
+    _quotable_creator_name: $ => choice(
       seq('《', field('creator', alias(repeat1(/./), $.creator_name)), '》'),  // quoting
       field('creator', $.creator_name),
     ),

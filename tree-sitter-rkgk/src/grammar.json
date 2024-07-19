@@ -34,7 +34,7 @@
               "type": "ALIAS",
               "content": {
                 "type": "SYMBOL",
-                "name": "_song"
+                "name": "_quotable_song_title_maybefeat"
               },
               "named": true,
               "value": "song"
@@ -43,46 +43,12 @@
         }
       ]
     },
-    "_song": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "《"
-            },
-            {
-              "type": "FIELD",
-              "name": "title",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_song_title"
-              }
-            },
-            {
-              "type": "STRING",
-              "value": "》"
-            }
-          ]
-        },
-        {
-          "type": "FIELD",
-          "name": "title",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_song_title"
-          }
-        }
-      ]
-    },
     "song": {
       "type": "SEQ",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "_song"
+          "name": "_quotable_song_title_maybefeat"
         },
         {
           "type": "CHOICE",
@@ -134,7 +100,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "_creator"
+            "name": "_quotable_creator_name"
           },
           {
             "type": "REPEAT",
@@ -156,7 +122,7 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "_creator"
+                  "name": "_quotable_creator_name"
                 }
               ]
             }
@@ -207,7 +173,41 @@
         ]
       }
     },
-    "_song_title": {
+    "_quotable_song_title_maybefeat": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "《"
+            },
+            {
+              "type": "FIELD",
+              "name": "title",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_song_title_maybefeat"
+              }
+            },
+            {
+              "type": "STRING",
+              "value": "》"
+            }
+          ]
+        },
+        {
+          "type": "FIELD",
+          "name": "title",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_song_title_maybefeat"
+          }
+        }
+      ]
+    },
+    "_song_title_maybefeat": {
       "type": "SEQ",
       "members": [
         {
@@ -252,7 +252,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_creator"
+          "name": "_quotable_creator_name"
         },
         {
           "type": "REPEAT",
@@ -274,14 +274,14 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_creator"
+                "name": "_quotable_creator_name"
               }
             ]
           }
         }
       ]
     },
-    "_creator": {
+    "_quotable_creator_name": {
       "type": "CHOICE",
       "members": [
         {
