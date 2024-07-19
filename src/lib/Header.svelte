@@ -2,12 +2,13 @@
 	import 'uno.css';
 	interface HeaderProps {
 		children?: () => any;
+		edgefade?: boolean;
 	}
-	let { children }: HeaderProps = $props();
+	let { children, edgefade = false }: HeaderProps = $props();
 </script>
 
 <header class="m-0 p-4 bg-bgm-lightergrey flex flex-justify-between">
-	<div class="z-1 shadow-[20px_0_15px_3px] shadow-bgm-lightergrey">
+	<div class={edgefade ? 'z-1 shadow-[20px_0_15px_3px] shadow-bgm-lightergrey' : ''}>
 		<a href="/" class="hover:decoration-none">
 			<h1 class="text-bgm-pink my--1">EXEC_WIKI=BGM/.</h1>
 		</a>

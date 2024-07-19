@@ -113,7 +113,7 @@
 		if (!e.shiftKey) shiftMode = false;
 	}}
 />
-<Header>
+<Header edgefade>
 	<Gallery relaMap={currentDisc.relaMap} bind:dupResolution class="h-32" />
 </Header>
 <main class="w-310 max-w-[95vw] lt-lg:w-200 lt-md:w-150 mx-auto my-4">
