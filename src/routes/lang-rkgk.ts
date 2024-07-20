@@ -115,6 +115,7 @@ export async function rkgk(onUpdate?: (disc: RawDisc) => void) {
         autocomplete: completeFromList([
             ...TYPE_COMPLETIONS.map(tp => ({ ...tp, type: "type", apply: applyTypeCompletion })),
         ]),
+        closeBrackets: { brackets: ["《",] }
     });
     const _onUpdate = onUpdate ? (leaves: LeafInfo[]) => onUpdate(intoRawDisc(leaves)) : undefined;
     const parser = new TreeSitterParser(tsp, docID(langData), FIELD2NODETYPE, _onUpdate);
