@@ -202,3 +202,55 @@ music : 《ちろ:D》　lyric : もちうつね
         (role)
         (creator_name)))))
 
+===
+comment, feat-field, quoting, creator name quoting
+===
+
+01　桃色ディスタンス
+    // 原曲：妖精大戦争 より 年中夢中の好奇心
+@
+02　触れられない物語\ouo/
+    // 原曲：東方永夜抄 より 竹取飛翔
+    Vocal：たま
+06　とある瀟洒な従者の物語 feat. ｙｔｒ // 原曲：東方紅魔郷 より 月時計－ルナ・ダイアル
+    Vocal：ｙｔｒ、たま
+《07　Bad >///< Apple？ feat. 《Romonosov?:p》》
+    // 原曲：幺樂団の歴史1 より Bad Apple!!
+    Vocal：たま
+
+---
+
+(source_file
+  (song
+    (song_title)
+    (comment))
+  (song
+    (song_title)
+    (comment)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name))))
+  (song
+    (song_title)
+    (feat_field
+      (feat)
+      (creator_name))
+    (comment)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name)
+        (creator_sep)
+        (creator_name))))
+  (song
+    (song_title)
+    (feat_field
+      (feat)
+      (creator_name))
+    (comment)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name)))))
+

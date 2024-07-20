@@ -1,5 +1,6 @@
 
 const separators = ` 　\t&＆:：\/・、；,`;
+const strictSeparators = ` 　\t&＆・、；,`;
 const roles = [
   'Music',
   'music',
@@ -69,12 +70,12 @@ module.exports = grammar({
       repeat($.song),
       choice(
         $.song,
-        alias($._quotable_song_title_maybefeat, $.song),
+        alias($._quotable_song_title_maybefeat_maybecomment, $.song),
       ),
     ),
 
     song: $ => seq(
-      $._quotable_song_title_maybefeat,
+      $._quotable_song_title_maybefeat_maybecomment,
       choice(
         $.credit_block,
         '@',  // empty credit
@@ -95,6 +96,13 @@ module.exports = grammar({
       choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep))
     )),
 
+    _quotable_song_title_maybefeat_maybecomment: $ => seq(
+      $._quotable_song_title_maybefeat,
+      optional(seq(
+        '//',
+        field('comment', alias(repeat1(/./), $.comment)),
+      )),
+    ),
     _quotable_song_title_maybefeat: $ => choice(
       seq('《', field('title', $._song_title_maybefeat), '》'),  // quoting
       field('title', $._song_title_maybefeat),
@@ -108,17 +116,19 @@ module.exports = grammar({
       alias(token(/feat\. ?/), $.feat),
       $._quotable_creator_name,  // CAVEAT: might also match trailing char like ')'
       repeat(seq(
-        field('creatorSeparator', alias($._sep, $.creator_sep)),
+        field('creatorSeparator', alias($._ssep, $.creator_sep)),
         $._quotable_creator_name,
       )),
+      optional($._ssep),
     ),
 
     _quotable_creator_name: $ => choice(
-      seq('《', field('creator', alias(repeat1(/./), $.creator_name)), '》'),  // quoting
+      seq('《', field('creator', alias(/[^》\n]+/, $.creator_name)), '》'),  // quoting
       field('creator', $.creator_name),
     ),
     creator_name: _ => token.immediate(new RegExp(`[^${separators}《》\n]+`)),
     role: _ => choice(...roles.map(r => field('role', r))),
     _sep: _ => token.immediate(new RegExp(`[${separators}]+`)),
+    _ssep: _ => token.immediate(new RegExp(`[${strictSeparators}]+`)),
   }
 });

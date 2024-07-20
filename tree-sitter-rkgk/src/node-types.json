@@ -1,6 +1,6 @@
 [
   {
-    "type": "creator_name",
+    "type": "comment",
     "named": true,
     "fields": {}
   },
@@ -335,6 +335,16 @@
     "type": "song",
     "named": true,
     "fields": {
+      "comment": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "comment",
+            "named": true
+          }
+        ]
+      },
       "title": {
         "multiple": true,
         "required": true,
@@ -387,6 +397,10 @@
   },
   {
     "type": "\n",
+    "named": false
+  },
+  {
+    "type": "//",
     "named": false
   },
   {
@@ -496,6 +510,10 @@
   {
     "type": "composition",
     "named": false
+  },
+  {
+    "type": "creator_name",
+    "named": true
   },
   {
     "type": "creator_sep",
