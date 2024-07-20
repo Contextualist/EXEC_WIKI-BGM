@@ -1,4 +1,4 @@
-import { TreeSitterParser, type LeafInfo } from "./treeSitterParser";
+import { TreeSitterParser, type NodeInfo } from "./treeSitterParser";
 
 import Parser from "web-tree-sitter";
 import { LanguageSupport, Language, defineLanguageFacet, languageDataProp } from "@codemirror/language";
@@ -59,6 +59,13 @@ const FIELD2NODETYPE: { [name: string]: lezer.NodeType } = {
     "ERROR": NODE_TYPES.invalid,
 }
 
+const SEMANTIC_TYPES = [
+    "role",
+    "feat",
+    "creator",
+    "creatorSeparator",
+    "title",
+];
 
 export interface CreditField {
     type: "role" | "creator" | "creatorSeparator";
@@ -74,31 +81,49 @@ export interface RawDisc {
     tracks: RawTrack[];
 }
 
-function intoRawDisc(leaves: LeafInfo[]): RawDisc {
+function intoRawDisc(root: NodeInfo): RawDisc {
     let disc: RawDisc = { tracks: [{ title: "", credits: [] }] };
-    let currentTrack = disc.tracks[0];
-    for (let i = 0; i < leaves.length; i++) {
-        let leaf = leaves[i];
-        if (leaf.type === "title") {
-            currentTrack = { title: leaf.text, credits: [] };
-            disc.tracks.push(currentTrack);
-        } else if (leaf.type === "role" || leaf.type === "creator" || leaf.type === "creatorSeparator") {
-            currentTrack.credits.push({ type: leaf.type, value: leaf.text });
-        } else if (leaf.type === "feat") { // dirty hack to match feat. fragments
-            currentTrack.title += leaf.text;
-            currentTrack.credits.push({ type: "role", value: "vocal" });
-            while (true) {
-                leaf = leaves[++i];
-                if (!leaf || (leaf.type !== "creator" && leaf.type !== "creatorSeparator")) {
-                    i--;
-                    break;
-                }
-                currentTrack.title += leaf.text;
-                currentTrack.credits.push({ type: leaf.type, value: leaf.text.replace(/[)）]$/, "") });
-            }
+    if (root.children.length > 0 && root.children[0].type === "credit_block") {
+        disc.tracks[0].credits = intoCredits(root.children.shift()!.children);
+    }
+    for (let child of root.children) {
+        if (child.type !== "song") {
+            console.warn(`Unknown node type at ${root.type} level: ${child.type}`);
+            continue;
         }
+        disc.tracks.push(intoRawTrack(child));
     }
     return disc;
+}
+
+function intoRawTrack(node: NodeInfo): RawTrack {
+    const track: RawTrack = { title: "", credits: [] };
+    if (node.children.length > 0 && node.children[0].type === "title") {
+        track.title = node.children.shift()!.text;
+    } else {
+        console.warn(`Track node does not start with title: ${node.text} type: ${node.type}`);
+    }
+    if (node.children.length > 0 && node.children[0].type === "title") { // not so dirty hack to match feat. fragments
+        const feat = node.children.shift()!;
+        track.title += feat.children.map(child => child.text).join("");
+        feat.children[feat.children.length - 1].text = feat.children[feat.children.length - 1].text.replace(/[)）]$/, "");
+        Object.assign(feat.children[0], { type: "role", text: "vocal" });
+        track.credits.push(...intoCredits([feat]));
+    }
+    if (node.children.length > 0 && node.children[0].type === "credit_block") {
+        track.credits.push(...intoCredits(node.children.shift()!.children));
+    }
+    if (node.children.length > 0) {
+        const unk = node.children.shift()!;
+        if (unk.type !== "@") {
+            console.warn(`Track node has unknown children: ${unk.type} ${unk.text}`);
+        }
+    }
+    return track;
+}
+
+function intoCredits(nodes: NodeInfo[]): CreditField[] {
+    return nodes.flatMap(node => node.children.map(child => { return { type: child.type as CreditField["type"], value: child.text } }));
 }
 
 async function initTreeSitterParser() {
@@ -117,8 +142,8 @@ export async function rkgk(onUpdate?: (disc: RawDisc) => void) {
         ]),
         closeBrackets: { brackets: ["《",] }
     });
-    const _onUpdate = onUpdate ? (leaves: LeafInfo[]) => onUpdate(intoRawDisc(leaves)) : undefined;
-    const parser = new TreeSitterParser(tsp, docID(langData), FIELD2NODETYPE, _onUpdate);
+    const _onUpdate = onUpdate ? (root: NodeInfo) => onUpdate(intoRawDisc(root)) : undefined;
+    const parser = new TreeSitterParser(tsp, docID(langData), FIELD2NODETYPE, SEMANTIC_TYPES, _onUpdate);
     const lang = new Language(langData, parser, [], "rkgk");
     return { lang: new LanguageSupport(lang) };
 }

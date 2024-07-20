@@ -1,11 +1,15 @@
 import Parser from "web-tree-sitter";
 import * as lezer from "@lezer/common";
 
-export interface LeafInfo {
+interface LeafInfo {
     type: string;
     text: string;
     startIndex: number;
     endIndex: number;
+}
+
+export interface NodeInfo extends LeafInfo {
+    children: NodeInfo[];
 }
 
 /**
@@ -17,17 +21,27 @@ export class TreeSitterParser extends lezer.Parser {
     tsp: Parser;
     dataNode: lezer.NodeType;
     field2nodeType: { [name: string]: lezer.NodeType };
-    onUpdate: (leaves: LeafInfo[]) => void;
+    semanticTypes: Set<string>;
+    onUpdate: (root: NodeInfo) => void;
+    /**
+     * @param tsp - The Tree-sitter parser to use.
+     * @param dataNode - The Lezer node type to use for the root of the Lezer tree.
+     * @param field2nodeType - A mapping from Tree-sitter field / node type to Lezer node type.
+     * @param semanticTypes - A set of Tree-sitter node types to be passed to the onUpdate callback.
+     * @param onUpdate - A callback to be called with a parsed semantic tree.
+     */
     constructor(
         tsp: Parser,
         dataNode: lezer.NodeType,
         field2nodeType: { [name: string]: lezer.NodeType },
-        onUpdate: (leaves: LeafInfo[]) => void = () => { },
+        semanticTypes: string[],
+        onUpdate: (root: NodeInfo) => void = () => { },
     ) {
         super();
         this.tsp = tsp;
         this.dataNode = dataNode;
         this.field2nodeType = field2nodeType;
+        this.semanticTypes = new Set(semanticTypes);
         this.onUpdate = onUpdate;
     }
 
@@ -39,8 +53,8 @@ export class TreeSitterParser extends lezer.Parser {
         const text = input.read(0, input.length);
         const tree = this.tsp.parse(text);
         let cursor = tree.walk();
-        let leaves = [...this.getLeaves(cursor)];
-        this.onUpdate(leaves);
+        const { root: rootNode, leaves } = this.traverse(cursor);
+        this.onUpdate(rootNode);
         let lNodes = [];
         let lStarts = [];
         for (const leaf of leaves) {
@@ -61,15 +75,22 @@ export class TreeSitterParser extends lezer.Parser {
         return new TreeSitterPartialParse(root, input.length);
     }
 
-    private *getLeaves(cursor: Parser.TreeCursor): Generator<LeafInfo> {
+    private traverse(cursor: Parser.TreeCursor): { root: NodeInfo, leaves: LeafInfo[] } {
+        const self: NodeInfo = { type: cursor.currentFieldName || cursor.nodeType, text: cursor.nodeText, startIndex: cursor.startIndex, endIndex: cursor.endIndex, children: [] };
+        const leaves = [];
         if (cursor.gotoFirstChild()) {
             do {
-                yield* this.getLeaves(cursor);
+                const { root: child, leaves: childLeaves } = this.traverse(cursor);
+                if (child.children.length > 0 || this.semanticTypes.has(child.type)) {
+                    self.children.push(child);
+                }
+                leaves.push(...childLeaves);
             } while (cursor.gotoNextSibling());
             cursor.gotoParent();
         } else {
-            yield { type: cursor.currentFieldName || cursor.nodeType, text: cursor.nodeText, startIndex: cursor.startIndex, endIndex: cursor.endIndex };
+            leaves.push(self);
         }
+        return { root: self, leaves };
     }
 }
 
