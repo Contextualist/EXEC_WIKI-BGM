@@ -120,7 +120,6 @@
 
 	<section>
 		<h2 id="faq">常见情况</h2>
-		<p>🕳️ 待填坑🕳️</p>
 		<section>
 			<h3 id="faq-everyevery">专辑里所有曲目的制作人都是一样的 / 专辑里没有分曲目制作人</h3>
 			<p>把制作人员信息加在曲目列表前面就行。</p>
@@ -273,6 +272,10 @@
 	h2 {
 		font-size: 1.5em;
 		margin-bottom: 10px;
+		background: linear-gradient(0deg, #dbf5ff 10%, #dbf5ff 45%, #ffffff00 45%, #ffffff00 100%);
+		width: max-content;
+		padding: 0 0.5rem;
+		transform: translate3d(-0.5rem, 0, 0);
 	}
 	p {
 		line-height: 1.5;
