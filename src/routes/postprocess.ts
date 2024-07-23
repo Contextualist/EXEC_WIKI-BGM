@@ -70,6 +70,7 @@ export interface PostProcessOptions {
 
 export interface Track {
     title: string;
+    comment: string;
     credits: { [roleID: string]: string[] }
 }
 
@@ -82,6 +83,7 @@ export class Disc {
     static async fromRawDisc(raw: RawDisc, options: PostProcessOptions): Promise<Disc> {
         let tracks = raw.tracks.map(rt => ({
             title: rt.title,
+            comment: rt.comment,
             credits: parseSongCredit(
                 rt.credits,
                 options.shouldCleanCircleParentheses,
@@ -92,7 +94,7 @@ export class Disc {
         if (tracks.length === 2 && Object.keys(tracks[1].credits).length === 0) {
             // "Every creator participates in every track" mode
             // Split the titles by newline
-            const trs = tracks[1].title.split("\n").map(title => ({ title, credits: {} }));
+            const trs = tracks[1].title.split("\n").map(title => ({ title, comment: "", credits: {} }));
             tracks.splice(1, 1, ...trs);
         }
         if (tracks.length > 1) {

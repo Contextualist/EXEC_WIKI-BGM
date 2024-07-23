@@ -56,6 +56,9 @@ const FIELD2NODETYPE: { [name: string]: lezer.NodeType } = {
     "《": NODE_TYPES.keyword,
     "》": NODE_TYPES.keyword,
     "title": NODE_TYPES.heading,
+    "//": NODE_TYPES.comment,
+    "comment": NODE_TYPES.comment,
+    "@": NODE_TYPES.keyword,
     "ERROR": NODE_TYPES.invalid,
 }
 
@@ -65,6 +68,7 @@ const SEMANTIC_TYPES = [
     "creator",
     "creatorSeparator",
     "title",
+    "comment",
 ];
 
 export interface CreditField {
@@ -74,6 +78,7 @@ export interface CreditField {
 
 export interface RawTrack {
     title: string;
+    comment: string;
     credits: CreditField[];
 }
 
@@ -82,7 +87,7 @@ export interface RawDisc {
 }
 
 function intoRawDisc(root: NodeInfo): RawDisc {
-    let disc: RawDisc = { tracks: [{ title: "", credits: [] }] };
+    let disc: RawDisc = { tracks: [{ title: "", comment: "", credits: [] }] };
     if (root.children.length > 0 && root.children[0].type === "credit_block") {
         disc.tracks[0].credits = intoCredits(root.children.shift()!.children);
     }
@@ -97,7 +102,7 @@ function intoRawDisc(root: NodeInfo): RawDisc {
 }
 
 function intoRawTrack(node: NodeInfo): RawTrack {
-    const track: RawTrack = { title: "", credits: [] };
+    const track: RawTrack = { title: "", comment: "", credits: [] };
     if (node.children.length > 0 && node.children[0].type === "title") {
         track.title = node.children.shift()!.text;
     } else {
@@ -109,6 +114,9 @@ function intoRawTrack(node: NodeInfo): RawTrack {
         feat.children[feat.children.length - 1].text = feat.children[feat.children.length - 1].text.replace(/[)）]$/, "");
         Object.assign(feat.children[0], { type: "role", text: "vocal" });
         track.credits.push(...intoCredits([feat]));
+    }
+    if (node.children.length > 0 && node.children[0].type === "comment") {
+        track.comment = node.children.shift()!.text.trim();
     }
     if (node.children.length > 0 && node.children[0].type === "credit_block") {
         track.credits.push(...intoCredits(node.children.shift()!.children));

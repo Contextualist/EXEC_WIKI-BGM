@@ -48,7 +48,8 @@
 		{ tag: tags.literal, color: '#69c' },
 		{ tag: tags.keyword, color: '#9065ed' },
 		{ tag: tags.invalid, color: '#f00' },
-		{ tag: tags.heading, color: '#333', fontWeight: 'bold' }
+		{ tag: tags.heading, color: '#333', fontWeight: 'bold' },
+		{ tag: tags.comment, color: '#999' }
 	]);
 
 	type CodeMirrorProps = {

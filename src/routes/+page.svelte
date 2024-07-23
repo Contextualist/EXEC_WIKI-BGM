@@ -57,6 +57,12 @@
 					.slice(1)
 					.map((tr) => tr.title)
 					.join('\n'),
+				trackTable: currentDisc.tracks
+					.slice(1)
+					.entries()
+					.map(([i, tr]) => `1|${i + 1}|${tr.title}|${tr.comment}|`)
+					.toArray()
+					.join('\n'),
 				relaTable
 			};
 			text = JSON.stringify(data);

@@ -151,6 +151,24 @@
 	</section>
 
 	<section>
+		<h2 id="rkgk-grammar-ext">扩展语法</h2>
+		<blockquote>
+			“至此，为了满足维基人对补完信息那无休止的欲望，小小的 rkgk
+			语言被缝上了怪诞的语法枝……它蜷缩着……不住地颤抖着……”
+		</blockquote>
+		<section>
+			<h3 id="grammar-comment">曲目注释</h3>
+			<p>
+				两个半角斜线<s>，原汁原味的C系注释</s
+				>。生成的内容在「曲目列表-批量修改」里点「填上注释」加上。
+			</p>
+			<pre>法界之锅 <span class="text-bgm-pink">//</span> <span class="text-bgm-grey"
+					>原曲：法界の火</span
+				></pre>
+		</section>
+	</section>
+
+	<section>
 		<h2 id="casestudy">复杂案例</h2>
 		<p>🕳️ 待填坑🕳️</p>
 	</section>

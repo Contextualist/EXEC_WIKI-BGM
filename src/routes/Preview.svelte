@@ -50,6 +50,9 @@
 					<div class="font-size-sm break-words hyphens-auto">
 						{i}
 						{track.title}
+						{#if track.comment}
+							<span class="font-size-xs color-bgm-darkgrey">/ {track.comment}</span>
+						{/if}
 					</div>
 				{/if}
 				{#each creditFormatted[i] as [roleID, staffs]}
