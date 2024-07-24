@@ -76,10 +76,11 @@ export interface CreditField {
     value: string;
 }
 
-export interface RawTrack {
-    title: string;
-    comment: string;
-    credits: CreditField[];
+class RawTrack {
+    title: string = "";
+    comment: string = "";
+    feat: CreditField[] = [];
+    credits: CreditField[] = [];
 }
 
 export interface RawDisc {
@@ -87,7 +88,7 @@ export interface RawDisc {
 }
 
 function intoRawDisc(root: NodeInfo): RawDisc {
-    let disc: RawDisc = { tracks: [{ title: "", comment: "", credits: [] }] };
+    const disc: RawDisc = { tracks: [new RawTrack()] };
     if (root.children.length > 0 && root.children[0].type === "credit_block") {
         disc.tracks[0].credits = intoCredits(root.children.shift()!.children);
     }
@@ -102,7 +103,7 @@ function intoRawDisc(root: NodeInfo): RawDisc {
 }
 
 function intoRawTrack(node: NodeInfo): RawTrack {
-    const track: RawTrack = { title: "", comment: "", credits: [] };
+    const track: RawTrack = new RawTrack();
     if (node.children.length > 0 && node.children[0].type === "title") {
         track.title = node.children.shift()!.text;
     } else {
@@ -113,7 +114,7 @@ function intoRawTrack(node: NodeInfo): RawTrack {
         track.title += feat.children.map(child => child.text).join("");
         feat.children[feat.children.length - 1].text = feat.children[feat.children.length - 1].text.replace(/[)）]$/, "");
         Object.assign(feat.children[0], { type: "role", text: "vocal" });
-        track.credits.push(...intoCredits([feat]));
+        track.feat.push(...intoCredits([feat]));
     }
     if (node.children.length > 0 && node.children[0].type === "comment") {
         track.comment = node.children.shift()!.text.trim();
@@ -142,7 +143,7 @@ async function initTreeSitterParser() {
     return parser;
 }
 
-export async function rkgk(onUpdate?: (disc: RawDisc) => void) {
+export async function rkgk(onUpdate: (disc: RawDisc) => void) {
     const tsp = await initTreeSitterParser();
     const langData = defineLanguageFacet({
         autocomplete: completeFromList([
@@ -150,7 +151,7 @@ export async function rkgk(onUpdate?: (disc: RawDisc) => void) {
         ]),
         closeBrackets: { brackets: ["《",] }
     });
-    const _onUpdate = onUpdate ? (root: NodeInfo) => onUpdate(intoRawDisc(root)) : undefined;
+    const _onUpdate = (root: NodeInfo) => onUpdate(intoRawDisc(root));
     const parser = new TreeSitterParser(tsp, docID(langData), FIELD2NODETYPE, SEMANTIC_TYPES, _onUpdate);
     const lang = new Language(langData, parser, [], "rkgk");
     return { lang: new LanguageSupport(lang) };

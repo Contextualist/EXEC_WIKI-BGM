@@ -5,6 +5,7 @@
 		shouldCleanCircleParentheses: boolean;
 		allowAllSpaceInCreatorName: boolean;
 		shouldAutofillArrangment: boolean;
+		enableFeatVocal: boolean;
 		defaultOpenBGMNewAfterPack: boolean;
 	}
 	export const defaultSettings: Settings = {
@@ -25,6 +26,7 @@
 		shouldCleanCircleParentheses: true,
 		allowAllSpaceInCreatorName: false,
 		shouldAutofillArrangment: true,
+		enableFeatVocal: true,
 		defaultOpenBGMNewAfterPack: false
 	};
 </script>
@@ -78,6 +80,10 @@
 		{
 			id: 'shouldAutofillArrangment',
 			text: '将作曲者视作未指定的编曲'
+		},
+		{
+			id: 'enableFeatVocal',
+			text: '将 feat. 视为艺术家'
 		}
 	];
 	const uiSettings = [

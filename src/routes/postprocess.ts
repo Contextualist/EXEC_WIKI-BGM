@@ -66,6 +66,7 @@ export interface PostProcessOptions {
     shouldCleanCircleParentheses: boolean;
     allowAllSpaceInCreatorName: boolean;
     shouldAutofillArrangment: boolean;
+    enableFeatVocal: boolean;
 }
 
 export interface Track {
@@ -85,7 +86,7 @@ export class Disc {
             title: rt.title,
             comment: rt.comment,
             credits: parseSongCredit(
-                rt.credits,
+                [...(options.enableFeatVocal ? rt.feat : []), ...rt.credits],
                 options.shouldCleanCircleParentheses,
                 options.allowAllSpaceInCreatorName,
                 options.shouldAutofillArrangment

@@ -12,7 +12,7 @@
 	import { rkgk, type RawDisc } from './lang-rkgk.ts';
 
 	interface TrackInfoProps {
-		onUpdate?: (disc: RawDisc) => void;
+		onUpdate: (disc: RawDisc) => void;
 		class?: string;
 	}
 	let { onUpdate, class: class_ = '', ...rest }: TrackInfoProps = $props();
