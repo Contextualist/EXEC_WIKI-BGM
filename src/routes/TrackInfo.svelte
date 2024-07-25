@@ -27,7 +27,7 @@
 				// Remove trailing whitespace
 				.replace(/\s+$/g, '')
 				// Unicode normalization
-				.normalize('NFKC')
+				.normalize('NFC')
 		);
 	}
 </script>
