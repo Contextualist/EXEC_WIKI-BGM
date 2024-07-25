@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import 'uno.css';
-	import CodeMirror from './CodeMirror.svelte';
+	import CodeMirror, { HighlightStyle, tags } from './CodeMirror.svelte';
 	import { localStorage$state } from './utils.svelte.ts';
 	import { rkgk, type RawDisc } from './lang-rkgk.ts';
 
@@ -30,6 +30,14 @@
 				.normalize('NFC')
 		);
 	}
+	const highlightStyle = HighlightStyle.define([
+		{ tag: tags.typeName, color: '#f09199' },
+		{ tag: tags.literal, color: '#69c' },
+		{ tag: tags.keyword, color: '#9065ed' },
+		{ tag: tags.invalid, color: '#f00' },
+		{ tag: tags.heading, color: '#333', fontWeight: 'bold' },
+		{ tag: tags.comment, color: '#999' }
+	]);
 </script>
 
 <div {...rest} class="{class_} max-w-130">
@@ -39,6 +47,7 @@
 			styles={{
 				'&': { height: '30.5rem', border: '1px solid lightgray', borderRadius: '0.25rem' }
 			}}
+			{highlightStyle}
 			{placeholder}
 			{lang}
 			bind:value={textState.val}

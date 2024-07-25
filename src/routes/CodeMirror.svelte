@@ -2,18 +2,20 @@
 	/**
     Adapted from https://github.com/touchifyapp/svelte-codemirror-editor
     */
+	import { HighlightStyle } from '@codemirror/language';
+	import { tags } from '@lezer/highlight';
 	export type ThemeSpec = Record<string, StyleSpec>;
 	export type StyleSpec = {
 		[propOrSelector: string]: string | number | StyleSpec | null;
 	};
+	export { HighlightStyle, tags };
 </script>
 
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { EditorView, placeholder as placeholderExt } from '@codemirror/view';
 	import { EditorSelection, EditorState, StateEffect, type Extension } from '@codemirror/state';
-	import { HighlightStyle, type LanguageSupport } from '@codemirror/language';
-	import { tags } from '@lezer/highlight';
+	import { type LanguageSupport } from '@codemirror/language';
 
 	import {
 		crosshairCursor,
@@ -43,21 +45,13 @@
 	} from '@codemirror/autocomplete';
 	import { lintKeymap } from '@codemirror/lint';
 
-	const defaultHighlightStyle = HighlightStyle.define([
-		{ tag: tags.typeName, color: '#f09199' },
-		{ tag: tags.literal, color: '#69c' },
-		{ tag: tags.keyword, color: '#9065ed' },
-		{ tag: tags.invalid, color: '#f00' },
-		{ tag: tags.heading, color: '#333', fontWeight: 'bold' },
-		{ tag: tags.comment, color: '#999' }
-	]);
-
 	type CodeMirrorProps = {
 		value?: string;
 		class?: string;
 		lang: LanguageSupport;
 		theme?: Extension;
 		styles?: ThemeSpec;
+		highlightStyle?: HighlightStyle;
 		extensions?: Extension[];
 		useTab?: boolean;
 		tabSize?: number;
@@ -74,6 +68,7 @@
 		lang,
 		theme,
 		styles,
+		highlightStyle,
 		extensions,
 		useTab = true,
 		tabSize = 2,
@@ -95,7 +90,7 @@
 
 	let state_extensions = $derived([
 		...get_base_extensions(useTab, tabSize, lineWrapping, placeholder, editable, readonly, lang),
-		...get_theme(theme, styles),
+		...get_theme(theme, styles, highlightStyle),
 		...(extensions ?? [])
 	]);
 
@@ -186,7 +181,6 @@
 			dropCursor(),
 			EditorState.allowMultipleSelections.of(true),
 			indentOnInput(),
-			syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
 			bracketMatching(),
 			closeBrackets(),
 			autocompletion(),
@@ -243,10 +237,15 @@
 		return extensions;
 	}
 
-	function get_theme(theme: Extension | undefined, styles: ThemeSpec | undefined): Extension[] {
+	function get_theme(
+		theme: Extension | undefined,
+		styles: ThemeSpec | undefined,
+		highlightStyle: HighlightStyle | undefined
+	): Extension[] {
 		const extensions: Extension[] = [];
 		if (styles) extensions.push(EditorView.theme(styles));
 		if (theme) extensions.push(theme);
+		if (highlightStyle) extensions.push(syntaxHighlighting(highlightStyle));
 		return extensions;
 	}
 </script>
