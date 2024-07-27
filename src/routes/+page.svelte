@@ -94,6 +94,7 @@
 	let descState = localStorage$state('desc', '');
 
 	let showSettings = $state(false);
+	let showRelaDB = $state(false);
 	let showTour = $state(settingsState.val.bgmUID === '');
 
 	let optMode = $state(false);
@@ -120,7 +121,7 @@
 	}}
 />
 <Header edgefade>
-	<Gallery relaMap={currentDisc.relaMap} bind:dupResolution class="h-32" />
+	<Gallery relaMap={currentDisc.relaMap} bind:dupResolution bind:showRelaDB class="h-32" />
 </Header>
 <main class="w-310 max-w-[95vw] lt-lg:w-200 lt-md:w-150 mx-auto my-4">
 	<div class="flex flex-justify-between">
@@ -165,7 +166,7 @@
 		</div>
 		<Preview disc={currentDisc} {name2staff} class="flex-basis-[28%] flex-grow-4" />
 	</div>
-	<Settings bind:settings={settingsState.val} bind:showSettings showRelaDB={false} />
+	<Settings bind:settings={settingsState.val} bind:showSettings bind:showRelaDB />
 	<Toast />
 	<Scenario
 		bind:show={showTour}

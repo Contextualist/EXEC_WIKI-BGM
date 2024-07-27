@@ -15,7 +15,8 @@
 			node &&
 			!node.contains(event.target as Node) &&
 			!event.defaultPrevented &&
-			(event.target as HTMLElement).id !== buttonId
+			(event.target as HTMLElement).id !== buttonId &&
+			!(event.target as HTMLElement).className.includes('execwb-prevent-click-outside')
 		) {
 			shown = false;
 		}

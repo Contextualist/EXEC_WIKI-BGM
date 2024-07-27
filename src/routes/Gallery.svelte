@@ -9,9 +9,15 @@
 	interface GalleryProps {
 		relaMap: Map<string, Staff[]>;
 		dupResolution: SvelteMap<string, number>;
+		showRelaDB: boolean;
 		class?: string;
 	}
-	let { relaMap, dupResolution = $bindable(), class: class_ = '' }: GalleryProps = $props();
+	let {
+		relaMap,
+		dupResolution = $bindable(),
+		showRelaDB = $bindable(),
+		class: class_ = ''
+	}: GalleryProps = $props();
 	let name2staff = $derived(resolveRelaMap(relaMap, Array.from(dupResolution.entries())));
 
 	let relaEntries = $derived(
@@ -48,8 +54,7 @@
 		</svg>`);
 
 	async function callSearch(name: string) {
-		await sleep(100); // allow the clickOutside handler of the Panel to run first
-		(document.getElementById('execwb-reladb') as HTMLButtonElement).click();
+		showRelaDB = true;
 		await sleep(100);
 		(document.getElementById('search-bgm') as HTMLInputElement).value = name;
 		(document.getElementById('search-bgm-btn') as HTMLButtonElement).click();
@@ -80,7 +85,7 @@
 						title:
 							m === Match.None ? `搜索「${name}」` : m !== Match.OK ? `「${name}」，有重名` : name
 					}}
-					class={'rounded-xl w-13 h-13 mx-1.2 my-0.8 object-cover ' +
+					class={'execwb-prevent-click-outside rounded-xl w-13 h-13 mx-1.2 my-0.8 object-cover ' +
 						(m !== Match.OK ? 'drop-shadow-color-bgm-pink ' : ' ') +
 						(m === Match.Conflict || m === Match.ConflictResolved
 							? 'drop-shadow-md'
