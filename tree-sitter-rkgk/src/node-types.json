@@ -335,16 +335,6 @@
     "type": "song",
     "named": true,
     "fields": {
-      "comment": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "comment",
-            "named": true
-          }
-        ]
-      },
       "title": {
         "multiple": true,
         "required": true,
@@ -361,9 +351,13 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
+        {
+          "type": "comment",
+          "named": true
+        },
         {
           "type": "credit_block",
           "named": true

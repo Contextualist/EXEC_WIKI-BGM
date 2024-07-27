@@ -98,9 +98,12 @@ module.exports = grammar({
 
     _quotable_song_title_maybefeat_maybecomment: $ => seq(
       $._quotable_song_title_maybefeat,
-      optional(seq(
-        '//',
-        field('comment', alias(repeat1(/./), $.comment)),
+      optional(choice(
+        seq(
+          '//',
+          alias(repeat1(/./), $.comment),
+        ),
+        alias(token(seq('原曲', repeat1(/./))), $.comment),
       )),
     ),
     _quotable_song_title_maybefeat: $ => choice(

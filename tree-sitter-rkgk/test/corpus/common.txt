@@ -209,6 +209,11 @@ comment, feat-field, quoting, creator name quoting
 01　桃色ディスタンス
     // 原曲：妖精大戦争 より 年中夢中の好奇心
 @
+01　桃色ディスタンス
+    原曲：妖精大戦争 より 年中夢中の好奇心
+@
+01　桃色ディスタンス 原曲：妖精大戦争 より 年中夢中の好奇心
+@
 02　触れられない物語\ouo/
     // 原曲：東方永夜抄 より 竹取飛翔
     Vocal：たま
@@ -221,6 +226,12 @@ comment, feat-field, quoting, creator name quoting
 ---
 
 (source_file
+  (song
+    (song_title)
+    (comment))
+  (song
+    (song_title)
+    (comment))
   (song
     (song_title)
     (comment))

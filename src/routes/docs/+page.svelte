@@ -159,11 +159,17 @@
 			<h3 id="grammar-comment">曲目注释</h3>
 			<p>
 				两个半角斜线<s>，原汁原味的C系注释</s
-				>。生成的内容在「曲目列表-批量修改」里点「填上注释」加上。
+				>，换不换行都可以，但必须在曲目制作人员信息前。生成的内容在「曲目列表-批量修改」里点「填上注释」加上。
+				<br />
+				另外，出于 Hyary 对车万的私心，“原曲”会被直接识别为注释。
 			</p>
-			<pre>法界之锅 <span class="text-bgm-pink">//</span> <span class="text-bgm-grey"
-					>原曲：法界の火</span
-				></pre>
+			<pre>
+欲望煤气灶 <span class="text-bgm-pink">//</span> <span class="text-bgm-grey">Bonus track</span>
+@
+飘上月球，不死乒乓
+<span class="text-bgm-pink">//</span> <span class="text-bgm-grey">Bonus track</span>
+@
+法界之锅 <span class="text-bgm-grey">原曲：法界の火</span></pre>
 		</section>
 	</section>
 
