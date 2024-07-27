@@ -63,7 +63,7 @@
 
 <div class="{class_} flex flex-col flex-wrap-reverse flex-justify-end overflow-auto pl-5">
 	{#each relaEntries as { name, m, pfp } ([name, m])}
-		<div class="relative">
+		<div class="static">
 			<button
 				class={'p-0 border-none bg-transparent text-size-base ' +
 					(m === Match.None ? 'cursor-copy' : m !== Match.OK ? 'cursor-context-menu' : '')}
@@ -90,7 +90,7 @@
 			<!-- 去重菜单 -->
 			{#if currentDisambiguation === name}
 				<div
-					class="absolute z-1 top-15 right--1 bg-faint-orangish/75 rounded-lg backdrop-blur-md shadow-lg"
+					class="absolute z-1 transform-translate-x--25 bg-faint-orangish/75 rounded-lg backdrop-blur-md shadow-lg"
 					transition:slide={{ duration: 200 }}
 				>
 					{#each relaMap.get(name)! as staff, i}
