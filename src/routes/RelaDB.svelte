@@ -56,14 +56,14 @@
 		bgmUID = $state.snapshot(bgmUID);
 	}
 
-	let searchResult: readonly Staff[] = $state.frozen([]);
-	async function searchBGM() {
+	let searchResultPromise: Promise<Staff[]> = $state(Promise.resolve([]));
+	async function searchBGM(): Promise<Staff[]> {
 		const name = (document.getElementById('search-bgm') as HTMLInputElement).value;
 		const result = await searchPerson(name);
 		if (result.length === 0) {
 			toast('没有找到相关人物', { alert: true });
 		}
-		searchResult = result;
+		return result;
 	}
 	async function idaddBGM() {
 		const id = (document.getElementById('idadd-bgm') as HTMLInputElement).value;
@@ -143,10 +143,12 @@
 				class="input-bgm p-1 w-65 text-sm placeholder-[#ccc]"
 				placeholder="をとは"
 				onkeypress={(e) => {
-					if (e.key === 'Enter') searchBGM();
+					if (e.key === 'Enter') searchResultPromise = searchBGM();
 				}}
 			/>
-			<Button id="search-bgm-btn" onclick={searchBGM}>搜索</Button>
+			<Button id="search-bgm-btn" onclick={async () => (searchResultPromise = searchBGM())}
+				>搜索</Button
+			>
 		</div>
 		<div class="text-bgm-grey italic text-xs mt-2">
 			没找到？
@@ -164,50 +166,54 @@
 		</div>
 	</div>
 	<div class={relaElClass}>
-		{#each searchResult as { id, pfp, name, aliases }}
-			<div
-				class="text-bgm-darkgrey text-sm py-3 w-full border-1 border-t-solid border-bgm-grey flex flex-row"
-			>
-				<div class="flex-basis-15">
-					<a href={`https://bgm.tv/person/${id}`} target="_blank" rel="noopener noreferrer">
-						<img
-							src={pfp === '' ? 'https://lain.bgm.tv/img/no_icon_subject.png' : pfp}
-							alt={name}
-							class="m-1 mr-2 w-15 h-15 object-cover rounded-md"
-						/>
-					</a>
-				</div>
-				<div class="flex-grow-1">
-					<a href={`https://bgm.tv/person/${id}`} target="_blank" rel="noopener noreferrer">
-						{name}
-					</a>
-					{#if aliases.length > 0}
-						<span class="text-bgm-grey text-xs">
-							{aliases.join('、')}
-						</span>
-					{/if}
-				</div>
-				<button
-					class={'text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
-						'border-none bg-transparent ml-1 h-[20px] w-[20px] p-0 flex-basis-[20px] flex-self-center'}
-					title="添加/更新这个人物"
-					onclick={() => addPerson({ id, pfp, name, aliases: aliases.filter((a) => a !== name) })}
+		{#await searchResultPromise}
+			<img src="/loading.gif" alt="loading" class="w-15 pt-2 opacity-60" />
+		{:then searchResult}
+			{#each searchResult as { id, pfp, name, aliases }}
+				<div
+					class="text-bgm-darkgrey text-sm py-3 w-full border-1 border-t-solid border-bgm-grey flex flex-row"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
+					<div class="flex-basis-15">
+						<a href={`https://bgm.tv/person/${id}`} target="_blank" rel="noopener noreferrer">
+							<img
+								src={pfp === '' ? 'https://lain.bgm.tv/img/no_icon_subject.png' : pfp}
+								alt={name}
+								class="m-1 mr-2 w-15 h-15 object-cover rounded-md"
+							/>
+						</a>
+					</div>
+					<div class="flex-grow-1">
+						<a href={`https://bgm.tv/person/${id}`} target="_blank" rel="noopener noreferrer">
+							{name}
+						</a>
+						{#if aliases.length > 0}
+							<span class="text-bgm-grey text-xs">
+								{aliases.join('、')}
+							</span>
+						{/if}
+					</div>
+					<button
+						class={'text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
+							'border-none bg-transparent ml-1 h-[20px] w-[20px] p-0 flex-basis-[20px] flex-self-center'}
+						title="添加/更新这个人物"
+						onclick={() => addPerson({ id, pfp, name, aliases: aliases.filter((a) => a !== name) })}
 					>
-						<path d="M3 3h18v18H3zM12 8v8m-4-4h8" />
-					</svg>
-				</button>
-			</div>
-		{/each}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<path d="M3 3h18v18H3zM12 8v8m-4-4h8" />
+						</svg>
+					</button>
+				</div>
+			{/each}
+		{/await}
 	</div>
 </div>
