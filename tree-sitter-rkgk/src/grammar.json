@@ -17,6 +17,44 @@
           ]
         },
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SYMBOL",
+                "name": "disc"
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_disc"
+            }
+          ]
+        }
+      ]
+    },
+    "disc": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "DISC"
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_disc"
+        }
+      ]
+    },
+    "_disc": {
+      "type": "SEQ",
+      "members": [
+        {
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",

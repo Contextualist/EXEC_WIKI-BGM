@@ -67,6 +67,18 @@ module.exports = grammar({
   rules: {
     source_file: $ => seq(
       optional($.credit_block),
+      choice(
+        repeat1($.disc),
+        $._disc,
+      ),
+    ),
+
+    disc: $ => seq(
+      'DISC',
+      '\n',
+      $._disc,
+    ),
+    _disc: $ => seq(
       repeat($.song),
       choice(
         $.song,

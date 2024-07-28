@@ -265,3 +265,43 @@ comment, feat-field, quoting, creator name quoting
         (role)
         (creator_name)))))
 
+===
+multi-disc
+===
+
+Producer: ARForest
+
+DISC
+The Unattended performer: ARForest
+《DISC》
+@
+
+DISC
+NORN performer: Rigël Theatre
+
+---
+
+(source_file
+  (credit_block
+    (credit_field
+      (role)
+      (creator_name)))
+  (disc
+    (song
+      (song_title)
+      (credit_block
+        (credit_field
+          (role)
+          (creator_name))))
+    (song
+       (song_title)))
+  (disc
+    (song
+      (song_title)
+      (credit_block
+        (credit_field
+          (role)
+          (creator_name)
+          (creator_sep)
+          (creator_name))))))
+
