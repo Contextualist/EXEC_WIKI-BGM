@@ -1,7 +1,7 @@
 /**
  * The ugly: the part of parsing that needs to be resolved at semantic level.
  */
-import type { RawDisc, CreditField } from "./lang-rkgk";
+import type { RawRelease, CreditField } from "./lang-rkgk";
 import { queryNameOrAliasBulk, type Staff } from "$lib/db";
 import { type ResolvedRelaMap } from "./disambiguation";
 
@@ -69,45 +69,61 @@ export interface PostProcessOptions {
     enableFeatVocal: boolean;
 }
 
+interface Credits { [roleID: string]: string[] }
+
 export interface Track {
     title: string;
     comment: string;
-    credits: { [roleID: string]: string[] }
+    credits: Credits;
 }
 
-export class Disc {
-    tracks: Track[];
+export class Release {
+    credits: Credits;
+    tracks: Track[][];
     relaMap: Map<string, Staff[]> = new Map();
-    constructor(tracks?: Track[]) {
+    constructor(credits?: { [roleID: string]: string[] }, tracks?: Track[][]) {
+        this.credits = credits || {};
         this.tracks = tracks || []
     }
-    static async fromRawDisc(raw: RawDisc, options: PostProcessOptions): Promise<Disc> {
-        let tracks = raw.tracks.map(rt => ({
-            title: rt.title,
-            comment: rt.comment,
-            credits: parseSongCredit(
-                [...(options.enableFeatVocal ? rt.feat : []), ...rt.credits],
+    static async fromRawRelease(raw: RawRelease, options: PostProcessOptions): Promise<Release> {
+        function _parseSongCredit(cfs: CreditField[]) {
+            return parseSongCredit(cfs,
                 options.shouldCleanCircleParentheses,
                 options.allowAllSpaceInCreatorName,
                 options.shouldAutofillArrangment
-            ),
-        }));
-        if (tracks.length === 2 && Object.keys(tracks[1].credits).length === 0) {
-            // "Every creator participates in every track" mode
-            // Split the titles by newline
-            const trs = tracks[1].title.split("\n").map(title => ({ title, comment: "", credits: {} }));
-            tracks.splice(1, 1, ...trs);
+            );
         }
-        if (tracks.length > 1) {
-            normalizeTitles(tracks.slice(1).map(t => t.title))
-                .forEach((title, i) => tracks[i + 1].title = title);
-        }
-        let disc = new Disc(tracks);
-        await disc.assignRelaMap();
-        return disc;
+
+        const credits = _parseSongCredit(raw.credits);
+        const all_tracks = raw.discs.map(disc => {
+            const tracks = disc.tracks.map(rt => ({
+                title: rt.title,
+                comment: rt.comment,
+                credits: _parseSongCredit([...(options.enableFeatVocal ? rt.feat : []), ...rt.credits]),
+            }))
+            if (tracks.length === 1 && Object.keys(tracks[0].credits).length === 0) {
+                // "Every creator participates in every track" mode
+                // Split the titles by newline
+                const trs = tracks[0].title.split("\n").map(title => ({ title, comment: "", credits: {} }));
+                if (trs.length > 1) {
+                    tracks.splice(0, 1, ...trs);
+                }
+            }
+            if (tracks.length > 1) {
+                normalizeTitles(tracks.map(t => t.title))
+                    .forEach((title, i) => tracks[i].title = title);
+            }
+            return tracks;
+        });
+        const release = new Release(credits, all_tracks);
+        await release.assignRelaMap();
+        return release;
     }
     private async assignRelaMap() {
-        const allCreators = Array.from(new Set<string>(this.tracks.flatMap(t => Object.values(t.credits).flat())));
+        const allCreators = Array.from(new Set<string>([
+            ...Object.values(this.credits).flat(),
+            ...this.tracks.flatMap(d => d.flatMap(t => Object.values(t.credits).flat())),
+        ]));
         const qr = await queryNameOrAliasBulk(allCreators);
         this.relaMap = new Map(allCreators.map((creator, i) => [creator, qr[i]]));
     }
@@ -117,12 +133,14 @@ export class Disc {
      * e.g. [["作曲", ["A", "B"]], ["作词", ["A", ...
      */
     intoRoleSummary(name2staff: ResolvedRelaMap): [string, string[]][] {
-        let r = new Map<string, Set<string>>(Object.values(Role).map(k => [k, new Set()]));
-        this.tracks.forEach(t => {
-            Object.entries(t.credits).forEach(([roleID, creators]) => {
+        const r = new Map<string, Set<string>>(Object.values(Role).map(k => [k, new Set()]));
+        function setCredits(credits: Credits) {
+            Object.entries(credits).forEach(([roleID, creators]) => {
                 creators.forEach(creator => r.get(roleID)?.add(creator));
             });
-        });
+        }
+        setCredits(this.credits);
+        this.tracks.forEach(d => d.forEach(t => setCredits(t.credits)));
         r.delete(Role.undef);
         return Array.from(r.entries())
             .map(([roleID, creators]) => [roleID, Array.from(creators).map((c) => this.formatCreator(c, name2staff.get(c)![0]?.name))]);
@@ -140,24 +158,38 @@ export class Disc {
      * e.g. [[10042, ["作曲#1,3", "作词#2"]], ...
      */
     intoCreatorSummary(name2staff: ResolvedRelaMap): [number, string[]][] {
-        let r = new Map<string, Map<string, number[]>>();  // creator -> { role -> tracks }
-        this.tracks.forEach((t, i) => {
-            Object.entries(t.credits).forEach(([roleID, creators]) => {
+        const nTracks = this.tracks.length;
+        let r = new Map<string, Map<string, number[][]>>();  // creator -> { role -> tracks }
+        function setCredits(credits: Credits, fn: (roleID: string, rtm: Map<string, number[][]>) => void) {
+            Object.entries(credits).forEach(([roleID, creators]) => {
                 creators.forEach(creator => {
-                    let rtm = r.get(creator) || new Map<string, number[]>();
-                    let rt = rtm.get(roleID) || [];
-                    if (i > 0) rt.push(i);
-                    rtm.set(roleID, rt);
+                    const rtm = r.get(creator) ?? new Map<string, number[][]>();
+                    fn(roleID, rtm);
                     r.set(creator, rtm);
                 });
             });
-        });
+        }
+        setCredits(this.credits, (roleID, rtm) => rtm.set(roleID, []));
+        this.tracks.forEach((d, i) =>
+            d.forEach((t, j) => {
+                setCredits(t.credits, (roleID, rtm) => {
+                    let rt = rtm.get(roleID)
+                    rt = !rt || rt.length === 0 ? Array.from({ length: nTracks }, () => []) : rt;
+                    rt[i].push(j + 1);
+                    rtm.set(roleID, rt);
+                });
+            })
+        );
+        const isMultiDisc = nTracks > 1;
         return Array.from(r.entries())
-            .map(([creator, rtm]): [Staff | undefined, Map<string, number[]>] => [name2staff.get(creator)![0], rtm])
+            .map(([creator, rtm]): [Staff | undefined, Map<string, number[][]>] => [name2staff.get(creator)![0], rtm])
             .filter(([staff, _1]) => staff)
             .map(([staff, rtm]) => {
-                let rts = Array.from(rtm.entries())
-                    .map(([roleID, tr]) => tr.length > 0 ? `${roleID}#${pagenoJoin(tr)}` : roleID);
+                const rts = Array.from(rtm.entries())
+                    .map(([roleID, tr]) => {
+                        if (tr.length === 0) return roleID;
+                        return isMultiDisc ? `${roleID}#${multiDiscPageNoJoin(tr)}` : `${roleID}#${pagenoJoin(tr[0])}`;
+                    });
                 return [staff!.id, rts];
             });
     }
@@ -241,16 +273,29 @@ function normalizeTitles(titles: string[]): string[] {
     return titles;
 }
 
-/// e.g. [1, 2, 3, 5, 6, 7, 9, 10] => "1-3,5-7,9,10"
-function pagenoJoin(arr: number[]): string {
+function _pagenoJoin(arr: number[]): string[] {
     let a = [...arr, Infinity];
     let r = [];
     let start = a[0];
     for (let i = 1; i < a.length; i++) {
         if (a[i] - a[i - 1] === 1) { continue; }
         const rlen = a[i - 1] - start + 1;
-        r.push(rlen === 1 ? start : rlen === 2 ? `${start},${a[i - 1]}` : `${start}-${a[i - 1]}`);
+        r.push(rlen === 1 ? start.toString() : rlen === 2 ? `${start},${a[i - 1]}` : `${start}-${a[i - 1]}`);
         start = a[i];
     }
-    return r.join(",");
+    return r;
+}
+
+/// e.g. [1, 2, 3, 5, 6, 7, 9, 10] => "1-3,5-7,9,10"
+function pagenoJoin(arr: number[]): string {
+    return _pagenoJoin(arr).join(",");
+}
+
+function multiDiscPageNoJoin(arr: number[][]): string {
+    const r = [];
+    for (const [i, a] of arr.entries()) {
+        if (a.length === 0) { continue; }
+        r.push(_pagenoJoin(a).map(s => `${i + 1}.${s}`).join(", "));
+    }
+    return r.join(", ");
 }

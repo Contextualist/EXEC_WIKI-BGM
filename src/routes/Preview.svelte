@@ -1,18 +1,23 @@
 <script lang="ts">
 	import 'uno.css';
-	import { Disc } from './postprocess';
+	import { Release } from './postprocess';
 	import { type Staff } from '$lib/db';
 	import { Match, type ResolvedRelaMap } from './disambiguation';
 
 	interface TrackInfoProps {
-		disc: Readonly<Disc>;
+		release: Readonly<Release>;
 		name2staff: ResolvedRelaMap;
 		class?: string;
 	}
-	let { disc, name2staff, class: class_ = '', ...rest }: TrackInfoProps = $props();
+	let { release, name2staff, class: class_ = '', ...rest }: TrackInfoProps = $props();
 
+	let creditTopFormatted = $derived(
+		mergeKeys(Object.entries(release.credits), (ps) => ps.join('、'))
+	);
 	let creditFormatted = $derived(
-		disc.tracks.map((tr) => mergeKeys(Object.entries(tr.credits), (ps) => ps.join('、')))
+		release.tracks.map((disc) =>
+			disc.map((tr) => mergeKeys(Object.entries(tr.credits), (ps) => ps.join('、')))
+		)
 	);
 
 	/// Merge keys with the same value
@@ -35,38 +40,47 @@
 	{:else if m === Match.Conflict}
 		<span class="text-bgm-pink">{name}</span>
 	{:else}
-		{#if name !== staff!.name}{name}（{/if}<a href="https://bgm.tv/person/{staff!.id}"
+		{#if name !== staff!.name}{name} ({/if}<a href="https://bgm.tv/person/{staff!.id}"
 			>{staff!.name}</a
-		>{#if name !== staff!.name}）{/if}
+		>{#if name !== staff!.name}){/if}
 	{/if}
 {/snippet}
 
+{#snippet formattedCredits(c: [string, string[]][])}
+	{#each c as [roleID, staffs]}
+		{#if roleID}
+			<div class="font-size-xs">
+				<span class="color-bgm-darkgrey">&#x3000;&#x3000;&#x3000;&#x3000;{roleID}：</span>
+				{#each staffs as name, i}
+					{@const [staff, m] = name2staff.get(name)!}
+					{@render formattedStaff(name, staff, m)}{i === staffs.length - 1 ? '' : '、'}
+				{/each}
+			</div>
+		{/if}
+	{/each}
+{/snippet}
+
 <div {...rest} class="min-w-85 max-w-180 ml-4 my-5 {class_}">
-	{#if disc.tracks.length > 1}
-		<div class="font-size-xs color-bgm-grey">Disc 1</div>
-		{#each disc.tracks as track, i}
-			<div class={'my-2 p-1 ' + (i !== 0 && i % 2 !== 0 ? 'bg-bgm-lightgrey' : '')}>
-				{#if i > 0}
+	{#if release.tracks.length > 0 && release.tracks[0].length > 0}
+		<div class="py-2 px-1">
+			{@render formattedCredits(creditTopFormatted)}
+		</div>
+		{#each release.tracks as disc, i}
+			<div class="p-1 font-size-xs color-bgm-grey border-b-solid border-1 border-color-gray">
+				Disc {i + 1}
+			</div>
+			{#each disc as track, j}
+				<div class={'py-2 px-1 ' + (j % 2 !== 0 ? 'bg-bgm-lightgrey' : '')}>
 					<div class="font-size-sm break-words hyphens-auto">
-						{i}
+						{j + 1}
 						{track.title}
 						{#if track.comment}
 							<span class="font-size-xs color-bgm-darkgrey">/ {track.comment}</span>
 						{/if}
 					</div>
-				{/if}
-				{#each creditFormatted[i] as [roleID, staffs]}
-					{#if roleID}
-						<div class="font-size-xs">
-							<span class="color-bgm-darkgrey">&#x3000;&#x3000;&#x3000;&#x3000;{roleID}：</span>
-							{#each staffs as name, j}
-								{@const [staff, m] = name2staff.get(name)!}
-								{@render formattedStaff(name, staff, m)}{j === staffs.length - 1 ? '' : '、'}
-							{/each}
-						</div>
-					{/if}
-				{/each}
-			</div>
+					{@render formattedCredits(creditFormatted[i][j])}
+				</div>
+			{/each}
 		{/each}
 	{:else}
 		<div class="flex flex-col h-full border-b-solid border-[#efefef] border-3">

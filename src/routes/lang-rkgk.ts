@@ -59,6 +59,7 @@ const FIELD2NODETYPE: { [name: string]: lezer.NodeType } = {
     "//": NODE_TYPES.comment,
     "comment": NODE_TYPES.comment,
     "@": NODE_TYPES.keyword,
+    "DISC": NODE_TYPES.keyword,
     "ERROR": NODE_TYPES.invalid,
 }
 
@@ -83,15 +84,36 @@ class RawTrack {
     credits: CreditField[] = [];
 }
 
-export interface RawDisc {
+interface RawDisc {
     tracks: RawTrack[];
 }
 
-function intoRawDisc(root: NodeInfo): RawDisc {
-    const disc: RawDisc = { tracks: [new RawTrack()] };
+export interface RawRelease {
+    credits: CreditField[];
+    discs: RawDisc[];
+}
+
+function intoRawRelease(root: NodeInfo): RawRelease {
+    const release: RawRelease = { credits: [], discs: [] };
     if (root.children.length > 0 && root.children[0].type === "credit_block") {
-        disc.tracks[0].credits = intoCredits(root.children.shift()!.children);
+        release.credits = intoCredits(root.children.shift()!.children);
     }
+    if (root.children.length > 0 && root.children[0].type === "disc") {
+        for (let child of root.children) {
+            if (child.type !== "disc") {
+                console.warn(`Unknown node type at ${root.type} level: ${child.type}`);
+                continue;
+            }
+            release.discs.push(intoRawDisc(child));
+        }
+    } else {
+        release.discs.push(intoRawDisc(root));
+    }
+    return release;
+}
+
+function intoRawDisc(root: NodeInfo): RawDisc {
+    const disc: RawDisc = { tracks: [] };
     for (let child of root.children) {
         if (child.type !== "song") {
             console.warn(`Unknown node type at ${root.type} level: ${child.type}`);
@@ -143,7 +165,7 @@ async function initTreeSitterParser() {
     return parser;
 }
 
-export async function rkgk(onUpdate: (disc: RawDisc) => void) {
+export async function rkgk(onUpdate: (disc: RawRelease) => void) {
     const tsp = await initTreeSitterParser();
     const langData = defineLanguageFacet({
         autocomplete: completeFromList([
@@ -151,7 +173,7 @@ export async function rkgk(onUpdate: (disc: RawDisc) => void) {
         ]),
         closeBrackets: { brackets: ["《",] }
     });
-    const _onUpdate = (root: NodeInfo) => onUpdate(intoRawDisc(root));
+    const _onUpdate = (root: NodeInfo) => onUpdate(intoRawRelease(root));
     const parser = new TreeSitterParser(tsp, docID(langData), FIELD2NODETYPE, SEMANTIC_TYPES, _onUpdate);
     const lang = new Language(langData, parser, [], "rkgk");
     return { lang: new LanguageSupport(lang) };

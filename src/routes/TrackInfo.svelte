@@ -9,10 +9,10 @@
 	import 'uno.css';
 	import CodeMirror, { HighlightStyle, tags } from './CodeMirror.svelte';
 	import { localStorage$state } from './utils.svelte.ts';
-	import { rkgk, type RawDisc } from './lang-rkgk.ts';
+	import { rkgk, type RawRelease } from './lang-rkgk.ts';
 
 	interface TrackInfoProps {
-		onUpdate: (disc: RawDisc) => void;
+		onUpdate: (disc: RawRelease) => void;
 		class?: string;
 	}
 	let { onUpdate, class: class_ = '', ...rest }: TrackInfoProps = $props();

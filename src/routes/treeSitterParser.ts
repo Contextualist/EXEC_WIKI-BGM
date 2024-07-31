@@ -81,7 +81,7 @@ export class TreeSitterParser extends lezer.Parser {
         if (cursor.gotoFirstChild()) {
             do {
                 const { root: child, leaves: childLeaves } = this.traverse(cursor);
-                if (child.children.length > 0 || this.semanticTypes.has(child.type)) {
+                if ((child.children.length > 0 && child.type !== 'ERROR') || this.semanticTypes.has(child.type)) {
                     self.children.push(child);
                 }
                 leaves.push(...childLeaves);

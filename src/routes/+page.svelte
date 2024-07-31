@@ -6,8 +6,8 @@
 	import InfoBox, { edit as editInfoBox } from './InfoBox.svelte';
 	import Preview from './Preview.svelte';
 	import Gallery from './Gallery.svelte';
-	import { type RawDisc } from './lang-rkgk.ts';
-	import { Disc } from './postprocess.ts';
+	import { type RawRelease } from './lang-rkgk.ts';
+	import { Release } from './postprocess.ts';
 	import { resolveRelaMap } from './disambiguation.ts';
 
 	import Header from '$lib/Header.svelte';
@@ -21,11 +21,11 @@
 	import { getRandomTip } from './dailyTips.ts';
 	import { localStorage$state } from './utils.svelte.ts';
 
-	let currentRawDisc: Readonly<RawDisc> = $state.frozen({ tracks: [] });
-	let currentDisc: Readonly<Disc> = $state.frozen(new Disc());
+	let currentRawRelease: Readonly<RawRelease> = $state.frozen({ credits: [], discs: [] });
+	let currentRelease: Readonly<Release> = $state.frozen(new Release());
 	let dupResolution = $state(new SvelteMap<string, number>());
 	let dupResolutionEntries = $derived(Array.from(dupResolution.entries()));
-	let name2staff = $derived(resolveRelaMap(currentDisc.relaMap, dupResolutionEntries));
+	let name2staff = $derived(resolveRelaMap(currentRelease.relaMap, dupResolutionEntries));
 
 	function clear() {
 		clearTrackInfo();
@@ -42,7 +42,11 @@
 	}
 	async function pack() {
 		let text;
-		const relaTable = currentDisc
+		const trackList = currentRelease.tracks.map((disc) => disc.map((tr) => tr.title).join('\n'));
+		const trackTable = currentRelease.tracks
+			.flatMap((disc, i) => disc.map((tr, j) => `${i + 1}|${j + 1}|${tr.title}|${tr.comment}|`))
+			.join('\n');
+		const relaTable = currentRelease
 			.intoCreatorSummary(name2staff)
 			.map(([bid, rt]) => `https://bgm.tv/person/${bid}  ${rt.join('  ')}`)
 			.join('\n');
@@ -53,16 +57,8 @@
 				title: titleState.val,
 				infoBox: infoBoxState.val,
 				description: descState.val,
-				trackList: currentDisc.tracks
-					.slice(1)
-					.map((tr) => tr.title)
-					.join('\n'),
-				trackTable: currentDisc.tracks
-					.slice(1)
-					.entries()
-					.map(([i, tr]) => `1|${i + 1}|${tr.title}|${tr.comment}|`)
-					.toArray()
-					.join('\n'),
+				trackList: trackList.length > 1 ? trackList : trackList[0],
+				trackTable,
 				relaTable
 			};
 			text = JSON.stringify(data);
@@ -74,18 +70,18 @@
 		}
 	}
 
-	async function onUpdate(disc: RawDisc) {
-		currentRawDisc = disc;
+	async function onUpdate(release: RawRelease) {
+		currentRawRelease = release;
 	}
 	$effect(() => {
-		// Update currentDisc (for Preview) whenever currentRawDisc or settingsState changes
-		Disc.fromRawDisc(currentRawDisc, settingsState.val).then((disc) => {
-			currentDisc = disc;
+		// Update currentRelease (for Preview) whenever currentRawRelease or settingsState changes
+		Release.fromRawRelease(currentRawRelease, settingsState.val).then((release) => {
+			currentRelease = release;
 		});
 	});
 	$effect(() => {
 		// Update infoBoxState whenever currentDisc or dupResolution changes
-		infoBoxState.evolve((ib) => editInfoBox(ib, currentDisc.intoRoleSummary(name2staff)));
+		infoBoxState.evolve((ib) => editInfoBox(ib, currentRelease.intoRoleSummary(name2staff)));
 	});
 
 	let settingsState = localStorage$state('settings', defaultSettings);
@@ -121,7 +117,7 @@
 	}}
 />
 <Header edgefade>
-	<Gallery relaMap={currentDisc.relaMap} bind:dupResolution bind:showRelaDB class="h-32" />
+	<Gallery relaMap={currentRelease.relaMap} bind:dupResolution bind:showRelaDB class="h-32" />
 </Header>
 <main class="w-310 max-w-[95vw] lt-lg:w-200 lt-md:w-150 mx-auto my-4">
 	<div class="flex flex-justify-between">
@@ -164,7 +160,7 @@
 				class="input-bgm text-sm w-[94%] h-[94%] flex-basis-[18%] p-[0.5rem]"
 			></textarea>
 		</div>
-		<Preview disc={currentDisc} {name2staff} class="flex-basis-[28%] flex-grow-4" />
+		<Preview release={currentRelease} {name2staff} class="flex-basis-[28%] flex-grow-4" />
 	</div>
 	<Settings bind:settings={settingsState.val} bind:showSettings bind:showRelaDB />
 	<Toast />

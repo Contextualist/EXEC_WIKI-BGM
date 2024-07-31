@@ -151,6 +151,19 @@
 
 	<section>
 		<h2 id="rkgk-grammar-ext">扩展语法</h2>
+		<section>
+			<h3 id="grammar-multidisc">多张 Disc</h3>
+			<p>
+				使用 <code>DISC</code> 来标记每张 disc 的开始。
+			</p>
+			<pre>
+producer: ARForest
+<span class="text-bgm-pink">DISC</span>
+The Unattended        performer: ARForest
+An Innocent Breeze    performer: Nego_tiator
+<span class="text-bgm-pink">DISC</span>
+NORN                  performer: Rigël Theatre</pre>
+		</section>
 		<blockquote>
 			“至此，为了满足维基人对补完信息那无休止的欲望，小小的 rkgk
 			语言被缝上了怪诞的语法枝……它蜷缩着……不住地颤抖着……”
