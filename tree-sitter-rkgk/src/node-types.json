@@ -1,10 +1,5 @@
 [
   {
-    "type": "comment",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "credit_block",
     "named": true,
     "fields": {},
@@ -515,6 +510,10 @@
   {
     "type": "circle",
     "named": false
+  },
+  {
+    "type": "comment",
+    "named": true
   },
   {
     "type": "compose",

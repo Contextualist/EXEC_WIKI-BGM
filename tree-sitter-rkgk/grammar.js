@@ -113,9 +113,9 @@ module.exports = grammar({
       optional(choice(
         seq(
           '//',
-          alias(repeat1(/./), $.comment),
+          alias(/[^\n]+/, $.comment),
         ),
-        alias(token(seq('原曲', repeat1(/./))), $.comment),
+        alias(token(seq('原曲', /[^\n]+/)), $.comment),
       )),
     ),
     _quotable_song_title_maybefeat: $ => choice(

@@ -234,11 +234,8 @@
                     {
                       "type": "ALIAS",
                       "content": {
-                        "type": "REPEAT1",
-                        "content": {
-                          "type": "PATTERN",
-                          "value": "."
-                        }
+                        "type": "PATTERN",
+                        "value": "[^\\n]+"
                       },
                       "named": true,
                       "value": "comment"
@@ -257,11 +254,8 @@
                           "value": "原曲"
                         },
                         {
-                          "type": "REPEAT1",
-                          "content": {
-                            "type": "PATTERN",
-                            "value": "."
-                          }
+                          "type": "PATTERN",
+                          "value": "[^\\n]+"
                         }
                       ]
                     }
