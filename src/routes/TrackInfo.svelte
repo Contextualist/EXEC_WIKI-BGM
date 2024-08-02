@@ -43,7 +43,7 @@
 <div {...rest} class="{class_} max-w-130">
 	{#await rkgk(onUpdate) then { lang }}
 		<CodeMirror
-			class="h-[30.5rem] max-w-130 pr-3 py-3 text-sm"
+			class="h-full min-h-[30.5rem] max-w-130 pr-3 py-3 text-sm"
 			styles={{
 				'&': { height: '30.5rem', border: '1px solid lightgray', borderRadius: '0.25rem' }
 			}}

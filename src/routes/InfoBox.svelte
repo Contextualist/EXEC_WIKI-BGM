@@ -55,7 +55,7 @@
 	</button>
 	-->
 	<textarea
-		class="input-bgm w-[94%] h-[94%] p-[0.5rem] text-sm break-all"
+		class="input-bgm w-[94%] h-[calc(100%-1.2rem)] p-[0.5rem] text-sm break-all"
 		spellcheck="false"
 		bind:value
 	>

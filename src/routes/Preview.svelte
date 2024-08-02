@@ -60,7 +60,10 @@
 	{/each}
 {/snippet}
 
-<div {...rest} class="min-w-85 max-w-180 ml-4 my-5 {class_}">
+<div
+	{...rest}
+	class="min-w-85 max-w-180 ml-4 my-2.8 {class_} border-b-solid border-[#efefef] border-3"
+>
 	{#if release.tracks.length > 0 && release.tracks[0].length > 0}
 		<div class="py-2 px-1">
 			{@render formattedCredits(creditTopFormatted)}
@@ -83,7 +86,7 @@
 			{/each}
 		{/each}
 	{:else}
-		<div class="flex flex-col h-full border-b-solid border-[#efefef] border-3">
+		<div class="flex flex-col h-full">
 			<div class="text-[6em] color-[#F0919933] font-serif mx-auto">空</div>
 			<svg
 				height="150"

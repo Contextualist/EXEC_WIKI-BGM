@@ -256,4 +256,7 @@
 	.codemirror-wrapper :global(.cm-focused) {
 		outline: none;
 	}
+	:global(.cm-editor) {
+		height: 100%;
+	}
 </style>

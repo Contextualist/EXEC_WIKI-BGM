@@ -136,10 +136,10 @@
 					: '打包<wbr/>带走！'}
 		</Button>
 	</div>
-	<div class="flex flex-wrap flex-justify-between">
-		<TrackInfo {onUpdate} class="flex-basis-[38%] flex-grow-4" />
+	<div class="flex flex-wrap flex-justify-between h-66vh">
+		<TrackInfo {onUpdate} class="flex-basis-[38%] flex-grow-4 h-full" />
 		<div
-			class="flex-basis-[24%] flex-grow-3 h-[30.5rem] my-[0.8rem] flex flex-col flex-justify-between"
+			class="flex-basis-[24%] flex-grow-3 h-full min-h-[30.5rem] mt-[0.8rem] flex flex-col flex-justify-between gap-row-xs"
 		>
 			<input
 				bind:value={titleState.val}
@@ -151,16 +151,20 @@
 			<InfoBox
 				bind:value={infoBoxState.val}
 				defaultValue={settingsState.val.newInfoBox}
-				class="flex-basis-[67%]"
+				class="flex-basis-[67%] flex-grow-3"
 			/>
 			<textarea
 				bind:value={descState.val}
 				placeholder="简介"
 				spellcheck="false"
-				class="input-bgm text-sm w-[94%] h-[94%] flex-basis-[18%] p-[0.5rem]"
+				class="input-bgm text-sm w-[94%] flex-basis-[18%] flex-grow-2 p-[0.5rem]"
 			></textarea>
 		</div>
-		<Preview release={currentRelease} {name2staff} class="flex-basis-[28%] flex-grow-4" />
+		<Preview
+			release={currentRelease}
+			{name2staff}
+			class="flex-basis-[28%] flex-grow-4 h-full min-h-[30.5rem] overflow-auto"
+		/>
 	</div>
 	<Settings bind:settings={settingsState.val} bind:showSettings bind:showRelaDB />
 	<Toast />
