@@ -280,7 +280,7 @@ function _pagenoJoin(arr: number[]): string[] {
     for (let i = 1; i < a.length; i++) {
         if (a[i] - a[i - 1] === 1) { continue; }
         const rlen = a[i - 1] - start + 1;
-        r.push(rlen === 1 ? start.toString() : rlen === 2 ? `${start},${a[i - 1]}` : `${start}-${a[i - 1]}`);
+        r.push(...(rlen === 1 ? [`${start}`] : rlen === 2 ? [`${start}`, `${a[i - 1]}`] : [`${start}-${a[i - 1]}`]));
         start = a[i];
     }
     return r;
