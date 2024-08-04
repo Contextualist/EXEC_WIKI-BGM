@@ -64,6 +64,8 @@
 	}
 
 	let currentDisambiguation: string | undefined = $state();
+	let menuTop = $state(0);
+	let menuRight = $state(0);
 </script>
 
 <div class="{class_} flex flex-col flex-wrap-reverse flex-justify-end overflow-auto pl-5">
@@ -75,7 +77,12 @@
 				onclick={m === Match.None
 					? () => callSearch(name)
 					: m !== Match.OK
-						? () => (currentDisambiguation = currentDisambiguation === name ? undefined : name)
+						? (ev) => {
+								currentDisambiguation = currentDisambiguation === name ? undefined : name;
+								const pos = (ev.target as HTMLElement).getBoundingClientRect();
+								menuTop = pos.bottom + 5;
+								menuRight = window.innerWidth - pos.right - 7;
+							}
 						: undefined}
 			>
 				<img
@@ -95,8 +102,9 @@
 			<!-- 去重菜单 -->
 			{#if currentDisambiguation === name}
 				<div
-					class="absolute z-1 transform-translate-x--25 bg-faint-orangish/75 rounded-lg backdrop-blur-md shadow-lg"
+					class="absolute z-1 bg-faint-orangish/75 rounded-lg backdrop-blur-md shadow-lg"
 					transition:slide={{ duration: 200 }}
+					style="top: {menuTop}px; right: {menuRight}px;"
 				>
 					{#each relaMap.get(name)! as staff, i}
 						<div class="p-2">
