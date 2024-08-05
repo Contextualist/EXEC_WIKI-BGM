@@ -159,13 +159,15 @@ export class Release {
      */
     intoCreatorSummary(name2staff: ResolvedRelaMap): [number, string[]][] {
         const nTracks = this.tracks.length;
-        let r = new Map<string, Map<string, number[][]>>();  // creator -> { role -> tracks }
+        let r = new Map<number, Map<string, number[][]>>();  // staff_id -> { role -> tracks }
         function setCredits(credits: Credits, fn: (roleID: string, rtm: Map<string, number[][]>) => void) {
             Object.entries(credits).forEach(([roleID, creators]) => {
                 creators.forEach(creator => {
-                    const rtm = r.get(creator) ?? new Map<string, number[][]>();
+                    const staff = name2staff.get(creator)![0];
+                    if (!staff) { return; }
+                    const rtm = r.get(staff.id) ?? new Map<string, number[][]>();
                     fn(roleID, rtm);
-                    r.set(creator, rtm);
+                    r.set(staff.id, rtm);
                 });
             });
         }
@@ -182,15 +184,13 @@ export class Release {
         );
         const isMultiDisc = nTracks > 1;
         return Array.from(r.entries())
-            .map(([creator, rtm]): [Staff | undefined, Map<string, number[][]>] => [name2staff.get(creator)![0], rtm])
-            .filter(([staff, _1]) => staff)
-            .map(([staff, rtm]) => {
+            .map(([staffID, rtm]) => {
                 const rts = Array.from(rtm.entries())
                     .map(([roleID, tr]) => {
                         if (tr.length === 0) return roleID;
                         return isMultiDisc ? `${roleID}#${multiDiscPageNoJoin(tr)}` : `${roleID}#${pagenoJoin(tr[0])}`;
                     });
-                return [staff!.id, rts];
+                return [staffID, rts];
             });
     }
 }
