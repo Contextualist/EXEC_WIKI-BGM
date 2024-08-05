@@ -18,6 +18,9 @@ const TYPE_COMPLETIONS = [
     { label: "Label" },
     { label: "Producer" },
     { label: "Recording" },
+    { label: "Guest vocal" },
+    { label: "Mixing" },
+    { label: "Mastering" },
     { displayLabel: "作詞作編曲", label: "zuocizuobianqu" },
     { displayLabel: "作詞作曲", label: "zuocizuoqu" },
     { displayLabel: "作編曲", label: "zuobianqu" },
@@ -30,7 +33,11 @@ const TYPE_COMPLETIONS = [
     { displayLabel: "制作人", label: "zhizuoren" },
     { displayLabel: "出版方", label: "chubanfang" },
     { displayLabel: "录音", label: "luyin" },
-    { displayLabel: "原作", label: "yuanzuo" }
+    { displayLabel: "原作", label: "yuanzuo" },
+    { displayLabel: "声乐", label: "shengyue" },
+    { displayLabel: "乐器", label: "yueqi" },
+    { displayLabel: "混音", label: "hunyin" },
+    { displayLabel: "母带制作", label: "mutaizhizuo" },
 ];
 
 function applyTypeCompletion(view: EditorView, completion: Completion, from: number, to: number) {
@@ -135,7 +142,7 @@ function intoRawTrack(node: NodeInfo): RawTrack {
         const feat = node.children.shift()!;
         track.title += feat.children.map(child => child.text).join("");
         feat.children[feat.children.length - 1].text = feat.children[feat.children.length - 1].text.replace(/[)）]$/, "");
-        Object.assign(feat.children[0], { type: "role", text: "vocal" });
+        Object.assign(feat.children[0], { type: "role", text: "guest vocal" });
         track.feat.push(...intoCredits([feat]));
     }
     if (node.children.length > 0 && node.children[0].type === "comment") {

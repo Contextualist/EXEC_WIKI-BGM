@@ -750,6 +750,78 @@
           "name": "role",
           "content": {
             "type": "STRING",
+            "value": "Guest Vocal"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Guest vocal"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "guest vocal"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Chorus"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "chorus"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Mixing"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "mixing"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Mastering"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "mastering"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
             "value": "ボーカル"
           }
         },
@@ -775,6 +847,14 @@
           "content": {
             "type": "STRING",
             "value": "レーベル"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "マスタリング"
           }
         },
         {
@@ -895,6 +975,38 @@
           "content": {
             "type": "STRING",
             "value": "原作"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "声乐"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "乐器"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "混音"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "母带制作"
           }
         }
       ]

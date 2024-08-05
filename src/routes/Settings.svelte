@@ -83,7 +83,7 @@
 		},
 		{
 			id: 'enableFeatVocal',
-			text: '将 feat. 视为艺术家'
+			text: '将 feat. 视为声乐/Vocal'
 		}
 	];
 	const uiSettings = [

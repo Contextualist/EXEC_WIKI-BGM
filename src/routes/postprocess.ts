@@ -18,6 +18,10 @@ enum Role {
     PL = "出版方",
     RC = "录音",
     O = "原作",
+    FV = "声乐",
+    IT = "乐器",
+    MX = "混音",
+    MA = "母带制作",
 }
 
 // NOTE: This should be kept in sync with `grammar.js` in the tree-sitter-rkgk repo.
@@ -41,10 +45,15 @@ const ROLE_MAP: { [name: string]: Role[] } = {
     'circle': [Role.RL],
     'producer': [Role.PD],
     'recording': [Role.RC],
+    'guest vocal': [Role.FV],
+    'chorus': [Role.FV],
+    'mixing': [Role.MX],
+    'mastering': [Role.MA],
     'ボーカル': [Role.V],
     'アレンジ': [Role.A],
     'イラスト': [Role.I],
     'レーベル': [Role.RL],
+    'マスタリング': [Role.MA],
     '歌唱': [Role.V],
     '作詞作編曲': [Role.L, Role.C, Role.A],
     '作詞作曲': [Role.L, Role.C],
@@ -60,6 +69,10 @@ const ROLE_MAP: { [name: string]: Role[] } = {
     '出版方': [Role.PL],
     '录音': [Role.RC],
     '原作': [Role.O],
+    '声乐': [Role.FV],
+    '乐器': [Role.IT],
+    '混音': [Role.MX],
+    '母带制作': [Role.MA],
 };
 
 export interface PostProcessOptions {

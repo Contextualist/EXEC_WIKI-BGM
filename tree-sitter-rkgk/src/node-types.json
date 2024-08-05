@@ -122,6 +122,10 @@
             "named": false
           },
           {
+            "type": "Chorus",
+            "named": false
+          },
+          {
             "type": "Circle",
             "named": false
           },
@@ -135,6 +139,14 @@
           },
           {
             "type": "Composition",
+            "named": false
+          },
+          {
+            "type": "Guest Vocal",
+            "named": false
+          },
+          {
+            "type": "Guest vocal",
             "named": false
           },
           {
@@ -159,6 +171,14 @@
           },
           {
             "type": "Lyrics",
+            "named": false
+          },
+          {
+            "type": "Mastering",
+            "named": false
+          },
+          {
+            "type": "Mixing",
             "named": false
           },
           {
@@ -198,6 +218,10 @@
             "named": false
           },
           {
+            "type": "chorus",
+            "named": false
+          },
+          {
             "type": "circle",
             "named": false
           },
@@ -211,6 +235,10 @@
           },
           {
             "type": "composition",
+            "named": false
+          },
+          {
+            "type": "guest vocal",
             "named": false
           },
           {
@@ -235,6 +263,14 @@
           },
           {
             "type": "lyrics",
+            "named": false
+          },
+          {
+            "type": "mastering",
+            "named": false
+          },
+          {
+            "type": "mixing",
             "named": false
           },
           {
@@ -274,7 +310,15 @@
             "named": false
           },
           {
+            "type": "マスタリング",
+            "named": false
+          },
+          {
             "type": "レーベル",
+            "named": false
+          },
+          {
+            "type": "乐器",
             "named": false
           },
           {
@@ -318,6 +362,10 @@
             "named": false
           },
           {
+            "type": "声乐",
+            "named": false
+          },
+          {
             "type": "录音",
             "named": false
           },
@@ -327,6 +375,14 @@
           },
           {
             "type": "歌唱",
+            "named": false
+          },
+          {
+            "type": "母带制作",
+            "named": false
+          },
+          {
+            "type": "混音",
             "named": false
           },
           {
@@ -428,6 +484,10 @@
     "named": false
   },
   {
+    "type": "Chorus",
+    "named": false
+  },
+  {
     "type": "Circle",
     "named": false
   },
@@ -445,6 +505,14 @@
   },
   {
     "type": "DISC",
+    "named": false
+  },
+  {
+    "type": "Guest Vocal",
+    "named": false
+  },
+  {
+    "type": "Guest vocal",
     "named": false
   },
   {
@@ -469,6 +537,14 @@
   },
   {
     "type": "Lyrics",
+    "named": false
+  },
+  {
+    "type": "Mastering",
+    "named": false
+  },
+  {
+    "type": "Mixing",
     "named": false
   },
   {
@@ -508,6 +584,10 @@
     "named": false
   },
   {
+    "type": "chorus",
+    "named": false
+  },
+  {
     "type": "circle",
     "named": false
   },
@@ -540,6 +620,10 @@
     "named": true
   },
   {
+    "type": "guest vocal",
+    "named": false
+  },
+  {
     "type": "illust",
     "named": false
   },
@@ -561,6 +645,14 @@
   },
   {
     "type": "lyrics",
+    "named": false
+  },
+  {
+    "type": "mastering",
+    "named": false
+  },
+  {
+    "type": "mixing",
     "named": false
   },
   {
@@ -608,7 +700,15 @@
     "named": false
   },
   {
+    "type": "マスタリング",
+    "named": false
+  },
+  {
     "type": "レーベル",
+    "named": false
+  },
+  {
+    "type": "乐器",
     "named": false
   },
   {
@@ -652,6 +752,10 @@
     "named": false
   },
   {
+    "type": "声乐",
+    "named": false
+  },
+  {
     "type": "录音",
     "named": false
   },
@@ -661,6 +765,14 @@
   },
   {
     "type": "歌唱",
+    "named": false
+  },
+  {
+    "type": "母带制作",
+    "named": false
+  },
+  {
+    "type": "混音",
     "named": false
   },
   {
