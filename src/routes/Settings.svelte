@@ -132,7 +132,7 @@
 	{@render SettingsToggle(async () => (showSettings = !showSettings), '设置', 'execwb-settings')}
 </div>
 
-{#snippet SettingsToggle(tfn, text, id)}
+{#snippet SettingsToggle(tfn: () => Promise<any>, text: string, id: string)}
 	<Button class="p-2.5 bg-bgm-lightergrey text-[1rem]" onclick={tfn} {id}>
 		{text}
 	</Button>

@@ -192,7 +192,7 @@ NORN                  performer: Rigël Theatre</pre>
 	</section>
 </article>
 
-{#snippet pic(src, alt, { compact = false } = {})}
+{#snippet pic(src: string, alt: string, { compact = false } = {})}
 	<div class="overflow-x-hidden">
 		<figure class={'flex w-[max-content] lt-md:m-0 ' + (compact ? 'my-0' : '')}>
 			<picture>
