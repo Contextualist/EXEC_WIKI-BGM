@@ -68,7 +68,10 @@
 	let menuRight = $state(0);
 </script>
 
-<div class="{class_} flex flex-col flex-wrap-reverse flex-justify-end overflow-auto pl-5">
+<div
+	class="{class_} w-full flex flex-col flex-wrap-reverse flex-justify-end flex-content-start overflow-auto pl-5"
+	style="scrollbar-width: none;"
+>
 	{#each relaEntries as { name, m, pfp } ([name, m])}
 		<div class="static">
 			<button
