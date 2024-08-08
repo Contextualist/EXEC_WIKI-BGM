@@ -68,7 +68,7 @@
 	async function idaddBGM() {
 		const id = (document.getElementById('idadd-bgm') as HTMLInputElement).value;
 		if (id.includes('character')) {
-			toast('角色不能用于关联', { alert: true });
+			toast('虚构角色不能用于关联', { alert: true });
 			return;
 		}
 		let id_num;

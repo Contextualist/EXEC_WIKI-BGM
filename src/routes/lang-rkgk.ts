@@ -4,7 +4,7 @@ import Parser from "web-tree-sitter";
 import { LanguageSupport, Language, defineLanguageFacet, languageDataProp } from "@codemirror/language";
 import { completeFromList, insertCompletionText, type Completion } from "@codemirror/autocomplete";
 import { EditorView } from "@codemirror/view";
-import { Facet } from "@codemirror/state";
+import { type Facet } from "@codemirror/state";
 import * as lezer from "@lezer/common";
 import { tags as highlightTags, styleTags } from "@lezer/highlight";
 
@@ -37,7 +37,7 @@ const TYPE_COMPLETIONS = [
     { displayLabel: "声乐", label: "shengyue" },
     { displayLabel: "乐器", label: "yueqi" },
     { displayLabel: "混音", label: "hunyin" },
-    { displayLabel: "母带制作", label: "mutaizhizuo" },
+    { displayLabel: "母带制作", label: "mudaizhizuo" },
 ];
 
 function applyTypeCompletion(view: EditorView, completion: Completion, from: number, to: number) {
