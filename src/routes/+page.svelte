@@ -1,9 +1,10 @@
 <script lang="ts">
 	import 'uno.css';
 	import { SvelteMap } from 'svelte/reactivity';
+	import { onMount, untrack } from 'svelte';
 
 	import TrackInfo, { clearTrackInfo } from './TrackInfo.svelte';
-	import InfoBox, { edit as editInfoBox } from './InfoBox.svelte';
+	import InfoBox, * as infoBox from './InfoBox.svelte';
 	import Preview from './Preview.svelte';
 	import Gallery from './Gallery.svelte';
 	import { type RawRelease } from './lang-rkgk.ts';
@@ -32,7 +33,7 @@
 		titleState.val = '';
 		setTimeout(() => {
 			// workaround: clear infobox after the infobox edit triggered by trackinfo clear
-			infoBoxState.val = settingsState.val.newInfoBox;
+			infoBox.reset(settingsState.val.newInfoBox);
 		}, 10);
 		descState.val = '';
 		dupResolution.clear();
@@ -55,7 +56,7 @@
 		} else {
 			const data = {
 				title: titleState.val,
-				infoBox: infoBoxState.val,
+				infoBox: infoBox.exportText(),
 				description: descState.val,
 				trackList: trackList.length > 1 ? trackList : trackList[0],
 				trackTable,
@@ -80,14 +81,20 @@
 		});
 	});
 	$effect(() => {
-		// Update infoBoxState whenever currentDisc or dupResolution changes
-		infoBoxState.evolve((ib) => editInfoBox(ib, currentRelease.intoRoleSummary(name2staff)));
+		// Update infoBoxState whenever currentRelease or dupResolution changes
+		const summary: [string, string][] = currentRelease
+			.intoRoleSummary(name2staff)
+			.map(([roleID, creators]) => [roleID, creators.join('、')]);
+		untrack(() => infoBox.edit(summary));
 	});
 
 	let settingsState = localStorage$state('settings', defaultSettings);
 	let titleState = localStorage$state('title', '');
 	let infoBoxState = localStorage$state('infoBox', settingsState.val.newInfoBox);
 	let descState = localStorage$state('desc', '');
+	onMount(() => {
+		infoBox.init(infoBoxState.val);
+	});
 
 	let showSettings = $state(false);
 	let showRelaDB = $state(false);
@@ -148,11 +155,7 @@
 				spellcheck="false"
 				class="input-bgm text-sm w-[94%] flex-basis-[1rem] p-[0.5rem]"
 			/>
-			<InfoBox
-				bind:value={infoBoxState.val}
-				defaultValue={settingsState.val.newInfoBox}
-				class="flex-basis-[67%] flex-grow-3"
-			/>
+			<InfoBox bind:value={infoBoxState.val} class="flex-basis-[67%] flex-grow-3" />
 			<textarea
 				bind:value={descState.val}
 				placeholder="简介"
