@@ -89,8 +89,8 @@
 
 <div {...rest} class="relative {modeRich ? 'overflow-auto' : ''} {class_}">
 	<button
-		class={'absolute z-1 top-2 right-2 text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
-			'border-none bg-transparent h-[24px] w-[24px] p-0'}
+		class={'absolute z-1 top-[1px] right-[3px] text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
+			'border-none border-rd-md bg-bgm-beige w-[30px] h-[30px] p-0'}
 		title="切换源码/表格模式"
 		onclick={() => {
 			if (!modeRich) {
@@ -116,6 +116,7 @@
 			stroke-width="2"
 			stroke-linecap="round"
 			stroke-linejoin="round"
+			class="pt-[3px]"
 		>
 			{#if modeRich}
 				<text

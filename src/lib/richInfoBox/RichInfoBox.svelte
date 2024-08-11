@@ -33,8 +33,10 @@
 
 <script lang="ts">
 	import 'uno.css';
+	import { flip } from 'svelte/animate';
 	import Plain from './Plain.svelte';
 	import PlainArray from './PlainArray.svelte';
+	import { Direction } from './Cell.svelte';
 
 	interface RichInfoBoxProps {
 		value: ArrayWiki;
@@ -42,14 +44,129 @@
 		class?: string;
 	}
 	let { value = $bindable(), class: class_ = '', update }: RichInfoBoxProps = $props();
+
+	function selectElementContents(el: HTMLElement) {
+		const sel = document.getSelection();
+		sel?.removeAllRanges();
+		const range = document.createRange();
+		range.selectNodeContents(el);
+		sel?.addRange(range);
+	}
+	function moveCursorToEnd(el: HTMLElement) {
+		const len = el.textContent?.length ?? 0;
+		if (!len) return;
+		const sel = document.getSelection();
+		sel?.removeAllRanges();
+		const range = document.createRange();
+		range.setStart(el.childNodes[0], len);
+		range.setEnd(el.childNodes[0], len);
+		sel?.addRange(range);
+	}
+
+	function actAs(value: ArrayWiki, i: number) {
+		return {
+			insert: () => {
+				value.splice(i + 1, 0, ['未命名项', '']);
+				update();
+				setTimeout(() => {
+					const keyEl = document.querySelectorAll('#rich-infobox .rich-infobox-key')[
+						i + 1
+					] as HTMLElement;
+					keyEl.focus();
+					setTimeout(() => selectElementContents(keyEl), 50);
+				}, 250);
+			},
+			swap: (updown: Direction, el: HTMLElement) => {
+				if (updown === Direction.Up) {
+					if (i === 0) return;
+					value.splice(i - 1, 2, value[i], value[i - 1]);
+				} else {
+					if (i === value.length - 1) return;
+					value.splice(i, 2, value[i + 1], value[i]);
+				}
+				setTimeout(() => el.focus(), 0);
+				update();
+			}
+		};
+	}
+	function navigate(direction: Direction, el: HTMLElement) {
+		let query = "#rich-infobox [tabindex='0']";
+		if (direction === Direction.Up || direction === Direction.Down) {
+			if (el.classList.contains('rich-infobox-key')) {
+				query = '#rich-infobox .rich-infobox-key';
+			} else {
+				query = '#rich-infobox [tabindex="0"]:not(.rich-infobox-key)';
+			}
+		}
+		const focusable = Array.from(document.querySelectorAll(query)) as HTMLElement[];
+		const idx = focusable.indexOf(el);
+		let move = {
+			[Direction.Up]: -1,
+			[Direction.Down]: 1,
+			[Direction.Left]: -1,
+			[Direction.Right]: 1
+		}[direction];
+		focusable[idx + move]?.focus();
+		moveCursorToEnd(document.activeElement as HTMLElement);
+	}
 </script>
 
-<div class="flex flex-col {class_}">
-	{#each value as _, i (i)}
-		{#if typeof value[i][1] === 'string'}
-			<Plain bind:value={value[i] as [string, string]} {update} />
-		{:else}
-			<PlainArray bind:value={value[i] as [string, [string, string][]]} {update} />
-		{/if}
+<div id="rich-infobox" class="flex flex-col {class_}" style="scrollbar-width: none;">
+	<div class="flex-basis-[1.0rem] flex-shrink-0 text-bgm-grey/65 text-xs">
+		&#x3000;↵ 新项&#x3000;&#x3000;←↑↓→穿梭&#x3000;&#x3000;shift↑↓排序
+	</div>
+	{#each value as val_i, i (val_i)}
+		{@const action = {
+			update,
+			...actAs(value, i),
+			navigate
+		}}
+		<div animate:flip={{ duration: 200 }}>
+			{#if typeof value[i][1] === 'string'}
+				<Plain bind:value={value[i] as [string, string]} {action} {entryMod} />
+			{:else}
+				<PlainArray bind:value={value[i] as [string, [string, string][]]} {action} {entryMod} />
+			{/if}
+
+			{#snippet entryMod()}
+				<button
+					title="删除项"
+					class="absolute right-0 top-[0.7rem] color-bgm-teal border-none bg-transparent p-0 cursor-pointer"
+					tabindex="-1"
+					onclick={() => {
+						value.splice(i, 1);
+						update();
+					}}
+				>
+					{@render delSVG()}
+				</button>
+			{/snippet}
+		</div>
 	{/each}
 </div>
+
+{#snippet delSVG()}
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="16"
+		height="16"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2.5"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	>
+		<line x1="18" y1="6" x2="6" y2="18"></line>
+		<line x1="6" y1="6" x2="18" y2="18"></line>
+	</svg>
+{/snippet}
+
+<style>
+	:global(#rich-infobox > div > div > button) {
+		display: none;
+	}
+	:global(#rich-infobox > div > div:focus-within > button) {
+		display: block;
+	}
+</style>

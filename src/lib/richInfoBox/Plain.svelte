@@ -1,24 +1,18 @@
 <script lang="ts">
 	import 'uno.css';
+	import { type Snippet } from 'svelte';
+	import Cell, { type CellActions } from './Cell.svelte';
 
 	interface PlainProps {
 		value: [string, string];
-		update: () => void;
+		action: CellActions;
+		entryMod: Snippet;
 	}
-	let { value = $bindable(), update }: PlainProps = $props();
+	let { value = $bindable(), action, entryMod }: PlainProps = $props();
 </script>
 
-<div class="flex">
-	<div
-		contenteditable
-		bind:innerText={value[0]}
-		oninput={() => update()}
-		class="rich-infobox-key"
-	></div>
-	<div
-		contenteditable
-		bind:innerText={value[1]}
-		oninput={() => update()}
-		class="rich-infobox-value"
-	></div>
+<div class="flex relative">
+	<Cell bind:value={value[0]} {action} class="rich-infobox-key" />
+	<Cell bind:value={value[1]} {action} class="rich-infobox-value" />
+	{@render entryMod()}
 </div>

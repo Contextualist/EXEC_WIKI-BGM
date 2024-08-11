@@ -29,8 +29,8 @@ export default defineConfig({
     },
     shortcuts: {
         'input-bgm': 'border-solid border-1 border-light-9 border-rd-md focus:outline-none focus:drop-shadow-sm focus:drop-shadow-color-bgm-pink',
-        'rich-infobox-key': 'flex-basis-[3.5rem] flex-shrink-0 line-height-[1.8rem] text-align-right pr-2 focus:outline-none',
-        'rich-infobox-value': 'flex-grow-1 p-1 border-b-solid border-bgm-grey border-1 focus:outline-none',
+        'rich-infobox-key': 'flex-basis-[3.5rem] flex-shrink-0 py-2 text-align-right pr-2 focus:outline-none',
+        'rich-infobox-value': 'flex-grow-1 px-1 py-2 border-b-solid border-bgm-grey border-1 focus:outline-none',
     },
     preflights: [
         {
