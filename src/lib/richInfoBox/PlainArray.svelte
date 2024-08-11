@@ -10,16 +10,19 @@
 		entryMod: Snippet;
 	}
 	let { value = $bindable(), action, entryMod }: PlainArrayProps = $props();
+	let currContainer: HTMLElement | null = null;
+
+	function focusIth(i: number) {
+		const keyEls = currContainer!.querySelectorAll('.rich-infobox-array > div');
+		(keyEls[i] as HTMLElement)?.focus();
+	}
 
 	function actAs(value: [string, string][], i: number) {
 		return {
 			insert: () => {
 				value.splice(i + 1, 0, ['', '']);
 				action.update();
-				setTimeout(() => {
-					const keyEls = document.querySelectorAll('.rich-infobox-array > div');
-					(keyEls[i + 1] as HTMLElement)?.focus();
-				}, 150);
+				setTimeout(() => focusIth(i + 1), 0);
 			},
 			swap: (updown: Direction, el: HTMLElement) => {
 				if (updown === Direction.Up) {
@@ -38,7 +41,7 @@
 
 <div class="flex relative">
 	<Cell bind:value={value[0]} {action} class="rich-infobox-key" />
-	<div class="rich-infobox-value">
+	<div class="rich-infobox-value" bind:this={currContainer}>
 		<div class="text-xs line-height-5 italic">
 			({value[1].length ? `列表，${value[1].length} 项` : '空列表'})
 			<button
@@ -57,9 +60,8 @@
 				<Cell
 					bind:value={value[1][i][1]}
 					action={{
-						update: action.update,
-						...actAs(value[1], i),
-						navigate: action.navigate
+						...action,
+						...actAs(value[1], i)
 					}}
 					class="mt-1.5 pl-1 border-l-solid border-bgm-grey/30 border-1 focus:outline-none"
 				/>
@@ -70,10 +72,7 @@
 					onclick={() => {
 						value[1].splice(i, 1);
 						action.update();
-						setTimeout(() => {
-							const keyEls = document.querySelectorAll('.rich-infobox-array > div');
-							(keyEls[i - 1] as HTMLElement)?.focus();
-						}, 150);
+						setTimeout(() => focusIth(i - 1), 0);
 					}}
 				>
 					{@render delSVG()}
