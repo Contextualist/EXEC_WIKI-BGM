@@ -86,6 +86,21 @@
 				}
 				setTimeout(() => el.focus(), 0);
 				update();
+			},
+			arraySwitch: () => {
+				if (!Array.isArray(value[i][1])) {
+					value[i][1] = value[i][1].split('、').map((v) => ['', v]);
+				} else {
+					value[i][1] = value[i][1].map(([_, v]) => v).join('、');
+				}
+				update();
+				setTimeout(() => {
+					let valEl = document.querySelectorAll('#rich-infobox .rich-infobox-value')[i];
+					if (Array.isArray(value[i][1])) {
+						valEl = valEl.children[1].children[0];
+					}
+					(valEl as HTMLElement).focus();
+				}, 0);
 			}
 		};
 	}

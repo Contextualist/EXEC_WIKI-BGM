@@ -14,11 +14,14 @@
 		swap: (updown: Direction, el: HTMLElement) => void;
 		/** Navigate to the previous or next entry */
 		navigate: (direction: Direction, el: HTMLElement) => void;
+		/** Convert array entry to string entry and vice versa */
+		arraySwitch: () => void;
 	}
 </script>
 
 <script lang="ts">
 	import 'uno.css';
+	import { isMac } from '../utils.ts';
 
 	interface CellProps {
 		value: string;
@@ -32,15 +35,6 @@
 	contenteditable="plaintext-only"
 	bind:innerText={value}
 	oninput={() => action.update()}
-	onkeypress={(e) => {
-		function alt(fn: () => void) {
-			e.preventDefault();
-			fn();
-		}
-		if (e.key === 'Enter') {
-			return alt(action.insert);
-		}
-	}}
 	onkeydown={(e) => {
 		function alt(fn: () => void) {
 			e.preventDefault();
@@ -67,6 +61,12 @@
 		if (e.key === 'ArrowRight') {
 			if (window.getSelection()?.anchorOffset === value.length)
 				return alt(() => action.navigate(Direction.Right, e.target as HTMLElement));
+		}
+		if (e.key === 'Enter') {
+			return alt(action.insert);
+		}
+		if (e.key === '[' && (isMac ? e.metaKey : e.ctrlKey)) {
+			return alt(action.arraySwitch);
 		}
 	}}
 	role="textbox"
