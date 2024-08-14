@@ -8,7 +8,7 @@
 	import Preview from './Preview.svelte';
 	import Gallery from './Gallery.svelte';
 	import { type RawRelease } from './lang-rkgk.ts';
-	import { Release } from './postprocess.ts';
+	import { Release, Role } from './postprocess.ts';
 	import { resolveRelaMap } from './disambiguation.ts';
 
 	import Header from '$lib/Header.svelte';
@@ -21,6 +21,8 @@
 	import { getUserNickname } from '$lib/client.ts';
 	import { getRandomTip } from './dailyTips.ts';
 	import { localStorage$state } from './utils.svelte.ts';
+
+	const reactiveFields = new Set(Object.values(Role).slice(1));
 
 	let currentRawRelease: Readonly<RawRelease> = $state.frozen({ credits: [], discs: [] });
 	let currentRelease: Readonly<Release> = $state.frozen(new Release());
@@ -155,7 +157,11 @@
 				spellcheck="false"
 				class="input-bgm text-sm w-[94%] flex-basis-[1rem] p-[0.5rem]"
 			/>
-			<InfoBox bind:value={infoBoxState.val} class="flex-basis-[67%] flex-grow-3" />
+			<InfoBox
+				bind:value={infoBoxState.val}
+				{reactiveFields}
+				class="flex-basis-[67%] flex-grow-3"
+			/>
 			<textarea
 				bind:value={descState.val}
 				placeholder="简介"

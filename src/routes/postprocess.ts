@@ -5,7 +5,7 @@ import type { RawRelease, CreditField } from "./lang-rkgk";
 import { queryNameOrAliasBulk, type Staff } from "$lib/db";
 import { type ResolvedRelaMap } from "./disambiguation";
 
-enum Role {
+export enum Role {
     undef = "",
     V = "艺术家",
     L = "作词",

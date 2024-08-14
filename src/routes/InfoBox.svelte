@@ -1,4 +1,11 @@
 <script lang="ts" context="module">
+	import RichInfoBox, {
+		type ArrayWiki,
+		wikiUnpack,
+		wikiRepack,
+		edit as editRich
+	} from '$lib/richInfoBox/RichInfoBox.svelte';
+
 	let value = $state('');
 	let modeRich = $state(false);
 	let valueWiki: ArrayWiki = $state([]);
@@ -22,9 +29,7 @@
 			let lines = value.split('\n');
 			entries.forEach(([key, val]) => {
 				const i = lines.findIndex((line) => line.startsWith(`|${key}=`));
-				if (!val) {
-					if (i === -1) return;
-				}
+				if (!val && i === -1) return;
 				const editLine = `|${key}= ${val}`;
 				if (i === -1) {
 					lines.splice(lines.length - 1, 0, editLine);
@@ -34,18 +39,7 @@
 			});
 			value = lines.join('\n');
 		} else {
-			entries.forEach(([key, val]) => {
-				const i = valueWiki.findIndex(([k, _]) => k === key);
-				if (!val) {
-					if (i === -1) return;
-				}
-				const v = val;
-				if (i === -1) {
-					valueWiki.push([key, v]);
-				} else {
-					valueWiki[i][1] = v;
-				}
-			});
+			editRich(entries, valueWiki);
 		}
 	}
 
@@ -61,20 +55,21 @@
 	import 'uno.css';
 	import { parse, stringify } from '@bgm38/wiki';
 
-	import RichInfoBox, {
-		type ArrayWiki,
-		wikiUnpack,
-		wikiRepack
-	} from '$lib/richInfoBox/RichInfoBox.svelte';
 	import { toast } from './Toast.svelte';
 	import { debounce } from './utils.svelte.ts';
 
 	interface TrackInfoProps {
 		value: string;
+		reactiveFields: Set<string>;
 		class?: string;
 	}
 	// NOTE: valueExport is for passing out only; changes should be made with the exported functions
-	let { value: valueExport = $bindable(), class: class_ = '', ...rest }: TrackInfoProps = $props();
+	let {
+		value: valueExport = $bindable(),
+		reactiveFields,
+		class: class_ = '',
+		...rest
+	}: TrackInfoProps = $props();
 	const update = debounce(() => {
 		value = JSON.stringify(valueWiki);
 		valueExport = value;
@@ -100,6 +95,7 @@
 					toast(`Infobox 格式错误：${e}`, { alert: true, duration: 8000 });
 					return;
 				}
+				update();
 			} else {
 				value = _arrWikiEncode(valueWiki);
 			}
@@ -136,8 +132,9 @@
 	</button>
 	{#if modeRich}
 		<RichInfoBox
-			class="input-bgm focus:drop-shadow-[_] w-[94%] h-[calc(100%-1.2rem)] px-[0.5rem] py-[0.5rem] text-sm break-all overflow-auto"
+			class="input-bgm border-none focus:drop-shadow-[_] w-[96.5%] h-[calc(100%-1.2rem)] pr-[0.5rem] py-[0.5rem] text-sm break-all overflow-auto"
 			bind:value={valueWiki}
+			{reactiveFields}
 			{update}
 		/>
 	{:else}

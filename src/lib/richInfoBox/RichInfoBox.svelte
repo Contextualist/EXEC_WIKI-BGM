@@ -29,6 +29,22 @@
 			)
 		};
 	}
+
+	let reactiveFieldsUnlinked: Record<string, boolean> = $state({});
+
+	export function edit(entries: [string, string][], valueWiki: ArrayWiki): void {
+		entries.forEach(([key, val]) => {
+			if (reactiveFieldsUnlinked[key]) return;
+			const i = valueWiki.findIndex(([k, _]) => k === key);
+			if (!val && i === -1) return;
+			const v = val;
+			if (i === -1) {
+				valueWiki.push([key, v]);
+			} else {
+				valueWiki[i][1] = v;
+			}
+		});
+	}
 </script>
 
 <script lang="ts">
@@ -36,14 +52,21 @@
 	import { flip } from 'svelte/animate';
 	import Plain from './Plain.svelte';
 	import PlainArray from './PlainArray.svelte';
+	import Reactive from './Reactive.svelte';
 	import { Direction } from './Cell.svelte';
 
 	interface RichInfoBoxProps {
 		value: ArrayWiki;
+		reactiveFields: Set<string>;
 		update: () => void;
 		class?: string;
 	}
-	let { value = $bindable(), class: class_ = '', update }: RichInfoBoxProps = $props();
+	let {
+		value = $bindable(),
+		reactiveFields,
+		class: class_ = '',
+		update
+	}: RichInfoBoxProps = $props();
 
 	function selectElementContents(el: HTMLElement) {
 		const sel = document.getSelection();
@@ -69,11 +92,9 @@
 				value.splice(i + 1, 0, ['未命名项', '']);
 				update();
 				setTimeout(() => {
-					const keyEl = document.querySelectorAll('#rich-infobox .rich-infobox-key')[
-						i + 1
-					] as HTMLElement;
-					keyEl.focus();
-					setTimeout(() => selectElementContents(keyEl), 50);
+					const keyEl = document.querySelectorAll('#rich-infobox .rich-infobox-key')[i + 1];
+					(keyEl as HTMLElement).focus();
+					setTimeout(() => selectElementContents(keyEl as HTMLElement), 0);
 				}, 250);
 			},
 			swap: (updown: Direction, el: HTMLElement) => {
@@ -115,12 +136,7 @@
 		}
 		const focusable = Array.from(document.querySelectorAll(query)) as HTMLElement[];
 		const idx = focusable.indexOf(el);
-		let move = {
-			[Direction.Up]: -1,
-			[Direction.Down]: 1,
-			[Direction.Left]: -1,
-			[Direction.Right]: 1
-		}[direction];
+		const move = direction === Direction.Up || direction === Direction.Left ? -1 : 1;
 		focusable[idx + move]?.focus();
 		moveCursorToEnd(document.activeElement as HTMLElement);
 	}
@@ -138,7 +154,16 @@
 		}}
 		<div animate:flip={{ duration: 200 }}>
 			{#if typeof value[i][1] === 'string'}
-				<Plain bind:value={value[i] as [string, string]} {action} {entryMod} />
+				{#if reactiveFields.has(value[i][0])}
+					<Reactive
+						bind:unlinked={reactiveFieldsUnlinked[value[i][0]]}
+						bind:value={value[i] as [string, string]}
+						{action}
+						{entryMod}
+					/>
+				{:else}
+					<Plain bind:value={value[i] as [string, string]} {action} {entryMod} />
+				{/if}
 			{:else}
 				<PlainArray bind:value={value[i] as [string, [string, string][]]} {action} {entryMod} />
 			{/if}
