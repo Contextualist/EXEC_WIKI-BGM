@@ -22,7 +22,7 @@
 	import { getRandomTip } from './dailyTips.ts';
 	import { localStorage$state } from './utils.svelte.ts';
 
-	const reactiveFields = new Set(Object.values(Role).slice(1));
+	const reactiveFields = new Set([...Object.values(Role).slice(1), '碟片数量']);
 
 	let currentRawRelease: Readonly<RawRelease> = $state.frozen({ credits: [], discs: [] });
 	let currentRelease: Readonly<Release> = $state.frozen(new Release());
@@ -87,6 +87,8 @@
 		const summary: [string, string][] = currentRelease
 			.intoRoleSummary(name2staff)
 			.map(([roleID, creators]) => [roleID, creators.join('、')]);
+		const nDiscs = currentRelease.tracks.length;
+		if (nDiscs > 1) summary.push(['碟片数量', nDiscs.toString()]);
 		untrack(() => infoBox.edit(summary));
 	});
 
