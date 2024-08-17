@@ -19,10 +19,11 @@
 
 	function actAs(value: [string, string][], i: number) {
 		return {
-			insert: () => {
-				value.splice(i + 1, 0, ['', '']);
+			insert: (before: boolean) => {
+				const newI = before ? i : i + 1;
+				value.splice(newI, 0, ['', '']);
 				action.update();
-				setTimeout(() => focusIth(i + 1), 0);
+				setTimeout(() => focusIth(newI), 0);
 			},
 			swap: (updown: Direction, el: HTMLElement) => {
 				if (updown === Direction.Up) {

@@ -8,8 +8,8 @@
 	export interface CellActions {
 		/** Submit content or structure changes for persistence */
 		update: () => void;
-		/** Insert a new entry after this one */
-		insert: () => void;
+		/** Insert a new entry before/after this one */
+		insert: (before: boolean) => void;
 		/** Swap this entry with the previous or next one */
 		swap: (updown: Direction, el: HTMLElement) => void;
 		/** Navigate to the previous or next entry */
@@ -63,7 +63,7 @@
 				return alt(() => action.navigate(Direction.Right, e.target as HTMLElement));
 		}
 		if (e.key === 'Enter') {
-			return alt(action.insert);
+			return alt(() => action.insert(e.shiftKey));
 		}
 		if (e.key === '[' && (isMac ? e.metaKey : e.ctrlKey)) {
 			return alt(action.arraySwitch);

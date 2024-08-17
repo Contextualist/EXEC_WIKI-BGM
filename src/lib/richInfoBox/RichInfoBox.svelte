@@ -88,11 +88,12 @@
 
 	function actAs(value: ArrayWiki, i: number) {
 		return {
-			insert: () => {
-				value.splice(i + 1, 0, ['未命名项', '']);
+			insert: (before: boolean) => {
+				const newI = before ? i : i + 1;
+				value.splice(newI, 0, ['未命名项', '']);
 				update();
 				setTimeout(() => {
-					const keyEl = document.querySelectorAll('#rich-infobox .rich-infobox-key')[i + 1];
+					const keyEl = document.querySelectorAll('#rich-infobox .rich-infobox-key')[newI];
 					(keyEl as HTMLElement).focus();
 					setTimeout(() => selectElementContents(keyEl as HTMLElement), 0);
 				}, 250);
