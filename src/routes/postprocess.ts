@@ -114,19 +114,11 @@ export class Release {
                 comment: rt.comment,
                 credits: _parseSongCredit([...(options.enableFeatVocal ? rt.feat : []), ...rt.credits]),
             }))
-            if (tracks.length === 1 && Object.keys(tracks[0].credits).length === 0) {
-                // "Every creator participates in every track" mode
-                // Split the titles by newline
-                const trs = tracks[0].title.split("\n").map(title => ({ title, comment: "", credits: {} }));
-                if (trs.length > 1) {
-                    tracks.splice(0, 1, ...trs);
-                }
-            }
             if (tracks.length > 1) {
                 normalizeTitles(tracks.map(t => t.title))
                     .forEach((title, i) => tracks[i].title = title);
             }
-            return tracks;
+            return tracks.filter(t => t.title); // remove empty lines from normalization
         });
         const release = new Release(credits, all_tracks);
         await release.assignRelaMap();
@@ -268,20 +260,8 @@ function normalizeTitles(titles: string[]): string[] {
     titles = titles.map(title => title.trim());
     if (titles.length < 2) { return titles; }
     // remove Tr.01 prefix
-    if (titles.every(title => RE_TR.test(title))) {
+    if (titles.every((title, i) => i % 2 == 1 || RE_TR.test(title))) {
         titles = titles.map(title => title.replace(RE_TR, ""));
-    }
-    return titles;
-    // TODO: add back this with a switch
-    // remove common suffix
-    const minLen = Math.min(...titles.map(title => title.length));
-    let lcf = 0;
-    while (titles.every(title => title.slice(-lcf - 1) === titles[0].slice(-lcf - 1))) {
-        lcf += 1;
-        if (lcf >= minLen) { break; }
-    }
-    if (0 < lcf && lcf < minLen) {
-        titles = titles.map(title => title.slice(0, -lcf));
     }
     return titles;
 }

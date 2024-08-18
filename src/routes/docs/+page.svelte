@@ -125,13 +125,6 @@
 			<p>把制作人员信息加在曲目列表前面就行。</p>
 		</section>
 		<section>
-			<h3 id="faq-emptycredit">有个别曲目不需要填制作人信息</h3>
-			<p>用 <code>@</code> 做占位符。</p>
-			<pre>なんでもない
-<span class="text-bgm-pink">@</span>
-なんでもね</pre>
-		</section>
-		<section>
 			<h3 id="faq-editexist">扩充现有的条目</h3>
 			<p>
 				可以考虑先复制现有的 infobox 信息到编辑器里的
@@ -178,10 +171,8 @@ NORN                  performer: Rigël Theatre</pre>
 			</p>
 			<pre>
 欲望煤气灶 <span class="text-bgm-pink">//</span> <span class="text-bgm-grey">Bonus track</span>
-@
 飘上月球，不死乒乓
 <span class="text-bgm-pink">//</span> <span class="text-bgm-grey">Bonus track</span>
-@
 法界之锅 <span class="text-bgm-grey">原曲：法界の火</span></pre>
 		</section>
 	</section>

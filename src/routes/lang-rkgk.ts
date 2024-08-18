@@ -65,7 +65,6 @@ const FIELD2NODETYPE: { [name: string]: lezer.NodeType } = {
     "title": NODE_TYPES.heading,
     "//": NODE_TYPES.comment,
     "comment": NODE_TYPES.comment,
-    "@": NODE_TYPES.keyword,
     "DISC": NODE_TYPES.keyword,
     "ERROR": NODE_TYPES.invalid,
 }
@@ -153,9 +152,7 @@ function intoRawTrack(node: NodeInfo): RawTrack {
     }
     if (node.children.length > 0) {
         const unk = node.children.shift()!;
-        if (unk.type !== "@") {
-            console.warn(`Track node has unknown children: ${unk.type} ${unk.text}`);
-        }
+        console.warn(`Track node has unknown children: ${unk.type} ${unk.text}`);
     }
     return track;
 }
