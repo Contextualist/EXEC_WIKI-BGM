@@ -92,20 +92,12 @@ module.exports = grammar({
       '\n',
       $._disc,
     ),
-    _disc: $ => seq(
-      repeat($.song),
-      choice(
-        $.song,
-        alias($._quotable_song_title_maybefeat_maybecomment, $.song),
-      ),
-    ),
+    _disc: $ => repeat1($.song),
 
     song: $ => seq(
       $._quotable_song_title_maybefeat_maybecomment,
-      choice(
-        $.credit_block,
-        '@',  // empty credit
-      ),
+      optional('\n'),
+      optional($.credit_block),
     ),
 
     credit_block: $ => prec(-1, repeat1($.credit_field)),
@@ -122,8 +114,9 @@ module.exports = grammar({
       choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep))
     )),
 
-    _quotable_song_title_maybefeat_maybecomment: $ => seq(
+    _quotable_song_title_maybefeat_maybecomment: $ => prec.right(seq(
       $._quotable_song_title_maybefeat,
+      optional('\n'),
       optional(choice(
         seq(
           '//',
@@ -131,7 +124,7 @@ module.exports = grammar({
         ),
         alias(token(seq('原曲', /[^\n]+/)), $.comment),
       )),
-    ),
+    )),
     _quotable_song_title_maybefeat: $ => choice(
       seq('《', field('title', $._song_title_maybefeat), '》'),  // quoting
       field('title', $._song_title_maybefeat),
@@ -140,8 +133,8 @@ module.exports = grammar({
       $.song_title,
       optional($.feat_field),
     ),
-    song_title: _ => repeat1(/./),
-    feat_field: $ => seq(
+    song_title: _ => prec.right(repeat1(/[^\n]/)),
+    feat_field: $ => prec.right(seq(
       alias(token(/feat\. ?/), $.feat),
       $._quotable_creator_name,  // CAVEAT: might also match trailing char like ')'
       repeat(seq(
@@ -149,7 +142,7 @@ module.exports = grammar({
         $._quotable_creator_name,
       )),
       optional($._ssep),
-    ),
+    )),
 
     _quotable_creator_name: $ => choice(
       seq('《', field('creator', alias(/[^》\n]+/, $.creator_name)), '》'),  // quoting

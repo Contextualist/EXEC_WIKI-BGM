@@ -52,34 +52,11 @@
       ]
     },
     "_disc": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SYMBOL",
-            "name": "song"
-          }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "song"
-            },
-            {
-              "type": "ALIAS",
-              "content": {
-                "type": "SYMBOL",
-                "name": "_quotable_song_title_maybefeat_maybecomment"
-              },
-              "named": true,
-              "value": "song"
-            }
-          ]
-        }
-      ]
+      "type": "REPEAT1",
+      "content": {
+        "type": "SYMBOL",
+        "name": "song"
+      }
     },
     "song": {
       "type": "SEQ",
@@ -92,12 +69,23 @@
           "type": "CHOICE",
           "members": [
             {
+              "type": "STRING",
+              "value": "\n"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "SYMBOL",
               "name": "credit_block"
             },
             {
-              "type": "STRING",
-              "value": "@"
+              "type": "BLANK"
             }
           ]
         }
@@ -212,65 +200,81 @@
       }
     },
     "_quotable_song_title_maybefeat_maybecomment": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_quotable_song_title_maybefeat"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "//"
-                    },
-                    {
-                      "type": "ALIAS",
-                      "content": {
-                        "type": "PATTERN",
-                        "value": "[^\\n]+"
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_quotable_song_title_maybefeat"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "\n"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": "//"
                       },
-                      "named": true,
-                      "value": "comment"
-                    }
-                  ]
-                },
-                {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": "原曲"
-                        },
-                        {
+                      {
+                        "type": "ALIAS",
+                        "content": {
                           "type": "PATTERN",
                           "value": "[^\\n]+"
-                        }
-                      ]
-                    }
+                        },
+                        "named": true,
+                        "value": "comment"
+                      }
+                    ]
                   },
-                  "named": true,
-                  "value": "comment"
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        }
-      ]
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "TOKEN",
+                      "content": {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "原曲"
+                          },
+                          {
+                            "type": "PATTERN",
+                            "value": "[^\\n]+"
+                          }
+                        ]
+                      }
+                    },
+                    "named": true,
+                    "value": "comment"
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        ]
+      }
     },
     "_quotable_song_title_maybefeat": {
       "type": "CHOICE",
@@ -328,69 +332,77 @@
       ]
     },
     "song_title": {
-      "type": "REPEAT1",
+      "type": "PREC_RIGHT",
+      "value": 0,
       "content": {
-        "type": "PATTERN",
-        "value": "."
+        "type": "REPEAT1",
+        "content": {
+          "type": "PATTERN",
+          "value": "[^\\n]"
+        }
       }
     },
     "feat_field": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "ALIAS",
-          "content": {
-            "type": "TOKEN",
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "ALIAS",
             "content": {
-              "type": "PATTERN",
-              "value": "feat\\. ?"
+              "type": "TOKEN",
+              "content": {
+                "type": "PATTERN",
+                "value": "feat\\. ?"
+              }
+            },
+            "named": true,
+            "value": "feat"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_quotable_creator_name"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "FIELD",
+                  "name": "creatorSeparator",
+                  "content": {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_ssep"
+                    },
+                    "named": true,
+                    "value": "creator_sep"
+                  }
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_quotable_creator_name"
+                }
+              ]
             }
           },
-          "named": true,
-          "value": "feat"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_quotable_creator_name"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
+          {
+            "type": "CHOICE",
             "members": [
               {
-                "type": "FIELD",
-                "name": "creatorSeparator",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_ssep"
-                  },
-                  "named": true,
-                  "value": "creator_sep"
-                }
+                "type": "SYMBOL",
+                "name": "_ssep"
               },
               {
-                "type": "SYMBOL",
-                "name": "_quotable_creator_name"
+                "type": "BLANK"
               }
             ]
           }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_ssep"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        }
-      ]
+        ]
+      }
     },
     "_quotable_creator_name": {
       "type": "CHOICE",
