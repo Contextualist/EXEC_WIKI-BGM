@@ -1,14 +1,15 @@
 <img align="right" src="https://static.hya.moe/execwb/jacket.avif" width="320" />
 
-# EXEC_WIKI=BGM/.
+# EXEC_WIKI=BGM/.<sub>『[指南](https://EXEC-WIKI-BGM.hya.moe/docs)』</sub>
 
-Bangumi 维基音乐条目可视化编辑套件 · 「[指南](https://EXEC-WIKI-BGM.hya.moe/docs)」
+Bangumi 维基音乐条目可视化编辑套件
 
 ~~今天就为你喜欢的音乐人加上语法高亮~~
 
 主要功能：
 
 - 解析大多数专辑的曲目制作人员信息（track info）并生成 Bangumi 格式的维基信息（infobox、曲目列表、关联人物）
+- 更丝滑的 infobox 编辑器
 - 实时预览条目页面
 - 人物关联库管理
 
@@ -30,17 +31,14 @@ rkgk（落書き）是一种极为灵活的标记方式，它存在的目的是�
 
 需要特殊处理的情况：
 
-1. 歌名里有职位关键字，需要用书名号括起来
+名称里有职位关键字或分隔符，需要用书名号括起来
 ```diff
 - 室内系なら作曲家 作編曲：Yunomi　作詞：Yunomi & nicamoq
 + 《室内系なら作曲家》 作編曲：Yunomi　作詞：Yunomi & nicamoq
 ```
-
-2. 用`@`分隔没有制作人员的曲目名
 ```diff
-  なんでもない
-+ @
-  なんでもね
+- music : ちろ:D lyric : もちうつね
++ music : 《ちろ:D》 lyric : もちうつね
 ```
 
 本项目的编辑器另提供职位关键字和关联库内人名的**自动补全**（目前仅支持职位关键字），所以手打曲目制作人员信息也不会太费劲。
