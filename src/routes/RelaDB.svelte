@@ -39,6 +39,7 @@
 	let { bgmUID = $bindable(), class: class_ = '' }: RelaDBProps = $props();
 
 	async function addPerson(p: Staff) {
+		p.aliases = p.aliases.map((a) => a.replace(/[\s*(（].+[）)]$/, '')); // trim circle names
 		try {
 			await db.staff.add(p);
 			updateCount();
