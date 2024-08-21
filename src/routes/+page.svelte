@@ -24,8 +24,8 @@
 
 	const reactiveFields = new Set([...Object.values(Role).slice(1), '碟片数量']);
 
-	let currentRawRelease: Readonly<RawRelease> = $state.frozen({ credits: [], discs: [] });
-	let currentRelease: Readonly<Release> = $state.frozen(new Release());
+	let currentRawRelease: Readonly<RawRelease> = $state.raw({ credits: [], discs: [] });
+	let currentRelease: Readonly<Release> = $state.raw(new Release());
 	let dupResolution = $state(new SvelteMap<string, number>());
 	let dupResolutionEntries = $derived(Array.from(dupResolution.entries()));
 	let name2staff = $derived(resolveRelaMap(currentRelease.relaMap, dupResolutionEntries));
