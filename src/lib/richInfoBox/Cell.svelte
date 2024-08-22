@@ -41,6 +41,7 @@
 			fn();
 		}
 		if (e.key === 'ArrowUp') {
+			if (e.metaKey || e.ctrlKey || e.altKey) return;
 			if (e.shiftKey) return alt(() => action.swap(Direction.Up, e.target as HTMLElement));
 			setTimeout(() => {
 				if (window.getSelection()?.anchorOffset === 0)
@@ -48,6 +49,7 @@
 			}, 0);
 		}
 		if (e.key === 'ArrowDown') {
+			if (e.metaKey || e.ctrlKey || e.altKey) return;
 			if (e.shiftKey) return alt(() => action.swap(Direction.Down, e.target as HTMLElement));
 			setTimeout(() => {
 				if (window.getSelection()?.anchorOffset === value.length)
@@ -55,10 +57,12 @@
 			}, 0);
 		}
 		if (e.key === 'ArrowLeft') {
+			if (e.metaKey || e.ctrlKey || e.altKey) return;
 			if (window.getSelection()?.anchorOffset === 0)
 				return alt(() => action.navigate(Direction.Left, e.target as HTMLElement));
 		}
 		if (e.key === 'ArrowRight') {
+			if (e.metaKey || e.ctrlKey || e.altKey) return;
 			if (window.getSelection()?.anchorOffset === value.length)
 				return alt(() => action.navigate(Direction.Right, e.target as HTMLElement));
 		}
