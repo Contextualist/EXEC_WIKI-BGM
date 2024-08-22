@@ -75,14 +75,15 @@
 		range.selectNodeContents(el);
 		sel?.addRange(range);
 	}
-	function moveCursorToEnd(el: HTMLElement) {
-		const len = el.textContent?.length ?? 0;
+	function moveCursorTo(el: HTMLElement, offset: number) {
+		let len = el.textContent?.length ?? 0;
 		if (!len) return;
+		offset = Math.min(len, offset);
 		const sel = document.getSelection();
 		sel?.removeAllRanges();
 		const range = document.createRange();
-		range.setStart(el.childNodes[0], len);
-		range.setEnd(el.childNodes[0], len);
+		range.setStart(el.childNodes[0], offset);
+		range.setEnd(el.childNodes[0], offset);
 		sel?.addRange(range);
 	}
 
@@ -126,7 +127,7 @@
 			}
 		};
 	}
-	function navigate(direction: Direction, el: HTMLElement) {
+	function navigate(direction: Direction, el: HTMLElement, offset: number) {
 		let query = "#rich-infobox [tabindex='0']";
 		if (direction === Direction.Up || direction === Direction.Down) {
 			if (el.classList.contains('rich-infobox-key')) {
@@ -139,7 +140,7 @@
 		const idx = focusable.indexOf(el);
 		const move = direction === Direction.Up || direction === Direction.Left ? -1 : 1;
 		focusable[idx + move]?.focus();
-		moveCursorToEnd(document.activeElement as HTMLElement);
+		moveCursorTo(document.activeElement as HTMLElement, offset);
 	}
 </script>
 

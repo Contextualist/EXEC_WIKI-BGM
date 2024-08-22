@@ -13,7 +13,7 @@
 		/** Swap this entry with the previous or next one */
 		swap: (updown: Direction, el: HTMLElement) => void;
 		/** Navigate to the previous or next entry */
-		navigate: (direction: Direction, el: HTMLElement) => void;
+		navigate: (direction: Direction, el: HTMLElement, offset: number) => void;
 		/** Convert array entry to string entry and vice versa */
 		arraySwitch: () => void;
 	}
@@ -29,6 +29,10 @@
 		class: string;
 	}
 	let { value = $bindable(), action, class: class_ }: CellProps = $props();
+
+	function getOffset() {
+		return window.getSelection()?.anchorOffset ?? 0;
+	}
 </script>
 
 <div
@@ -43,28 +47,32 @@
 		if (e.key === 'ArrowUp') {
 			if (e.metaKey || e.ctrlKey || e.altKey) return;
 			if (e.shiftKey) return alt(() => action.swap(Direction.Up, e.target as HTMLElement));
+			const offset = getOffset();
 			setTimeout(() => {
-				if (window.getSelection()?.anchorOffset === 0)
-					return alt(() => action.navigate(Direction.Up, e.target as HTMLElement));
+				if (getOffset() === 0)
+					return alt(() => action.navigate(Direction.Up, e.target as HTMLElement, offset));
 			}, 0);
 		}
 		if (e.key === 'ArrowDown') {
 			if (e.metaKey || e.ctrlKey || e.altKey) return;
 			if (e.shiftKey) return alt(() => action.swap(Direction.Down, e.target as HTMLElement));
+			const offset = getOffset();
 			setTimeout(() => {
-				if (window.getSelection()?.anchorOffset === value.length)
-					return alt(() => action.navigate(Direction.Down, e.target as HTMLElement));
+				if (getOffset() === value.length)
+					return alt(() => action.navigate(Direction.Down, e.target as HTMLElement, offset));
 			}, 0);
 		}
 		if (e.key === 'ArrowLeft') {
 			if (e.metaKey || e.ctrlKey || e.altKey) return;
-			if (window.getSelection()?.anchorOffset === 0)
-				return alt(() => action.navigate(Direction.Left, e.target as HTMLElement));
+			if (getOffset() === 0)
+				return alt(() =>
+					action.navigate(Direction.Left, e.target as HTMLElement, Number.MAX_SAFE_INTEGER)
+				);
 		}
 		if (e.key === 'ArrowRight') {
 			if (e.metaKey || e.ctrlKey || e.altKey) return;
-			if (window.getSelection()?.anchorOffset === value.length)
-				return alt(() => action.navigate(Direction.Right, e.target as HTMLElement));
+			if (getOffset() === value.length)
+				return alt(() => action.navigate(Direction.Right, e.target as HTMLElement, 0));
 		}
 		if (e.key === 'Enter') {
 			return alt(() => action.insert(e.shiftKey));
