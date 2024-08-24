@@ -224,6 +224,9 @@
 				if (title) titleState.val = title;
 				if (intro) descState.val = intro;
 			},
+			setInfoBox: (content: string) => {
+				infoBox.merge(content);
+			},
 			pushWarning: (warning: string) => {
 				toast(warning, { alert: true });
 			},

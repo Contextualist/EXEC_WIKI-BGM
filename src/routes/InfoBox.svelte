@@ -23,6 +23,18 @@
 			valueWiki = wikiUnpack(parse(text));
 		}
 	}
+	export function merge(text: string): void {
+		if (!modeRich) {
+			try {
+				toRich();
+			} catch (e) {
+				return;
+			}
+			modeRich = true;
+		}
+		const vw = wikiUnpack(parse(text));
+		editRich(vw, valueWiki);
+	}
 
 	export function edit(entries: [string, string][]): void {
 		if (!modeRich) {
@@ -40,6 +52,15 @@
 			value = lines.join('\n');
 		} else {
 			editRich(entries, valueWiki);
+		}
+	}
+
+	function toRich(): void {
+		try {
+			valueWiki = wikiUnpack(parse(value));
+		} catch (e) {
+			toast(`Infobox 格式错误：${e}`, { alert: true, duration: 8000 });
+			throw e;
 		}
 	}
 
@@ -89,12 +110,7 @@
 		title="切换源码/表格模式"
 		onclick={() => {
 			if (!modeRich) {
-				try {
-					valueWiki = wikiUnpack(parse(value));
-				} catch (e) {
-					toast(`Infobox 格式错误：${e}`, { alert: true, duration: 8000 });
-					return;
-				}
+				toRich();
 				update();
 			} else {
 				value = _arrWikiEncode(valueWiki);

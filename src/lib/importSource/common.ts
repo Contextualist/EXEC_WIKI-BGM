@@ -16,6 +16,7 @@ export interface ImportSourceOption {
 
 export interface AutoEditor {
     editTitleIntro: (title: string, intro: string) => void;
+    setInfoBox: (content: string) => void;
     pushWarning: (warning: string) => void;
     done: () => void;
 }

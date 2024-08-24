@@ -68,7 +68,7 @@
 	{:else if currentSource}
 		{#if currentResolvedTitle !== null}
 			{#await currentResolvedTitle}
-				<p class="text-sm"></p>
+				<p class="text-sm">从 {currentSource.name} 导入...</p>
 			{:then title}
 				<p class="text-sm">从 {currentSource.name} 导入 {title}</p>
 			{/await}

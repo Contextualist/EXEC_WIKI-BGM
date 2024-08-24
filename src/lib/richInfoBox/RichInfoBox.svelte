@@ -32,7 +32,7 @@
 
 	let reactiveFieldsUnlinked: Record<string, boolean> = $state({});
 
-	export function edit(entries: [string, string][], valueWiki: ArrayWiki): void {
+	export function edit(entries: ArrayWiki, valueWiki: ArrayWiki): void {
 		entries.forEach(([key, val]) => {
 			if (reactiveFieldsUnlinked[key]) return;
 			const i = valueWiki.findIndex(([k, _]) => k === key);
