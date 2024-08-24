@@ -17,6 +17,7 @@
 	import LongpressButton from './LongpressButton.svelte';
 	import Toast, { toast } from './Toast.svelte';
 	import Scenario from '$lib/vn/Scenario.svelte';
+	import ImportDialog from './ImportDialog.svelte';
 	import { importPersonCreated, importRelaHistory } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
 	import { getRandomTip } from './dailyTips.ts';
@@ -102,6 +103,7 @@
 
 	let showSettings = $state(false);
 	let showRelaDB = $state(false);
+	let showImportDialog = $state(false);
 	let showTour = $state(settingsState.val.bgmUID === '');
 
 	let optMode = $state(false);
@@ -131,9 +133,10 @@
 	<Gallery relaMap={currentRelease.relaMap} bind:dupResolution bind:showRelaDB class="h-32" />
 </Header>
 <main class="w-310 max-w-[95vw] lt-lg:w-200 lt-md:w-150 mx-auto my-4">
-	<div class="flex flex-justify-between">
+	<div class="flex flex-justify-between gap-5">
 		<LongpressButton class="w-33 text-lg" onclick={clear}>长按<wbr />再来一张</LongpressButton>
-		<div class="w-96 h-[1rem] mx-3 p-2"></div>
+		<Button class="w-20 text-lg" onclick={async () => (showImportDialog = true)}>导入…</Button>
+		<div class="flex-grow-1 h-[1rem] mx-3 p-2"></div>
 		<Button
 			class="{!shouldPackRelaOnly && shouldPackThenOpen ? '' : 'w-31'} text-lg"
 			onclick={pack}
@@ -211,6 +214,21 @@
 			},
 			exit: () => {
 				showTour = false;
+			}
+		}}
+	/>
+	<ImportDialog
+		bind:show={showImportDialog}
+		editor={{
+			editTitleIntro: (title: string, intro: string) => {
+				if (title) titleState.val = title;
+				if (intro) descState.val = intro;
+			},
+			pushWarning: (warning: string) => {
+				toast(warning, { alert: true });
+			},
+			done: () => {
+				showImportDialog = false;
 			}
 		}}
 	/>

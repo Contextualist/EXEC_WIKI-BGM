@@ -3,6 +3,19 @@ const BGMAPI_ENDPOINT = 'https://api.bgm.tv';
 
 import { type Staff } from './db';
 
+export interface SubjectInfo {
+    name: string;
+    typeID: number;
+    infobox: string;
+    summary: string;
+}
+export interface SubjectEpInfo {
+    name: string;
+    name_cn: string;
+    disc: number;
+    ep: number;
+}
+
 const RELEVANT_CAREERS = new Set(['artist', 'illustrator']);
 
 export async function searchPerson(name: string): Promise<Staff[]> {
@@ -59,11 +72,25 @@ export async function getPerson(pid: number): Promise<[Staff, boolean]> {
     ];
 }
 
+export async function getSubjectInfo(sid: number): Promise<SubjectInfo> {
+    const request = new Request(`${CORS_ENDPOINT}/p1/wiki/subjects/${sid}`, { method: 'GET', mode: 'cors' });
+    const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
+    const result = await response.json();
+    return result as SubjectInfo;
+}
+
 export async function getSubjectType(sid: number): Promise<number> {
     const request = new Request(`${BGMAPI_ENDPOINT}/v0/subjects/${sid}`, { method: 'GET', mode: 'cors' });
     const response = await FETCHERS.BGMAPI.dispatch(request);
     const result = await response.json();
     return result.type;
+}
+
+export async function getSubjectEpInfo(sid: number): Promise<SubjectEpInfo[]> {
+    const request = new Request(`${BGMAPI_ENDPOINT}/v0/episodes?subject_id=${sid}&limit=1000`, { method: 'GET', mode: 'cors' });
+    const response = await FETCHERS.BGMAPI.dispatch(request);
+    const result = await response.json();
+    return result.data as SubjectEpInfo[];
 }
 
 export async function getSubjectRelaPIDList(sid: number): Promise<number[]> {
@@ -187,5 +214,6 @@ const FETCHERS = {
     ChiiAi: new Fetcher(300),
     BGMRaw: new Fetcher(300),
     BGMAPI: new Fetcher(300),
+    BGMPrivateAPI: new Fetcher(300),
     BGMWeb: new Fetcher(500),
 }
