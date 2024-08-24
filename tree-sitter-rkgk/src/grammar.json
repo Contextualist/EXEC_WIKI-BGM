@@ -890,7 +890,23 @@
           "name": "role",
           "content": {
             "type": "STRING",
+            "value": "作词作编曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
             "value": "作詞作曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作词作曲"
           }
         },
         {
@@ -906,7 +922,23 @@
           "name": "role",
           "content": {
             "type": "STRING",
+            "value": "作词曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
             "value": "作編曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作编曲"
           }
         },
         {
@@ -930,7 +962,23 @@
           "name": "role",
           "content": {
             "type": "STRING",
+            "value": "编曲"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
             "value": "作詞"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "作词"
           }
         },
         {

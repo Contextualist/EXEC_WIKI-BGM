@@ -330,6 +330,10 @@
             "named": false
           },
           {
+            "type": "作编曲",
+            "named": false
+          },
+          {
             "type": "作詞",
             "named": false
           },
@@ -343,6 +347,22 @@
           },
           {
             "type": "作詞曲",
+            "named": false
+          },
+          {
+            "type": "作词",
+            "named": false
+          },
+          {
+            "type": "作词作曲",
+            "named": false
+          },
+          {
+            "type": "作词作编曲",
+            "named": false
+          },
+          {
+            "type": "作词曲",
             "named": false
           },
           {
@@ -387,6 +407,10 @@
           },
           {
             "type": "編曲",
+            "named": false
+          },
+          {
+            "type": "编曲",
             "named": false
           },
           {
@@ -716,6 +740,10 @@
     "named": false
   },
   {
+    "type": "作编曲",
+    "named": false
+  },
+  {
     "type": "作詞",
     "named": false
   },
@@ -729,6 +757,22 @@
   },
   {
     "type": "作詞曲",
+    "named": false
+  },
+  {
+    "type": "作词",
+    "named": false
+  },
+  {
+    "type": "作词作曲",
+    "named": false
+  },
+  {
+    "type": "作词作编曲",
+    "named": false
+  },
+  {
+    "type": "作词曲",
     "named": false
   },
   {
@@ -773,6 +817,10 @@
   },
   {
     "type": "編曲",
+    "named": false
+  },
+  {
+    "type": "编曲",
     "named": false
   },
   {
