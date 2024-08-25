@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	export function clearTrackInfo() {
-		textState.val = '';
+	export function setTrackInfo(content: string) {
+		textState.val = content;
 	}
 	let textState = localStorage$state('trackInfo', '');
 </script>

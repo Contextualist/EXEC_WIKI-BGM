@@ -16,7 +16,25 @@ export interface ImportSourceOption {
 
 export interface AutoEditor {
     editTitleIntro: (title: string, intro: string) => void;
+    setTrackInfo: (info: Release) => void;
     setInfoBox: (content: string) => void;
     pushWarning: (warning: string) => void;
     done: () => void;
 }
+
+export interface Release {
+    credits: Credits;
+    discs: Disc[];
+}
+
+export interface Disc {
+    tracks: Track[];
+}
+
+export interface Track {
+    title: string;
+    comment: string;
+    credits: Credits;
+}
+
+export type Credits = Record<string, string[]>;

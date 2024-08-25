@@ -81,6 +81,8 @@ const ROLE_MAP: { [name: string]: Role[] } = {
     '母带制作': [Role.MA],
 };
 
+export const RE_ROLE_KEYWORD = new RegExp(Object.keys(ROLE_MAP).join("|"), "i");
+
 export interface PostProcessOptions {
     shouldCleanCircleParentheses: boolean;
     allowAllSpaceInCreatorName: boolean;

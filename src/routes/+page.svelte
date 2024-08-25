@@ -3,7 +3,7 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import { onMount, untrack } from 'svelte';
 
-	import TrackInfo, { clearTrackInfo } from './TrackInfo.svelte';
+	import TrackInfo, { setTrackInfo } from './TrackInfo.svelte';
 	import InfoBox, * as infoBox from './InfoBox.svelte';
 	import Preview from './Preview.svelte';
 	import Gallery from './Gallery.svelte';
@@ -21,6 +21,7 @@
 	import { importPersonCreated, importRelaHistory } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
 	import { getRandomTip } from './dailyTips.ts';
+	import { type Release as InfoRelease, writeTrackInfo } from './trackInfoWriter.ts';
 	import { localStorage$state } from './utils.svelte.ts';
 
 	const reactiveFields = new Set([...Object.values(Role).slice(1), '碟片数量']);
@@ -32,7 +33,7 @@
 	let name2staff = $derived(resolveRelaMap(currentRelease.relaMap, dupResolutionEntries));
 
 	function clear() {
-		clearTrackInfo();
+		setTrackInfo('');
 		titleState.val = '';
 		setTimeout(() => {
 			// workaround: clear infobox after the infobox edit triggered by trackinfo clear
@@ -223,6 +224,9 @@
 			editTitleIntro: (title: string, intro: string) => {
 				if (title) titleState.val = title;
 				if (intro) descState.val = intro;
+			},
+			setTrackInfo: (info: InfoRelease) => {
+				setTrackInfo(writeTrackInfo(info));
 			},
 			setInfoBox: (content: string) => {
 				infoBox.merge(content);

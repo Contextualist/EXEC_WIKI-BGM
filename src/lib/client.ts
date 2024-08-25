@@ -15,6 +15,12 @@ export interface SubjectEpInfo {
     disc: number;
     ep: number;
 }
+export interface SubjectRelaPerson {
+    id: number;
+    name: string;
+    relation: string;
+    eps: string;
+}
 
 const RELEVANT_CAREERS = new Set(['artist', 'illustrator']);
 
@@ -93,11 +99,16 @@ export async function getSubjectEpInfo(sid: number): Promise<SubjectEpInfo[]> {
     return result.data as SubjectEpInfo[];
 }
 
-export async function getSubjectRelaPIDList(sid: number): Promise<number[]> {
+export async function getSubjectRelaPerson(sid: number): Promise<SubjectRelaPerson[]> {
     const request = new Request(`${BGMAPI_ENDPOINT}/v0/subjects/${sid}/persons`, { method: 'GET', mode: 'cors' });
     const response = await FETCHERS.BGMAPI.dispatch(request);
     const result = await response.json();
-    return Array.from(new Set(result.map((r: any) => r.id)));
+    return result as SubjectRelaPerson[];
+}
+
+export async function getSubjectRelaPIDList(sid: number): Promise<number[]> {
+    const result = await getSubjectRelaPerson(sid);
+    return Array.from(new Set(result.map((r) => r.id)));
 }
 
 async function getWikiHistory(cat: string, username: string, page: number): Promise<{ ids: number[], maxPage: number }> {
