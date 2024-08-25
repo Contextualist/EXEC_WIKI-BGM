@@ -15,6 +15,7 @@ export interface ImportSourceOption {
 }
 
 export interface AutoEditor {
+    associableFields: Set<string>;
     editTitleIntro: (title: string, intro: string) => void;
     setTrackInfo: (info: Release) => void;
     setInfoBox: (content: string) => void;

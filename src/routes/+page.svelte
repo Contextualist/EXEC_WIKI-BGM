@@ -24,7 +24,8 @@
 	import { type Release as InfoRelease, writeTrackInfo } from './trackInfoWriter.ts';
 	import { localStorage$state } from './utils.svelte.ts';
 
-	const reactiveFields = new Set([...Object.values(Role).slice(1), '碟片数量']);
+	const associableFields = new Set(Object.values(Role).slice(1));
+	const reactiveFields = new Set([...associableFields, '碟片数量']);
 
 	let currentRawRelease: Readonly<RawRelease> = $state.raw({ credits: [], discs: [] });
 	let currentRelease: Readonly<Release> = $state.raw(new Release());
@@ -221,6 +222,7 @@
 	<ImportDialog
 		bind:show={showImportDialog}
 		editor={{
+			associableFields,
 			editTitleIntro: (title: string, intro: string) => {
 				if (title) titleState.val = title;
 				if (intro) descState.val = intro;

@@ -1,5 +1,5 @@
 import type { ImportSource, AutoEditor, Track } from "./common";
-import { getSubjectInfo, getSubjectEpInfo, getSubjectRelaPerson, type SubjectInfo } from "$lib/client";
+import { getSubjectInfo, getSubjectEpInfo, getSubjectRelaPerson, type SubjectInfo, type SubjectRelaPerson } from "$lib/client";
 
 export class Bangumi implements ImportSource {
     name = "Bangumi";
@@ -31,11 +31,12 @@ export class Bangumi implements ImportSource {
         if (opts.trackListCredits) {
             const subjectEpInfo = getSubjectEpInfo(this.sid);
             const rela = await getSubjectRelaPerson(this.sid);
+            const [aliasTable, unassociated] = resolveAlias(this.subjectInfo!.infobox, rela, editor.associableFields);
             const relaMap0 = DefaultDict(() => [] as string[]); // relation -> names
             const relaMap = DefaultDict(() => DefaultDict(() => DefaultDict(() => [] as string[]))); // disc -> track -> relation -> names
             rela.forEach(({ name, relation, eps }) => {
                 const kw = ROLE2KEYWORD[relation] || relation;
-                // TODO: simple alias extraction from infobox
+                name = aliasTable[relation]?.[name] ?? name; // try using alias
                 if (eps === "") {
                     relaMap0[kw].push(name);
                     return;
@@ -45,7 +46,10 @@ export class Bangumi implements ImportSource {
                     relaMap[disc][track][kw].push(name);
                 });
             });
-            // TODO: extract unassociated credits from infobox
+            Object.entries(unassociated).forEach(([role, names]) => {
+                if (names.length === 0) return;
+                relaMap0[ROLE2KEYWORD[role] || role].push(...names);
+            });
 
             const discs = DefaultDict(() => ({} as Record<number, Track>));
             (await subjectEpInfo).forEach((tr) => {
@@ -111,4 +115,79 @@ function parsePart(part: string): [number, number][] {
 function _parseMaybeRange(s: string) {
     const [start, end] = s.split('-').map(x => parseInt(x));
     return Array.from({ length: (end || start) - start + 1 }, (_, i) => start + i);
+}
+
+
+const RE_SIMPLE_NAME = /^[^（(\[]+$/; // no brackets
+const RE_ALIAS_NAME = /^([^（(\[]+)(\([^（(\[]+\)|（[^（(\[]+）)$/; // `alias(name)`
+const RE_CHAR_CV = /^([^（(\[]+)\(CV[.:：](.+)\)$/; // `charactor(CV:...)`
+/// The grief of not having an alias system crystalized...
+function resolveAlias(
+    infobox: string,
+    rela: SubjectRelaPerson[],
+    associableFields: Set<string>
+): [Record<string, Record<string, string>>, Record<string, string[]>] {
+    const plain = infobox.split('\n').filter(x => x.startsWith('|')).map(x => x.slice(1).split('='));
+    const associable = plain.filter(([k, _]) => associableFields.has(k)) as [string, string][];
+    const relaNames = DefaultDict(() => new Set<string>());
+    rela.forEach(({ name, relation }) => relaNames[relation].add(name));
+
+    const aliasTable: Record<string, Record<string, string>> = {}; // role -> name -> alias
+    const unassociated: Record<string, string[]> = {}; // role -> name[]
+    associable.forEach(([role, raw]) => {
+        if (!(raw.trim())) return;
+        const amap: Record<string, string> = {};
+        const uarr: string[] = [];
+        parseCreatorGroup(raw).forEach((rep) => {
+            rep = rep.trim();
+            // ignoring the character part for now
+            const cv_match = rep.match(RE_CHAR_CV);
+            if (cv_match) {
+                rep = cv_match[2].trim();
+            }
+            // case 1: just name
+            if (RE_SIMPLE_NAME.test(rep)) {
+                if (!relaNames[role].has(rep)) uarr.push(rep);
+                return;
+            }
+            // case 2: alias(name)
+            const alias_match = rep.match(RE_ALIAS_NAME);
+            if (alias_match) {
+                let [_, alias, name] = alias_match;
+                name = name.slice(1, -1);
+                if (!relaNames[role].has(name)) uarr.push(name);
+                amap[name] = alias.trim();
+            }
+        });
+        aliasTable[role] = amap;
+        unassociated[role] = uarr;
+    });
+    return [aliasTable, unassociated];
+}
+
+const bracketMap: Record<string, string> = {
+    '（': '）',
+    '(': ')',
+    '[': ']',
+};
+/// e.g. 'A (B、C)、D、E [F (G)、H]' => ['B', 'C', 'A (B、C)', 'D', 'F (G)', 'H', 'E [F (G)、H]']
+function parseCreatorGroup(s: string): string[] {
+    let frag = [];
+    let stack: [string, number][] = [['', 0]];
+    for (let i = 0; i < s.length; i++) {
+        const stackTop = stack[stack.length - 1];
+        if (s[i] in bracketMap) {
+            stack.push([s[i], i + 1]);
+        } else if (s[i] === bracketMap[stackTop[0]]) {
+            if (s[stackTop[1] - 1] !== stackTop[0]) { // skip one-entity group
+                frag.push(s.slice(stackTop[1], i));
+            }
+            stack.pop();
+        } else if (s[i] === '、') {
+            frag.push(s.slice(stackTop[1], i));
+            stackTop[1] = i + 1;
+        }
+    }
+    frag.push(s.slice(stack[0][1]));
+    return frag;
 }
