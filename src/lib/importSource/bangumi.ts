@@ -67,7 +67,12 @@ export class Bangumi implements ImportSource {
                     { length: Object.keys(discs).length },
                     (_, i) => {
                         const trm = discs[i + 1];
-                        return { tracks: Array.from({ length: Object.keys(trm).length }, (_, j) => trm[j + 1]) }
+                        return {
+                            tracks: Array.from(
+                                { length: Math.max(...Object.keys(trm).map(x => parseInt(x))) },
+                                (_, j) => trm[j + 1]
+                            ).filter(x => x)
+                        };
                     },
                 ),
             };
@@ -120,7 +125,7 @@ function _parseMaybeRange(s: string) {
 
 
 const RE_SIMPLE_NAME = /^[^（(\[]+$/; // no brackets
-const RE_ALIAS_NAME = /^([^（(\[]+)(\([^（(\[]+\)|（[^（(\[]+）)$/; // `alias(name)`
+const RE_ALIAS_NAME = /^([^（(\[]+)(\([^（(\[]+\)|（[^（(\[、]+）)$/; // `alias(name)`
 const RE_CHAR_CV = /^([^（(\[]+)\(CV[.:：](.+)\)$/; // `charactor(CV:...)`
 /// The grief of not having an alias system crystalized...
 function resolveAlias(

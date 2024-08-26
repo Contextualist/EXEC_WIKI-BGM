@@ -12,7 +12,9 @@ export function writeTrackInfo(info: Release): string {
         return ((RE_SEP.test(n) && !RE_LATIN_SPACE.test(n)) || RE_ROLE_KEYWORD.test(n)) ? `《${n}》` : n;
     }
     function formatCredits(rmap: Record<string, string[]>): string {
-        return Object.entries(reverseRecord(rmap)).map(([n, rs]) => `${rs.join('、')}：${nameEscape(n)}`).join('\n') + '\n';
+        return Object.entries(reverseRecord(rmap))
+            .map(([n, rs]) => `${rs.sort().join('、')}：${nameEscape(n)}`)
+            .join('\n') + '\n';
     }
     let trackInfo = Object.keys(info.credits).length > 0 ? formatCredits(info.credits) + '\n' : '';
     trackInfo += info.discs.map((disc) => {
