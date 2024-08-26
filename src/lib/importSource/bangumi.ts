@@ -14,16 +14,17 @@ export class Bangumi implements ImportSource {
     ];
 
     private sid: number = 0;
-    private subjectInfo: SubjectInfo | null = null;
+    private subjectInfo: Promise<SubjectInfo> | null = null;
 
     async load(url: string): Promise<string> {
         this.sid = parseInt(this.match.exec(url)![1]);
-        this.subjectInfo = await getSubjectInfo(this.sid);
-        return this.subjectInfo.typeID === 3 ? this.subjectInfo.name : "……不对，这不是音乐条目。";
+        this.subjectInfo = getSubjectInfo(this.sid);
+        const si = await this.subjectInfo;
+        return si.typeID === 3 ? si.name : "……不对，这不是音乐条目。";
     }
 
     async apply(opts: { [key: string]: any }, editor: AutoEditor): Promise<void> {
-        if (this.subjectInfo!.typeID !== 3) {
+        if ((await this.subjectInfo!).typeID !== 3) {
             editor.pushWarning(Math.random() < 0.9 ? "这不是音乐条目啦！" : "什么都导入只会害了你");
             return;
         }
@@ -31,7 +32,7 @@ export class Bangumi implements ImportSource {
         if (opts.trackListCredits) {
             const subjectEpInfo = getSubjectEpInfo(this.sid);
             const rela = await getSubjectRelaPerson(this.sid);
-            const [aliasTable, unassociated] = resolveAlias(this.subjectInfo!.infobox, rela, editor.associableFields);
+            const [aliasTable, unassociated] = resolveAlias((await this.subjectInfo!).infobox, rela, editor.associableFields);
             const relaMap0 = DefaultDict(() => [] as string[]); // relation -> names
             const relaMap = DefaultDict(() => DefaultDict(() => DefaultDict(() => [] as string[]))); // disc -> track -> relation -> names
             rela.forEach(({ name, relation, eps }) => {
@@ -74,12 +75,12 @@ export class Bangumi implements ImportSource {
         }
 
         if (opts.titleIntro) {
-            const { name, summary } = this.subjectInfo!;
+            const { name, summary } = (await this.subjectInfo!);
             editor.editTitleIntro(name, summary);
         }
 
         if (opts.infobox) {
-            editor.setInfoBox(this.subjectInfo!.infobox);
+            editor.setInfoBox((await this.subjectInfo!).infobox);
         }
 
         editor.done();
