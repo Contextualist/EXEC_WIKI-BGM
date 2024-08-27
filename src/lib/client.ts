@@ -96,6 +96,10 @@ export async function getSubjectEpInfo(sid: number): Promise<SubjectEpInfo[]> {
     const request = new Request(`${BGMAPI_ENDPOINT}/v0/episodes?subject_id=${sid}&limit=1000`, { method: 'GET', mode: 'cors' });
     const response = await FETCHERS.BGMAPI.dispatch(request);
     const result = await response.json();
+    (result.data as SubjectEpInfo[]).forEach((ep) => {
+        ep.name = ep.name.replace("&amp;", "&");
+        ep.name_cn = ep.name_cn.replace("&amp;", "&");
+    }); // workaround for the HTML entities bug
     return result.data as SubjectEpInfo[];
 }
 
