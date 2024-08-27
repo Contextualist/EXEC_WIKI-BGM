@@ -11,7 +11,7 @@ import { toast, type ToastItemProps } from './Toast.svelte';
 export async function importPersonCreated(bgmUID: string, tillPage: number = 10) {
     const pids = await gatherEntries(getWikiHistoryPersonPIDList, bgmUID, tillPage);
     let { tp, rfn } = toast('正在导入最近创建人物...', { progress: true });
-    await importPersonBatch(pids, tp, rfn);
+    await __importPersonBatch(pids, tp, rfn);
 }
 
 export async function importRelaHistory(bgmUID: string, tillPage: number = 10) {
@@ -38,7 +38,7 @@ export async function importRelaHistory(bgmUID: string, tillPage: number = 10) {
     rfn1();
 
     let { tp: tp2, rfn: rfn2 } = toast('正在导入最近关联人物...', { progress: true });
-    await importPersonBatch(upids, tp2, rfn2);
+    await __importPersonBatch(upids, tp2, rfn2);
 }
 
 async function gatherEntries(
@@ -60,7 +60,12 @@ async function gatherEntries(
     return Array.from(new Set(allIDs));
 }
 
-async function importPersonBatch(pids: number[], tp: ToastItemProps, rfn: () => void) {
+export async function importPersonBatch(pids: number[]) {
+    let { tp, rfn } = toast('正在导入关联人物...', { progress: true });
+    await __importPersonBatch(pids, tp, rfn, false);
+}
+
+async function __importPersonBatch(pids: number[], tp: ToastItemProps, rfn: () => void, artistOnly: boolean = true) {
     // filter out existing entries in the database
     const existingRec = await db.staff.where('id').anyOf(pids).toArray();
     const existing = new Set(existingRec.map((s) => s.id));
@@ -75,7 +80,7 @@ async function importPersonBatch(pids: number[], tp: ToastItemProps, rfn: () => 
             } finally {
                 tp.nDone++;
             }
-            return isA ? s : null;
+            return !artistOnly || isA ? s : null;
         })
     );
     const staffs = results

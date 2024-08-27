@@ -8,7 +8,7 @@ export class Bangumi implements ImportSource {
     options = [
         { id: "trackListCredits", text: "曲目列表与制作人员", default: true },
         { id: "titleIntro", text: "标题与简介", default: true },
-        //{ id: "importRela", text: "导入关联的人物", default: true },
+        { id: "importRela", text: "导入关联的人物", default: true },
         { id: "infobox", text: "Infobox", default: true },
         //{ id: "infoboxKeepRelaField", text: "保留 infobox 可关联字段的内容", default: false },
     ];
@@ -29,9 +29,10 @@ export class Bangumi implements ImportSource {
             return;
         }
 
+        let rela: SubjectRelaPerson[] | null = null;
         if (opts.trackListCredits) {
             const subjectEpInfo = getSubjectEpInfo(this.sid);
-            const rela = await getSubjectRelaPerson(this.sid);
+            rela = await getSubjectRelaPerson(this.sid);
             const [aliasTable, unassociated] = resolveAlias((await this.subjectInfo!).infobox, rela, editor.associableFields);
             const relaMap0 = DefaultDict(() => [] as string[]); // relation -> names
             const relaMap = DefaultDict(() => DefaultDict(() => DefaultDict(() => [] as string[]))); // disc -> track -> relation -> names
@@ -86,6 +87,13 @@ export class Bangumi implements ImportSource {
 
         if (opts.infobox) {
             editor.setInfoBox((await this.subjectInfo!).infobox);
+        }
+
+        if (opts.importRela) {
+            if (rela === null) {
+                rela = await getSubjectRelaPerson(this.sid);
+            }
+            editor.importRela(Array.from(new Set(rela.map(x => x.id))));
         }
 
         editor.done();

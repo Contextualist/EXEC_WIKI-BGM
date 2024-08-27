@@ -97,7 +97,7 @@
 	<div class="text-bgm-darkgrey text-sm mb-2">当前有 {numEntries} 个人物条目</div>
 
 	<div class={relaElClass}>
-		<div class={labelClass}>从我的班古米导入...</div>
+		<div class={labelClass}>从我的班古米同步...</div>
 		<Button
 			onclick={async () => {
 				await importPersonCreated(bgmUID, 1);
@@ -105,7 +105,7 @@
 				perturbSettings();
 			}}
 		>
-			导入最近创建人物
+			同步最近创建人物
 		</Button>
 		<Button
 			onclick={async () => {
@@ -114,7 +114,7 @@
 				perturbSettings();
 			}}
 		>
-			导入最近关联编辑
+			同步最近关联编辑
 		</Button>
 	</div>
 

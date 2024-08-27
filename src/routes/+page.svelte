@@ -18,7 +18,7 @@
 	import Toast, { toast } from './Toast.svelte';
 	import Scenario from '$lib/vn/Scenario.svelte';
 	import ImportDialog from './ImportDialog.svelte';
-	import { importPersonCreated, importRelaHistory } from './relaDB.ts';
+	import { importPersonCreated, importRelaHistory, importPersonBatch } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
 	import { getRandomTip } from './dailyTips.ts';
 	import { type Release as InfoRelease, writeTrackInfo } from './trackInfoWriter.ts';
@@ -232,6 +232,11 @@
 			},
 			setInfoBox: (content: string) => {
 				infoBox.merge(content);
+			},
+			importRela: (pids: number[]) => {
+				importPersonBatch(pids).then(() => {
+					settingsState.val = { ...settingsState.val }; // trigger Gallery update
+				});
 			},
 			pushWarning: (warning: string) => {
 				toast(warning, { alert: true });

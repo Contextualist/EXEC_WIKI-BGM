@@ -19,6 +19,7 @@ export interface AutoEditor {
     editTitleIntro: (title: string, intro: string) => void;
     setTrackInfo: (info: Release) => void;
     setInfoBox: (content: string) => void;
+    importRela: (pids: number[]) => void;
     pushWarning: (warning: string) => void;
     done: () => void;
 }
