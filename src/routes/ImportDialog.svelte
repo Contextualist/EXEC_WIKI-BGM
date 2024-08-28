@@ -58,6 +58,7 @@
 			id="btn-external-import"
 			class="flex-basis-[4rem] text-sm"
 			disabled={currentSource === null || currentSource === undefined}
+			spinner={true}
 			onclick={async () => await currentSource!.apply(currentSourceOptions, editor)}
 		>
 			来吧

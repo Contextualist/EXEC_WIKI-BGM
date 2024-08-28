@@ -4,18 +4,20 @@
 	interface ButtonProps extends HTMLButtonAttributes {
 		class?: string;
 		onclick: () => Promise<any>;
+		spinner?: boolean;
 		children: () => any;
 	}
-	let { class: class_ = '', onclick, children, ...rest }: ButtonProps = $props();
+	let { class: class_ = '', onclick, spinner = false, children, ...rest }: ButtonProps = $props();
 	let promise: Promise<any> = $state(Promise.resolve());
 </script>
 
 <button
-	onclick={async () => {
-		promise = onclick().catch((err) => {
+	onclick={() => {
+		const p = onclick().catch((err) => {
 			console.error(err);
 			return err;
 		});
+		if (spinner) promise = p;
 	}}
 	{...rest}
 	class={class_ +
