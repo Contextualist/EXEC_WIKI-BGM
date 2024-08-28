@@ -45,6 +45,10 @@
 			}
 		});
 	}
+
+	export function unlinkField(key: string): void {
+		reactiveFieldsUnlinked[key] = true;
+	}
 </script>
 
 <script lang="ts">

@@ -3,8 +3,11 @@
 		type ArrayWiki,
 		wikiUnpack,
 		wikiRepack,
-		edit as editRich
+		edit as editRich,
+		unlinkField
 	} from '$lib/richInfoBox/RichInfoBox.svelte';
+
+	export { unlinkField };
 
 	let value = $state('');
 	let modeRich = $state(false);

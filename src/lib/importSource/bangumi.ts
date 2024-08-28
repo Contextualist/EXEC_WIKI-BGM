@@ -10,7 +10,7 @@ export class Bangumi implements ImportSource {
         { id: "titleIntro", text: "标题与简介", default: true },
         { id: "importRela", text: "导入关联的人物", default: true },
         { id: "infobox", text: "Infobox", default: true },
-        //{ id: "infoboxKeepRelaField", text: "保留 infobox 可关联字段的内容", default: false },
+        { id: "infoboxKeepRelaField", text: "保留「艺术家」字段的内容", default: false },
     ];
 
     private sid: number = 0;
@@ -87,6 +87,10 @@ export class Bangumi implements ImportSource {
 
         if (opts.infobox) {
             editor.setInfoBox((await this.subjectInfo!).infobox);
+        }
+
+        if (opts.infoboxKeepRelaField) {
+            editor.unlinkInfoBoxField('艺术家');
         }
 
         if (opts.importRela) {
