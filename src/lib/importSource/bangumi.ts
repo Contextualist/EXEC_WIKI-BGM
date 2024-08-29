@@ -173,8 +173,10 @@ function resolveAlias(
             if (alias_match) {
                 let [_, alias, name] = alias_match;
                 name = name.slice(1, -1);
-                if (!relaNames[role].has(name)) uarr.push(name);
-                amap[name] = alias.trim();
+                alias = alias.trim();
+                // putting alias, as unassociated name won't get substituted
+                if (!relaNames[role].has(name)) uarr.push(alias);
+                amap[name] = alias;
             }
         });
         aliasTable[role] = amap;
