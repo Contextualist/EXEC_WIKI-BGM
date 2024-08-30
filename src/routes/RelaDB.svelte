@@ -34,9 +34,10 @@
 
 	interface RelaDBProps {
 		bgmUID: string;
+		closeRelaDB: () => void;
 		class?: string;
 	}
-	let { bgmUID = $bindable(), class: class_ = '' }: RelaDBProps = $props();
+	let { bgmUID = $bindable(), closeRelaDB, class: class_ = '' }: RelaDBProps = $props();
 
 	async function addPerson(p: Staff) {
 		p.aliases = p.aliases.map((a) => a.replace(/[\s*(（].+[）)]$/, '')); // trim circle names
@@ -197,7 +198,10 @@
 						class={'text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
 							'border-none bg-transparent ml-1 h-[20px] w-[20px] p-0 flex-basis-[20px] flex-self-center'}
 						title="添加/更新这个人物"
-						onclick={() => addPerson({ id, pfp, name, aliases: aliases.filter((a) => a !== name) })}
+						onclick={() =>
+							addPerson({ id, pfp, name, aliases: aliases.filter((a) => a !== name) }).then(() =>
+								closeRelaDB()
+							)}
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"

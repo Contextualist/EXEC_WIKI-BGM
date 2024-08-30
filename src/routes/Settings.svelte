@@ -120,6 +120,10 @@
 		el.click();
 		document.body.removeChild(el);
 	}
+
+	function closeRelaDB() {
+		showRelaDB = false;
+	}
 </script>
 
 <div class="fixed bottom-0 right-[3rem]">
@@ -195,5 +199,5 @@
 	<div class={panelElClass}>
 		<h2 class="text-bgm-pink">关联数据库</h2>
 	</div>
-	<RelaDb class={panelElClass} bind:bgmUID={settings.bgmUID} />
+	<RelaDb class={panelElClass} bind:bgmUID={settings.bgmUID} {closeRelaDB} />
 </Panel>
