@@ -60,6 +60,17 @@ export default defineConfig({
                             transform: translateY(3px);
                         }
                     }
+
+                    kbd {
+                        background: #f7f7f7;
+                        border: 1px solid #ccc;
+                        border-radius: 3px;
+                        box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+                        color: #333;
+                        display: inline-block;
+                        font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+                        padding: .05rem .3rem;
+                    }
                 `
             },
         },
