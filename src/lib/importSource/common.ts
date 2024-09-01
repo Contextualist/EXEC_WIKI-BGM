@@ -18,7 +18,7 @@ export interface AutoEditor {
     associableFields: Set<string>;
     editTitleIntro: (title: string, intro: string) => void;
     setTrackInfo: (info: Release) => void;
-    setInfoBox: (content: string) => void;
+    setInfoBox: (content: string, override: boolean) => void;
     unlinkInfoBoxField: (field: string) => void;
     importRela: (pids: number[]) => void;
     pushWarning: (warning: string) => void;

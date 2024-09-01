@@ -4,13 +4,14 @@ import { getSubjectInfo, getSubjectEpInfo, getSubjectRelaPerson, type SubjectInf
 export class Bangumi implements ImportSource {
     name = "Bangumi";
     match = /^https:\/\/bgm.tv\/subject\/(\d+)$/;
-    warning = "最近新增的可关联职位还在等班古米的API支持，暂时会显示为UNKNOWN。";
+    warning = "";
     options = [
         { id: "trackListCredits", text: "曲目列表与制作人员", default: true },
         { id: "titleIntro", text: "标题与简介", default: true },
         { id: "importRela", text: "导入关联的人物", default: true },
         { id: "infobox", text: "Infobox", default: true },
         { id: "infoboxKeepRelaField", text: "保留「艺术家」字段的内容", default: false },
+        { id: "infoboxOverride", text: "完全覆写现有的 Infobox", default: false },
     ];
 
     private sid: number = 0;
@@ -86,7 +87,7 @@ export class Bangumi implements ImportSource {
         }
 
         if (opts.infobox) {
-            editor.setInfoBox((await this.subjectInfo!).infobox);
+            editor.setInfoBox((await this.subjectInfo!).infobox, opts.infoboxOverride);
         }
 
         if (opts.infoboxKeepRelaField) {

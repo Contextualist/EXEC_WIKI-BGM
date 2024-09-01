@@ -230,8 +230,13 @@
 			setTrackInfo: (info: InfoRelease) => {
 				setTrackInfo(writeTrackInfo(info));
 			},
-			setInfoBox: (content: string) => {
+			setInfoBox: (content: string, override: boolean) => {
+				if (override) {
+					infoBox.reset(content);
+					infoBox.merge('');
+				} else {
 				infoBox.merge(content);
+				}
 			},
 			unlinkInfoBoxField: (key: string) => {
 				infoBox.unlinkField(key);
