@@ -49,6 +49,9 @@
 	export function unlinkField(key: string): void {
 		reactiveFieldsUnlinked[key] = true;
 	}
+	export function resetReactiveFields(): void {
+		reactiveFieldsUnlinked = {};
+	}
 </script>
 
 <script lang="ts">

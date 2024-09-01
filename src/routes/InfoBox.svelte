@@ -4,7 +4,8 @@
 		wikiUnpack,
 		wikiRepack,
 		edit as editRich,
-		unlinkField
+		unlinkField,
+		resetReactiveFields
 	} from '$lib/richInfoBox/RichInfoBox.svelte';
 
 	export { unlinkField };
@@ -24,6 +25,7 @@
 		value = text;
 		if (modeRich) {
 			valueWiki = wikiUnpack(parse(text));
+			resetReactiveFields();
 		}
 	}
 	export function merge(text: string): void {
