@@ -25,7 +25,7 @@ export enum Role {
 }
 
 // NOTE: This should be kept in sync with `grammar.js` in the tree-sitter-rkgk repo.
-const ROLE_MAP: { [name: string]: Role[] } = {
+export const ROLE_MAP: { [name: string]: Role[] } = {
     'music': [Role.C, Role.A],
     'composition': [Role.C],
     'composer': [Role.C],

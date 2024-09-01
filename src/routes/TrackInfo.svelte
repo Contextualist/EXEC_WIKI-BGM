@@ -10,6 +10,7 @@
 	import CodeMirror, { HighlightStyle, tags } from './CodeMirror.svelte';
 	import { localStorage$state } from './utils.svelte.ts';
 	import { rkgk, type RawRelease } from './lang-rkgk.ts';
+	import { getLinter } from './lint-rkgk.ts';
 
 	interface TrackInfoProps {
 		onUpdate: (disc: RawRelease) => void;
@@ -38,6 +39,7 @@
 		{ tag: tags.heading, color: '#333', fontWeight: 'bold' },
 		{ tag: tags.comment, color: '#999' }
 	]);
+	const extensions = [getLinter()];
 </script>
 
 <div {...rest} class="{class_} max-w-130">
@@ -52,6 +54,7 @@
 			{lang}
 			bind:value={textState.val}
 			{filterPaste}
+			{extensions}
 		/>
 	{/await}
 </div>
