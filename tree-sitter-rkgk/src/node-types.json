@@ -66,42 +66,6 @@
     }
   },
   {
-    "type": "feat_field",
-    "named": true,
-    "fields": {
-      "creator": {
-        "multiple": true,
-        "required": true,
-        "types": [
-          {
-            "type": "creator_name",
-            "named": true
-          }
-        ]
-      },
-      "creatorSeparator": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "creator_sep",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "feat",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "role",
     "named": true,
     "fields": {
@@ -426,13 +390,9 @@
     "named": true,
     "fields": {
       "title": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
-          {
-            "type": "feat_field",
-            "named": true
-          },
           {
             "type": "song_title",
             "named": true
@@ -633,10 +593,6 @@
   },
   {
     "type": "creator_sep",
-    "named": true
-  },
-  {
-    "type": "feat",
     "named": true
   },
   {

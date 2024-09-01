@@ -63,7 +63,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "_quotable_song_title_maybefeat_maybecomment"
+          "name": "_quotable_song_title_maybecomment"
         },
         {
           "type": "CHOICE",
@@ -199,7 +199,7 @@
         ]
       }
     },
-    "_quotable_song_title_maybefeat_maybecomment": {
+    "_quotable_song_title_maybecomment": {
       "type": "PREC_RIGHT",
       "value": 0,
       "content": {
@@ -207,7 +207,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_quotable_song_title_maybefeat"
+            "name": "_quotable_song_title"
           },
           {
             "type": "CHOICE",
@@ -276,7 +276,7 @@
         ]
       }
     },
-    "_quotable_song_title_maybefeat": {
+    "_quotable_song_title": {
       "type": "CHOICE",
       "members": [
         {
@@ -291,7 +291,7 @@
               "name": "title",
               "content": {
                 "type": "SYMBOL",
-                "name": "_song_title_maybefeat"
+                "name": "song_title"
               }
             },
             {
@@ -305,29 +305,8 @@
           "name": "title",
           "content": {
             "type": "SYMBOL",
-            "name": "_song_title_maybefeat"
+            "name": "song_title"
           }
-        }
-      ]
-    },
-    "_song_title_maybefeat": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "song_title"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "feat_field"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
         }
       ]
     },
@@ -340,68 +319,6 @@
           "type": "PATTERN",
           "value": "[^\\n]"
         }
-      }
-    },
-    "feat_field": {
-      "type": "PREC_RIGHT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "ALIAS",
-            "content": {
-              "type": "TOKEN",
-              "content": {
-                "type": "PATTERN",
-                "value": "feat\\. ?"
-              }
-            },
-            "named": true,
-            "value": "feat"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "_quotable_creator_name"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "FIELD",
-                  "name": "creatorSeparator",
-                  "content": {
-                    "type": "ALIAS",
-                    "content": {
-                      "type": "SYMBOL",
-                      "name": "_ssep"
-                    },
-                    "named": true,
-                    "value": "creator_sep"
-                  }
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_quotable_creator_name"
-                }
-              ]
-            }
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_ssep"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          }
-        ]
       }
     },
     "_quotable_creator_name": {

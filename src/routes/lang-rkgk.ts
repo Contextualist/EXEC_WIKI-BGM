@@ -58,7 +58,6 @@ const NODE_TYPES = Object.fromEntries(
 const FIELD2NODETYPE: { [name: string]: lezer.NodeType } = {
     "": NODE_TYPES[""],
     "role": NODE_TYPES.typeName,
-    "feat": NODE_TYPES.typeName,
     "creator": NODE_TYPES.literal,
     "《": NODE_TYPES.keyword,
     "》": NODE_TYPES.keyword,
@@ -71,7 +70,6 @@ const FIELD2NODETYPE: { [name: string]: lezer.NodeType } = {
 
 const SEMANTIC_TYPES = [
     "role",
-    "feat",
     "creator",
     "creatorSeparator",
     "title",
@@ -86,7 +84,6 @@ export interface CreditField {
 class RawTrack {
     title: string = "";
     comment: string = "";
-    feat: CreditField[] = [];
     credits: CreditField[] = [];
 }
 
@@ -136,13 +133,6 @@ function intoRawTrack(node: NodeInfo): RawTrack {
         track.title = node.children.shift()!.text;
     } else {
         console.warn(`Track node does not start with title: ${node.text} type: ${node.type}`);
-    }
-    if (node.children.length > 0 && node.children[0].type === "title") { // not so dirty hack to match feat. fragments
-        const feat = node.children.shift()!;
-        track.title += feat.children.map(child => child.text).join("");
-        feat.children[feat.children.length - 1].text = feat.children[feat.children.length - 1].text.replace(/[)）]$/, "");
-        Object.assign(feat.children[0], { type: "role", text: "guest vocal" });
-        track.feat.push(...intoCredits([feat]));
     }
     if (node.children.length > 0 && node.children[0].type === "comment") {
         track.comment = node.children.shift()!.text.trim();

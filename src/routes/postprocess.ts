@@ -87,7 +87,6 @@ export interface PostProcessOptions {
     shouldCleanCircleParentheses: boolean;
     allowAllSpaceInCreatorName: boolean;
     shouldAutofillArrangment: boolean;
-    enableFeatVocal: boolean;
 }
 
 interface Credits { [roleID: string]: string[] }
@@ -120,7 +119,7 @@ export class Release {
             const tracks = disc.tracks.map(rt => ({
                 title: rt.title,
                 comment: rt.comment,
-                credits: _parseSongCredit([...(options.enableFeatVocal ? rt.feat : []), ...rt.credits]),
+                credits: _parseSongCredit(rt.credits),
             }))
             if (tracks.length > 1) {
                 normalizeTitles(tracks.map(t => t.title))

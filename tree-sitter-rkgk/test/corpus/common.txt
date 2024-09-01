@@ -156,7 +156,7 @@ Sleep
     (song_title)))
 
 ===
-feat-field, quoting
+quoting
 ===
 
 2	吸って、吐く（feat. 安次嶺希和子）
@@ -167,24 +167,11 @@ feat-field, quoting
 
 (source_file
   (song
-    (song_title)
-    (feat_field
-      (feat)
-      (creator_name)))
+    (song_title))
   (song
-    (song_title)
-    (feat_field
-      (feat)
-      (creator_name)
-      (creator_sep)
-      (creator_name)))
+    (song_title))
   (song
-    (song_title)
-    (feat_field
-      (feat)
-      (creator_name)
-      (creator_sep)
-      (creator_name))))
+    (song_title)))
 
 ===
 creator name quoting
@@ -210,7 +197,7 @@ music : 《ちろ:D》　lyric : もちうつね
         (creator_name)))))
 
 ===
-comment, feat-field, quoting, creator name quoting
+comment, quoting, creator name quoting
 ===
 
 01　桃色ディスタンス
@@ -223,7 +210,7 @@ comment, feat-field, quoting, creator name quoting
     Vocal：たま
 06　とある瀟洒な従者の物語 feat. ｙｔｒ // 原曲：東方紅魔郷 より 月時計－ルナ・ダイアル
     Vocal：ｙｔｒ、たま
-《07　Bad >///< Apple？ feat. 《Romonosov?:p》》
+《07　Bad >///< Apple？ feat. Romonosov?:p》
     // 原曲：幺樂団の歴史1 より Bad Apple!!
     Vocal：たま
 
@@ -248,9 +235,6 @@ comment, feat-field, quoting, creator name quoting
         (creator_name))))
   (song
     (song_title)
-    (feat_field
-      (feat)
-      (creator_name))
     (comment)
     (credit_block
       (credit_field
@@ -260,9 +244,6 @@ comment, feat-field, quoting, creator name quoting
         (creator_name))))
   (song
     (song_title)
-    (feat_field
-      (feat)
-      (creator_name))
     (comment)
     (credit_block
       (credit_field

@@ -1,6 +1,5 @@
 
 const separators = ` 　\t&＆:：\/・、；,`;
-const strictSeparators = ` 　\t&＆・、；,`;
 const roles = [
   'Music',
   'music',
@@ -101,7 +100,7 @@ module.exports = grammar({
     _disc: $ => repeat1($.song),
 
     song: $ => seq(
-      $._quotable_song_title_maybefeat_maybecomment,
+      $._quotable_song_title_maybecomment,
       optional('\n'),
       optional($.credit_block),
     ),
@@ -120,8 +119,8 @@ module.exports = grammar({
       choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep))
     )),
 
-    _quotable_song_title_maybefeat_maybecomment: $ => prec.right(seq(
-      $._quotable_song_title_maybefeat,
+    _quotable_song_title_maybecomment: $ => prec.right(seq(
+      $._quotable_song_title,
       optional('\n'),
       optional(choice(
         seq(
@@ -131,24 +130,11 @@ module.exports = grammar({
         alias(token(seq('原曲', /[^\n]+/)), $.comment),
       )),
     )),
-    _quotable_song_title_maybefeat: $ => choice(
-      seq('《', field('title', $._song_title_maybefeat), '》'),  // quoting
-      field('title', $._song_title_maybefeat),
-    ),
-    _song_title_maybefeat: $ => seq(
-      $.song_title,
-      optional($.feat_field),
+    _quotable_song_title: $ => choice(
+      seq('《', field('title', $.song_title), '》'),  // quoting
+      field('title', $.song_title),
     ),
     song_title: _ => prec.right(repeat1(/[^\n]/)),
-    feat_field: $ => prec.right(seq(
-      alias(token(/feat\. ?/), $.feat),
-      $._quotable_creator_name,  // CAVEAT: might also match trailing char like ')'
-      repeat(seq(
-        field('creatorSeparator', alias($._ssep, $.creator_sep)),
-        $._quotable_creator_name,
-      )),
-      optional($._ssep),
-    )),
 
     _quotable_creator_name: $ => choice(
       seq('《', field('creator', alias(/[^》\n]+/, $.creator_name)), '》'),  // quoting
@@ -157,6 +143,5 @@ module.exports = grammar({
     creator_name: _ => token.immediate(new RegExp(`[^${separators}《》\n]+`)),
     role: _ => choice(...roles.map(r => field('role', r))),
     _sep: _ => token.immediate(new RegExp(`[${separators}]+`)),
-    _ssep: _ => token.immediate(new RegExp(`[${strictSeparators}]+`)),
   }
 });
