@@ -50,7 +50,9 @@
 		reactiveFieldsUnlinked[key] = true;
 	}
 	export function resetReactiveFields(): void {
-		reactiveFieldsUnlinked = {};
+		Object.keys(reactiveFieldsUnlinked).forEach((key) => {
+			reactiveFieldsUnlinked[key] = false;
+		});
 	}
 </script>
 
