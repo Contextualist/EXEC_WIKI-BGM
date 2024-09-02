@@ -1,7 +1,5 @@
-import { isMac } from "$lib/utils"
+import { ctrlOrCmd, altOrOpt } from "$lib/utils"
 
-const ctrlOrCmd = isMac ? "⌘" : "Ctrl"
-const altOrOpt = isMac ? "⌥" : "Alt"
 const TIPS = [
     "有想在这里对别的维基人说的话吗？私信投稿给 Hyary 吧～",
     '左侧编辑器可以通过自动补全来快速输入职位，支持英文和拼音，试试看输入"zuo"吧',

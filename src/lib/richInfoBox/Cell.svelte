@@ -45,8 +45,8 @@
 			fn();
 		}
 		if (e.key === 'ArrowUp') {
-			if (e.metaKey || e.ctrlKey || e.altKey) return;
-			if (e.shiftKey) return alt(() => action.swap(Direction.Up, e.target as HTMLElement));
+			if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+			if (e.altKey) return alt(() => action.swap(Direction.Up, e.target as HTMLElement));
 			const offset = getOffset();
 			setTimeout(() => {
 				if (getOffset() === 0)
@@ -54,8 +54,8 @@
 			}, 0);
 		}
 		if (e.key === 'ArrowDown') {
-			if (e.metaKey || e.ctrlKey || e.altKey) return;
-			if (e.shiftKey) return alt(() => action.swap(Direction.Down, e.target as HTMLElement));
+			if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+			if (e.altKey) return alt(() => action.swap(Direction.Down, e.target as HTMLElement));
 			const offset = getOffset();
 			setTimeout(() => {
 				if (getOffset() === value.length)
@@ -63,14 +63,14 @@
 			}, 0);
 		}
 		if (e.key === 'ArrowLeft') {
-			if (e.metaKey || e.ctrlKey || e.altKey) return;
+			if (e.metaKey || e.ctrlKey || e.shiftKey) return;
 			if (getOffset() === 0)
 				return alt(() =>
 					action.navigate(Direction.Left, e.target as HTMLElement, Number.MAX_SAFE_INTEGER)
 				);
 		}
 		if (e.key === 'ArrowRight') {
-			if (e.metaKey || e.ctrlKey || e.altKey) return;
+			if (e.metaKey || e.ctrlKey || e.shiftKey) return;
 			if (getOffset() === value.length)
 				return alt(() => action.navigate(Direction.Right, e.target as HTMLElement, 0));
 		}

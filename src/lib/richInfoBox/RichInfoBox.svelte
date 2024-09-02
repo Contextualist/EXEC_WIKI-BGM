@@ -63,6 +63,7 @@
 	import PlainArray from './PlainArray.svelte';
 	import Reactive from './Reactive.svelte';
 	import { Direction } from './Cell.svelte';
+	import { altOrOpt } from '../utils.ts';
 
 	interface RichInfoBoxProps {
 		value: ArrayWiki;
@@ -155,7 +156,7 @@
 
 <div id="rich-infobox" class="flex flex-col {class_}" style="scrollbar-width: none;">
 	<div class="flex-basis-[1.0rem] flex-shrink-0 text-bgm-grey/65 text-xs">
-		&#x3000;↵ 新项&#x3000;&#x3000;←↑↓→穿梭&#x3000;&#x3000;shift↑↓排序
+		&#x3000;↵ 新项&#x3000;&#x3000;←↑↓→穿梭&#x3000;&#x3000;{altOrOpt}↑↓排序
 	</div>
 	{#each value as val_i, i (val_i)}
 		{@const action = {
