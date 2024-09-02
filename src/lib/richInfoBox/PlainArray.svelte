@@ -43,7 +43,7 @@
 <div class="flex relative">
 	<Cell bind:value={value[0]} {action} class="rich-infobox-key" />
 	<div class="rich-infobox-value" bind:this={currContainer}>
-		<div class="text-xs line-height-5 italic">
+		<div class="text-xs text-bgm-grey/65 line-height-5">
 			{#if value[1].length}
 				(列表，{value[1].length} 项)
 			{:else}
