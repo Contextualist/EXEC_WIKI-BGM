@@ -73,7 +73,7 @@
 				/>
 				<button
 					title="删除列表项"
-					class="absolute right--1 top-[0.1rem] color-bgm-teal/50 border-none bg-transparent p-0 cursor-pointer"
+					class="absolute left--5 top-[calc(50%-0.5rem)] color-bgm-teal/50 border-none bg-transparent p-0 cursor-pointer"
 					tabindex="-1"
 					onclick={() => {
 						value[1].splice(i, 1);

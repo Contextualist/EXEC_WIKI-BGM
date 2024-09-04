@@ -62,8 +62,10 @@
 	import Plain from './Plain.svelte';
 	import PlainArray from './PlainArray.svelte';
 	import Reactive from './Reactive.svelte';
+	import ComboBox from './ComboBox.svelte';
+	import { COMBO_CONFIG } from './comboConfig.ts';
 	import { Direction } from './Cell.svelte';
-	import { altOrOpt } from '../utils.ts';
+	import { moveCursorTo, altOrOpt } from '../utils.ts';
 
 	interface RichInfoBoxProps {
 		value: ArrayWiki;
@@ -83,17 +85,6 @@
 		sel?.removeAllRanges();
 		const range = document.createRange();
 		range.selectNodeContents(el);
-		sel?.addRange(range);
-	}
-	function moveCursorTo(el: HTMLElement, offset: number) {
-		let len = el.textContent?.length ?? 0;
-		if (!len) return;
-		offset = Math.min(len, offset);
-		const sel = document.getSelection();
-		sel?.removeAllRanges();
-		const range = document.createRange();
-		range.setStart(el.childNodes[0], offset);
-		range.setEnd(el.childNodes[0], offset);
 		sel?.addRange(range);
 	}
 
@@ -165,7 +156,9 @@
 			navigate
 		}}
 		<div animate:flip={{ duration: 200 }}>
-			{#if typeof value[i][1] === 'string'}
+			{#if value[i][0] in COMBO_CONFIG}
+				<ComboBox bind:value={value[i] as [string, any]} {action} {entryMod} />
+			{:else if typeof value[i][1] === 'string'}
 				{#if reactiveFields.has(value[i][0])}
 					<Reactive
 						bind:unlinked={reactiveFieldsUnlinked[value[i][0]]}
@@ -183,7 +176,7 @@
 			{#snippet entryMod()}
 				<button
 					title="删除项"
-					class="absolute right-0 top-[0.7rem] color-bgm-teal border-none bg-transparent p-0 cursor-pointer"
+					class="absolute right-0 top-[calc(50%-0.5rem)] color-bgm-teal border-none bg-transparent p-0 cursor-pointer"
 					tabindex="-1"
 					onclick={() => {
 						value.splice(i, 1);

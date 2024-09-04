@@ -16,6 +16,8 @@
 		navigate: (direction: Direction, el: HTMLElement, offset: number) => void;
 		/** Convert array entry to string entry and vice versa */
 		arraySwitch: () => void;
+		/** Structural deletion, if applicable */
+		delete?: () => void;
 	}
 </script>
 
@@ -27,8 +29,9 @@
 		value: string;
 		action: CellActions;
 		class: string;
+		this_?: HTMLElement;
 	}
-	let { value = $bindable(), action, class: class_ }: CellProps = $props();
+	let { value = $bindable(), action, class: class_, this_ = $bindable() }: CellProps = $props();
 
 	function getOffset() {
 		return window.getSelection()?.anchorOffset ?? 0;
@@ -36,6 +39,7 @@
 </script>
 
 <div
+	bind:this={this_}
 	contenteditable="plaintext-only"
 	bind:innerText={value}
 	oninput={() => action.update()}
@@ -80,8 +84,12 @@
 		if (e.key === '[' && (isMac ? e.metaKey : e.ctrlKey)) {
 			return alt(action.arraySwitch);
 		}
+		if (action.delete && e.key === 'Backspace' && value === '') {
+			return alt(action.delete);
+		}
 	}}
 	role="textbox"
 	tabindex="0"
+	spellcheck="false"
 	class={class_}
 ></div>
