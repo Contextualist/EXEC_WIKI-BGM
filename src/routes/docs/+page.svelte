@@ -3,6 +3,7 @@
 
 	import Header from '$lib/Header.svelte';
 	import Tooltip from '$lib/Tooltip.svelte';
+	import { ctrlOrCmd, altOrOpt } from '$lib/utils';
 </script>
 
 <head>
@@ -128,7 +129,7 @@
 			<h3 id="faq-editexist">扩充现有的条目</h3>
 			<p>
 				在「导入…」里用条目链接导入现有的条目。编辑好信息后，在班古米上选择性保存。
-				如果只需要更改关联信息，可以在“打包带走！”时按下 <kbd>Alt</kbd> 键，只复制关联信息。
+				如果只需要更改关联信息，可以在“打包带走！”时按下 <kbd>{altOrOpt}</kbd> 键，只复制关联信息。
 			</p>
 		</section>
 		<section>
@@ -173,6 +174,48 @@ NORN                  performer: Rigël Theatre</pre>
 飘上月球，不死乒乓
 <span class="text-bgm-pink">//</span> <span class="text-bgm-grey">Bonus track</span>
 法界之锅 <span class="text-bgm-grey">原曲：法界の火</span></pre>
+		</section>
+	</section>
+
+	<section>
+		<h2 id="shortcut-reference">快捷键列表</h2>
+		<section>
+			<h3>Infobox 编辑器</h3>
+			<table>
+				<tbody>
+					<tr>
+						<td><kbd>enter</kbd></td>
+						<td>在下方新增字段</td>
+					</tr>
+					<tr>
+						<td><kbd>shift</kbd> + <kbd>enter</kbd></td>
+						<td>在上方新增字段</td>
+					</tr>
+					<tr>
+						<td><kbd>{altOrOpt}</kbd> + <kbd>上/下</kbd></td>
+						<td>交换相邻的两个字段</td>
+					</tr>
+					<tr>
+						<td><kbd>{ctrlOrCmd}</kbd> + <kbd>{'['}</kbd></td>
+						<td>在普通字段与列表字段之间切换</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+		<section>
+			<h3>曲目列表编辑器（节选）</h3>
+			<table>
+				<tbody>
+					<tr>
+						<td><kbd>{ctrlOrCmd}</kbd> + <kbd>f</kbd></td>
+						<td>打开查找替换面板</td>
+					</tr>
+					<tr>
+						<td><kbd>{altOrOpt}</kbd> + <kbd>上/下</kbd></td>
+						<td>交换相邻的两行</td>
+					</tr>
+				</tbody>
+			</table>
 		</section>
 	</section>
 
