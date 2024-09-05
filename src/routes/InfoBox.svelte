@@ -72,6 +72,9 @@
 	function _arrWikiEncode(a: ArrayWiki): string {
 		return stringify(wikiRepack(a)).replaceAll(' =', '=');
 	}
+	export function toArrayWikiString(text: string): string {
+		return JSON.stringify(wikiUnpack(parse(text)));
+	}
 	export function exportText(): string {
 		return modeRich ? _arrWikiEncode(valueWiki) : value;
 	}

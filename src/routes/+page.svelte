@@ -97,7 +97,10 @@
 
 	let settingsState = localStorage$state('settings', defaultSettings);
 	let titleState = localStorage$state('title', '');
-	let infoBoxState = localStorage$state('infoBox', settingsState.val.newInfoBox);
+	let infoBoxState = localStorage$state(
+		'infoBox',
+		infoBox.toArrayWikiString(settingsState.val.newInfoBox)
+	);
 	let descState = localStorage$state('desc', '');
 	onMount(() => {
 		infoBox.init(infoBoxState.val);
@@ -235,7 +238,7 @@
 					infoBox.reset(content);
 					infoBox.merge('');
 				} else {
-				infoBox.merge(content);
+					infoBox.merge(content);
 				}
 			},
 			unlinkInfoBoxField: (key: string) => {
