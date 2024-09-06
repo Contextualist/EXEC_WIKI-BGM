@@ -18,6 +18,8 @@
 		arraySwitch: () => void;
 		/** Structural deletion, if applicable */
 		delete?: () => void;
+		/** Autofix on focusout */
+		autofix?: (value: string) => string | void;
 	}
 </script>
 
@@ -86,6 +88,14 @@
 		}
 		if (action.delete && e.key === 'Backspace' && value === '') {
 			return alt(action.delete);
+		}
+	}}
+	onfocusout={() => {
+		if (!action.autofix) return;
+		const fixed = action.autofix(value);
+		if (fixed) {
+			value = fixed;
+			action.update();
 		}
 	}}
 	role="textbox"

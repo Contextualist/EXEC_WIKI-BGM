@@ -66,6 +66,7 @@
 	import { COMBO_CONFIG } from './comboConfig.ts';
 	import { Direction } from './Cell.svelte';
 	import { moveCursorTo, altOrOpt } from '../utils.ts';
+	import { AUTOFIX_CONFIG } from './lintConfig.ts';
 
 	interface RichInfoBoxProps {
 		value: ArrayWiki;
@@ -167,7 +168,11 @@
 						{entryMod}
 					/>
 				{:else}
-					<Plain bind:value={value[i] as [string, string]} {action} {entryMod} />
+					{@const actionWithLint = {
+						...action,
+						...(value[i][0] in AUTOFIX_CONFIG ? { autofix: AUTOFIX_CONFIG[value[i][0]] } : {})
+					}}
+					<Plain bind:value={value[i] as [string, string]} action={actionWithLint} {entryMod} />
 				{/if}
 			{:else}
 				<PlainArray bind:value={value[i] as [string, [string, string][]]} {action} {entryMod} />
