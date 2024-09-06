@@ -40,7 +40,7 @@
 		<div
 			class="my-3 min-w-60 max-w-80 p-4 {ti.nTotal > 0
 				? 'pb-3'
-				: ''} rounded-md backdrop-blur-sm shadow-xl {ti.isAlert
+				: ''} rounded-md backdrop-blur-sm shadow-xl overflow-hidden {ti.isAlert
 				? 'bg-faint-orangish'
 				: 'bg-faint-skyish'}"
 			in:fly={{ x: 500 }}
@@ -53,7 +53,33 @@
 					class="block h-1 bg-[rgba(107,170,232,0.7)] rounded-md transition-width"
 					style="width: {(ti.nDone / ti.nTotal) * 100}%;"
 				></span>
+			{:else}
+				<div
+					class="absolute bottom-0 right-0 w-0 h-0 border-[transparent_transparent_#ffffff88_transparent] border-solid border-width-[0_0_3rem_3rem] bg-transparent"
+				></div>
+				<button
+					class="absolute bottom-0 right-0 border-none bg-transparent color-bgm-grey hover:color-bgm-darkgrey cursor-pointer"
+					onclick={() => (queue = queue.filter((t) => t.time !== ti.time))}
+				>
+					{@render checkmarkSVG()}
+				</button>
 			{/if}
 		</div>
 	{/each}
 </div>
+
+{#snippet checkmarkSVG()}
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="20"
+		height="20"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="3.5"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	>
+		<polyline points="20 6 9 17 4 12"></polyline>
+	</svg>
+{/snippet}
