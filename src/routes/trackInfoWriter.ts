@@ -19,8 +19,8 @@ export function writeTrackInfo(info: Release): string {
     let trackInfo = Object.keys(info.credits).length > 0 ? formatCredits(info.credits) + '\n' : '';
     trackInfo += info.discs.map((disc) => {
         let s = isMulti ? "\nDISC\n" : "";
-        s += disc.tracks.map((tr) => {
-            let t = tr.title;
+        s += disc.tracks.map((tr, i) => {
+            let t = `${String(i + 1).padStart(2, '0')} ${tr.title}`;
             t = RE_ROLE_KEYWORD.test(t) ? `《${t}》` : t;
             if (tr.comment) t += ` // ${tr.comment}`;
             t += '\n';
