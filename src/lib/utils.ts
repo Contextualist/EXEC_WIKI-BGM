@@ -1,4 +1,5 @@
 export const isMac = /mac/i.test(navigator.userAgentData?.platform ?? navigator.platform);
+export const isFirefox = /firefox/i.test(navigator.userAgent);
 export const ctrlOrCmd = isMac ? '⌘' : 'Ctrl';
 export const altOrOpt = isMac ? '⌥' : 'Alt';
 

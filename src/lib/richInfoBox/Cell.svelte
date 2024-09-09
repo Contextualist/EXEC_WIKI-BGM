@@ -25,7 +25,8 @@
 
 <script lang="ts">
 	import 'uno.css';
-	import { isMac } from '../utils.ts';
+	import { onMount } from 'svelte';
+	import { isMac, isFirefox } from '../utils.ts';
 
 	interface CellProps {
 		value: string;
@@ -34,6 +35,11 @@
 		this_?: HTMLElement;
 	}
 	let { value = $bindable(), action, class: class_, this_ = $bindable() }: CellProps = $props();
+	onMount(() => {
+		if (isFirefox && this_) {
+			this_.contentEditable = 'true';
+		}
+	});
 
 	function getOffset() {
 		return window.getSelection()?.anchorOffset ?? 0;
