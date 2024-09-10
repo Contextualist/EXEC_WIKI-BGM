@@ -1,7 +1,7 @@
 <script lang="ts">
 	import 'uno.css';
-	import { type Snippet } from 'svelte';
-	import Cell, { type CellActions } from './Cell.svelte';
+	import { type Snippet, getContext } from 'svelte';
+	import Cell, { type CellActions, type CellConfig } from './Cell.svelte';
 
 	interface ReactiveProps {
 		unlinked: boolean;
@@ -10,6 +10,7 @@
 		entryMod: Snippet;
 	}
 	let { unlinked = $bindable(), value = $bindable(), action, entryMod }: ReactiveProps = $props();
+	let { keyClass } = getContext<CellConfig>('cell-config');
 	function valueUpdate() {
 		// manual editting removes the reactivity of current field
 		unlinked = true;
@@ -31,7 +32,7 @@
 	<Cell
 		bind:value={value[0]}
 		{action}
-		class="rich-infobox-key {unlinked ? 'bg-bgm-lightgrey' : 'bg-faint-skyish/60'}"
+		class="rich-infobox-key {keyClass} {unlinked ? 'bg-bgm-lightgrey' : 'bg-faint-skyish/60'}"
 	/>
 	<Cell
 		bind:value={value[1]}

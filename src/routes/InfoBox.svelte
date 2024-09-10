@@ -86,19 +86,25 @@
 
 	import { toast } from './Toast.svelte';
 	import { debounce } from './utils.svelte.ts';
+	import { setContext } from 'svelte';
 
-	interface TrackInfoProps {
+	interface InfoBoxProps {
 		value: string;
 		reactiveFields: Set<string>;
+		wideFormat?: boolean;
 		class?: string;
 	}
 	// NOTE: valueExport is for passing out only; changes should be made with the exported functions
 	let {
 		value: valueExport = $bindable(),
 		reactiveFields,
+		wideFormat = false,
 		class: class_ = '',
 		...rest
-	}: TrackInfoProps = $props();
+	}: InfoBoxProps = $props();
+	setContext('cell-config', {
+		keyClass: wideFormat ? 'flex-basis-[5.5rem]' : 'flex-basis-[3.5rem]'
+	});
 	const update = debounce(() => {
 		value = JSON.stringify(valueWiki);
 		valueExport = value;
@@ -113,7 +119,7 @@
 
 <div {...rest} class="relative {modeRich ? 'overflow-auto' : ''} {class_}">
 	<button
-		class={'absolute z-1 top-[1px] right-[3px] text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
+		class={'absolute z-1 top-[1px] right-[calc(6%-17px)] text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
 			'border-none border-rd-md bg-bgm-beige w-[30px] h-[30px] p-0'}
 		title="切换源码/表格模式"
 		onclick={() => {

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import 'uno.css';
 	import { flip } from 'svelte/animate';
-	import { type Snippet } from 'svelte';
-	import Cell, { type CellActions, Direction } from './Cell.svelte';
+	import { type Snippet, getContext } from 'svelte';
+	import Cell, { type CellActions, Direction, type CellConfig } from './Cell.svelte';
 
 	interface PlainArrayProps {
 		value: [string, [string, string][]];
@@ -10,6 +10,7 @@
 		entryMod: Snippet;
 	}
 	let { value = $bindable(), action, entryMod }: PlainArrayProps = $props();
+	let { keyClass } = getContext<CellConfig>('cell-config');
 	let currContainer: HTMLElement | null = null;
 
 	function focusIth(i: number) {
@@ -41,7 +42,7 @@
 </script>
 
 <div class="flex relative">
-	<Cell bind:value={value[0]} {action} class="rich-infobox-key" />
+	<Cell bind:value={value[0]} {action} class="rich-infobox-key {keyClass}" />
 	<div class="rich-infobox-value" bind:this={currContainer}>
 		<div class="text-xs text-bgm-grey/65 line-height-5">
 			{#if value[1].length}

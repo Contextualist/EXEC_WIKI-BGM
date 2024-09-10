@@ -21,6 +21,9 @@
 		/** Autofix on focusout */
 		autofix?: (value: string) => string | void;
 	}
+	export interface CellConfig {
+		keyClass: string;
+	}
 </script>
 
 <script lang="ts">
