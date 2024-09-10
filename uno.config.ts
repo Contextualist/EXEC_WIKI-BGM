@@ -71,6 +71,12 @@ export default defineConfig({
                         font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
                         padding: .05rem .3rem;
                     }
+
+                    /* workaround for Firefox contenteditable height issue */
+                    /* https://stackoverflow.com/a/23530317 */
+                    [contenteditable='true']:before {
+                        content: "\\feff ";
+                    }
                 `
             },
         },

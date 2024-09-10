@@ -92,8 +92,17 @@
 		if (e.key === '[' && (isMac ? e.metaKey : e.ctrlKey)) {
 			return alt(action.arraySwitch);
 		}
-		if (action.delete && e.key === 'Backspace' && value === '') {
-			return alt(action.delete);
+		if (e.key === 'Backspace') {
+			setTimeout(() => {
+				// workaround for Safari & Firefox
+				if (value === '\n') {
+					value = '';
+					action.update();
+				}
+			}, 0);
+			if (action.delete && value === '') {
+				return alt(action.delete);
+			}
 		}
 	}}
 	onfocusout={() => {
