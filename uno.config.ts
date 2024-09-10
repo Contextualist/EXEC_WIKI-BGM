@@ -74,7 +74,7 @@ export default defineConfig({
 
                     /* workaround for Firefox contenteditable height issue */
                     /* https://stackoverflow.com/a/23530317 */
-                    [contenteditable='true']:before {
+                    .rich-infobox-value > [contenteditable='true']:before {
                         content: "\\feff ";
                     }
                 `
