@@ -85,7 +85,7 @@
 	import { parse, stringify } from '@bgm38/wiki';
 
 	import { toast } from './Toast.svelte';
-	import { debounce } from './utils.svelte.ts';
+	import { debounce, throttle } from './utils.svelte.ts';
 	import { setContext } from 'svelte';
 
 	interface InfoBoxProps {
@@ -108,7 +108,7 @@
 	const update = debounce(() => {
 		value = JSON.stringify(valueWiki);
 		valueExport = value;
-	}, 500);
+	}, 400);
 	const sync = debounce(() => {
 		valueExport = value;
 	}, 100);
@@ -122,7 +122,7 @@
 		class={'absolute z-1 top-[1px] right-[calc(6%-17px)] text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
 			'border-none border-rd-md bg-bgm-beige w-[30px] h-[30px] p-0'}
 		title="切换源码/表格模式"
-		onclick={() => {
+		onclick={throttle(() => {
 			if (!modeRich) {
 				toRich();
 				update();
@@ -130,7 +130,7 @@
 				value = _arrWikiEncode(valueWiki);
 			}
 			modeRich = !modeRich;
-		}}
+		}, 400)}
 	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
