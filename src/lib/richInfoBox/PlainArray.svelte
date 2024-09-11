@@ -36,6 +36,12 @@
 				}
 				setTimeout(() => el.focus(), 0);
 				action.update();
+			},
+			delete: (hard: boolean) => {
+				if (!hard) return;
+				value.splice(i, 1);
+				action.update();
+				setTimeout(() => focusIth(Math.min(i, value.length - 1)), 0);
 			}
 		};
 	}

@@ -185,15 +185,19 @@ NORN                  performer: Rigël Theatre</pre>
 				<tbody>
 					<tr>
 						<td><kbd>enter</kbd></td>
-						<td>在下方新增字段</td>
+						<td>在下方新增行</td>
 					</tr>
 					<tr>
 						<td><kbd>shift</kbd> + <kbd>enter</kbd></td>
-						<td>在上方新增字段</td>
+						<td>在上方新增行</td>
+					</tr>
+					<tr>
+						<td><kbd>{ctrlOrCmd}</kbd> + <kbd>shift</kbd> + <kbd>k</kbd></td>
+						<td>删除当前行</td>
 					</tr>
 					<tr>
 						<td><kbd>{altOrOpt}</kbd> + <kbd>上/下</kbd></td>
-						<td>交换相邻的两个字段</td>
+						<td>交换相邻的两行</td>
 					</tr>
 					<tr>
 						<td><kbd>{ctrlOrCmd}</kbd> + <kbd>{'['}</kbd></td>

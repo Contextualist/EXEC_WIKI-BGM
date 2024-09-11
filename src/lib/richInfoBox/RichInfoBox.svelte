@@ -89,6 +89,14 @@
 		sel?.addRange(range);
 	}
 
+	function focusIth(i: number) {
+		let valEl = document.querySelectorAll('#rich-infobox .rich-infobox-value')[i];
+		if (Array.isArray(value[i][1])) {
+			valEl = valEl.children[1].children[0];
+		}
+		(valEl as HTMLElement).focus();
+	}
+
 	function actAs(value: ArrayWiki, i: number) {
 		return {
 			insert: (before: boolean) => {
@@ -119,13 +127,13 @@
 					value[i][1] = value[i][1].map(([_, v]) => v).join('、');
 				}
 				update();
-				setTimeout(() => {
-					let valEl = document.querySelectorAll('#rich-infobox .rich-infobox-value')[i];
-					if (Array.isArray(value[i][1])) {
-						valEl = valEl.children[1].children[0];
-					}
-					(valEl as HTMLElement).focus();
-				}, 0);
+				setTimeout(() => focusIth(i), 0);
+			},
+			delete: (hard: boolean) => {
+				if (!hard) return;
+				value.splice(i, 1);
+				update();
+				setTimeout(() => focusIth(Math.min(i, value.length - 1)), 0);
 			}
 		};
 	}
@@ -147,7 +155,7 @@
 </script>
 
 <div id="rich-infobox" class="flex flex-col {class_}" style="scrollbar-width: none;">
-	<div class="flex-basis-[1.0rem] flex-shrink-0 text-bgm-grey/65 text-xs">
+	<div class="flex-basis-[1.0rem] flex-shrink-0 text-bgm-grey/65 text-xs font-sans">
 		&#x3000;↵ 新项&#x3000;&#x3000;←↑↓→穿梭&#x3000;&#x3000;{altOrOpt}↑↓排序
 	</div>
 	{#each value as val_i, i (val_i)}

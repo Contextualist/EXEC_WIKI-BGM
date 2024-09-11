@@ -17,7 +17,7 @@
 		/** Convert array entry to string entry and vice versa */
 		arraySwitch: () => void;
 		/** Structural deletion, if applicable */
-		delete?: () => void;
+		delete?: (hard: boolean) => void;
 		/** Autofix on focusout */
 		autofix?: (value: string) => string | void;
 	}
@@ -104,8 +104,11 @@
 				}
 			}, 0);
 			if (action.delete && value === '') {
-				return alt(action.delete);
+				return alt(() => action.delete?.(false));
 			}
+		}
+		if (e.key === 'k' && e.shiftKey && (isMac ? e.metaKey : e.ctrlKey)) {
+			return alt(() => action.delete?.(true));
 		}
 	}}
 	onfocusout={() => {

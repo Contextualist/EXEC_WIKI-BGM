@@ -55,8 +55,9 @@
 			rawValue.push(inputValue);
 			inputValue = '';
 		},
-		delete: () => {
-			rawValue.pop();
+		delete: (hard: boolean) => {
+			if (hard) action.delete?.(hard);
+			else rawValue.pop();
 		}
 	};
 	let innerAction = $derived({
@@ -87,7 +88,7 @@
 		bind:this_={inputEl}
 		bind:value={inputValue}
 		action={innerAction}
-		class="inline-block flex-grow-1 mx--1 px-1 py-2 focus:outline-none"
+		class="inline-block mx--1 px-1 py-2 focus:outline-none"
 	/>
 	{#if showDropdown}
 		<div
