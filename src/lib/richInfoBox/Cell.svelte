@@ -107,7 +107,7 @@
 				return alt(() => action.delete?.(false));
 			}
 		}
-		if (e.key === 'k' && e.shiftKey && (isMac ? e.metaKey : e.ctrlKey)) {
+		if (e.code === 'KeyK' && e.shiftKey && (isMac ? e.metaKey : e.ctrlKey)) {
 			return alt(() => action.delete?.(true));
 		}
 	}}
