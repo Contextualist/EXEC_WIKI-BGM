@@ -14,7 +14,12 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { EditorView, placeholder as placeholderExt } from '@codemirror/view';
-	import { EditorSelection, EditorState, StateEffect, type Extension } from '@codemirror/state';
+	import {
+		EditorState,
+		StateEffect,
+		type TransactionSpec,
+		type Extension
+	} from '@codemirror/state';
 	import { type LanguageSupport } from '@codemirror/language';
 
 	import {
@@ -210,25 +215,15 @@
 			extensions.push(
 				EditorState.transactionFilter.of((tr) => {
 					if (tr.isUserEvent('input.paste')) {
-						const ranges = tr.startState.selection.ranges[0];
-						let text = '';
+						let trMod: TransactionSpec[] = [];
 						tr.changes.iterChanges((fromA, toA, fromB, toB, inserted) => {
-							text += inserted;
+							const text = filterPaste(inserted.toString());
+							trMod.push({
+								changes: { from: fromB, to: toB, insert: text },
+								sequential: true // add as follow-up changes
+							});
 						});
-						text = filterPaste(text);
-						let selection = tr.selection;
-						if (selection) {
-							selection = EditorSelection.create([
-								EditorSelection.range(ranges.from + text.length, ranges.from + text.length)
-							]);
-						}
-						return [
-							{
-								changes: { from: ranges.from, to: ranges.to, insert: text },
-								scrollIntoView: true,
-								selection: selection
-							}
-						];
+						return [tr, ...trMod.reverse()];
 					}
 					return tr;
 				})
