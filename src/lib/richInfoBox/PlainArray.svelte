@@ -76,7 +76,7 @@
 						...action,
 						...actAs(value[1], i)
 					}}
-					class="mt-1.5 pl-1 border-l-solid border-bgm-grey/30 border-1 focus:outline-none"
+					class="mt-2 pl-1 border-l-solid border-bgm-grey border-1 focus:outline-none"
 				/>
 				<button
 					title="删除列表项"
