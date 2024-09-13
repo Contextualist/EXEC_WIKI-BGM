@@ -92,6 +92,7 @@
 					src={pfp}
 					alt={name}
 					use:tooltip={{
+						attachment: 'bottom',
 						title:
 							m === Match.None ? `搜索「${name}」` : m !== Match.OK ? `「${name}」，有重名` : name
 					}}

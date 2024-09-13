@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	interface TooltipOptions {
 		title: string;
+		attachment?: 'top' | 'bottom' | 'left' | 'right';
 		widthUnbound?: boolean;
 	}
 
@@ -11,26 +12,49 @@
 		function mouseEnter(event: MouseEvent) {
 			if (event.target !== element) return;
 			div = document.createElement('div');
-			div.textContent = options.title;
+			div.innerHTML = options.title;
 			document.body.appendChild(div);
+			const anchor = () => {
+				const view = { height: window.innerHeight, width: window.innerWidth };
+				const dock = element.getBoundingClientRect();
+				const self = div.getBoundingClientRect();
+				const scrollY = window.scrollY;
+				switch (options.attachment ?? 'right') {
+					case 'top':
+						return {
+							left: `${(dock.left + dock.right - self.width) / 2}px`,
+							bottom: `${view.height - dock.top + 4}px`
+						};
+					case 'bottom':
+						return {
+							left: `${(dock.left + dock.right - self.width) / 2}px`,
+							top: `${dock.bottom + 4}px`
+						};
+					case 'left':
+						return {
+							right: `${view.width - dock.left + 4}px`,
+							top: `${(dock.top + dock.bottom - self.height) / 2 + scrollY}px`
+						};
+					case 'right':
+						return {
+							left: `${dock.right + 4}px`,
+							top: `${(dock.top + dock.bottom - self.height) / 2 + scrollY}px`
+						};
+				}
+			};
 			Object.assign(div.style, {
 				'font-size': fontSize,
-				border: '1px solid #ddd',
-				'box-shadow': '1px 1px 1px #ddd',
+				'box-shadow':
+					'0px 0.3px 1.4px #aaaaaa11, 0px 1.4px 3px -0.1px #aaaaaa22, 0px 2.9px 6.2px -0.2px #aaaaaa44, 0.1px 6.1px 10.8px -0.4px #aaaaaa55',
 				background: 'white',
-				'border-radius': '4px',
-				padding: '4px',
+				'border-radius': '0.5rem',
+				padding: '0.5rem',
 				position: 'absolute',
 				'z-index': '100',
-				left: `${event.pageX - 3}px`,
-				top: `${event.pageY - 35}px`,
+				'max-width': '30em',
 				...(options.widthUnbound ? { width: 'max-content' } : {})
 			});
-		}
-		function mouseMove(event: MouseEvent) {
-			if (event.target !== element) return;
-			div.style.left = `${event.pageX - 3}px`;
-			div.style.top = `${event.pageY - 35}px`;
+			Object.assign(div.style, anchor());
 		}
 		function mouseLeave(event: MouseEvent) {
 			if (event.target !== element) return;
@@ -39,13 +63,11 @@
 
 		element.addEventListener('mouseenter', mouseEnter);
 		element.addEventListener('mouseleave', mouseLeave);
-		element.addEventListener('mousemove', mouseMove);
 
 		return {
 			destroy() {
 				element.removeEventListener('mouseenter', mouseEnter);
 				element.removeEventListener('mouseleave', mouseLeave);
-				element.removeEventListener('mousemove', mouseMove);
 			}
 		};
 	}
