@@ -241,6 +241,13 @@
 					infoBox.merge(content);
 				}
 			},
+			setInfoBoxField: (
+				key: string,
+				value: string | string[],
+				{ editOnly = false } = {}
+			): boolean => {
+				return infoBox.editField(key, value, { editOnly });
+			},
 			unlinkInfoBoxField: (key: string) => {
 				infoBox.unlinkField(key);
 			},

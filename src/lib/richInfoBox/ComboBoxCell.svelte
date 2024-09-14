@@ -6,7 +6,6 @@
 	import { type ComboConfig } from './comboConfig.ts';
 
 	interface ComboBoxCellProps {
-		// NOTE: value is used as the initial value, then it will be for passing out changes only
 		value: V;
 		config: ComboConfig<V>;
 		action: CellActions;
@@ -14,10 +13,10 @@
 	}
 	let { value = $bindable(), config, action, class: class_ }: ComboBoxCellProps = $props();
 
+	//            ┌----> rawValueView
+	// (edit) > value <--rawValue < (edit)
 	let rawValue: string[] = $state(config.toRaw(value));
-	$effect(() => {
-		//rawValue = config.toRaw(value);
-	});
+	let rawValueView: string[] = $derived(config.toRaw(value));
 	$effect(() => {
 		value = config.fromRaw(rawValue);
 		action.update();
@@ -25,7 +24,7 @@
 
 	let inputValue = $state('');
 	let showDropdown = $state(false);
-	let inputEl: HTMLInputElement | undefined = $state(undefined);
+	let inputEl: HTMLElement | undefined = $state(undefined);
 
 	function optionText(v: string | { text: string }) {
 		return typeof v === 'string' ? v : v.text;
@@ -81,7 +80,7 @@
 	role="textbox"
 	tabindex="-1"
 >
-	{#each rawValue as v, i}
+	{#each rawValueView as v, i}
 		{@render Tag(v, i)}
 	{/each}
 	<Cell

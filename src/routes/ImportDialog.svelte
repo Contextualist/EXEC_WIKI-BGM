@@ -3,6 +3,7 @@
 	import Dialog from './Dialog.svelte';
 	import type { ImportSource, AutoEditor } from '$lib/importSource';
 	import { Bangumi } from '$lib/importSource/bangumi';
+	import { MusicBrainz } from '$lib/importSource/musicbrainz';
 	import Button from './Button.svelte';
 	import { tooltip } from '$lib/Tooltip.svelte';
 
@@ -16,7 +17,7 @@
 	let currentSourceOptions: Record<string, any> = $state({});
 	let currentResolvedTitle: Promise<string> | null = $state(null);
 
-	const sourceList: ImportSource[] = [new Bangumi()];
+	const sourceList: ImportSource[] = [new Bangumi(), new MusicBrainz()];
 	let currentSource: ImportSource | null | undefined = $derived.by(() => {
 		if (!importURL) return null;
 		for (const source of sourceList) {

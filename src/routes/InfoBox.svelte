@@ -29,13 +29,10 @@
 		}
 	}
 	export function merge(text: string): void {
-		if (!modeRich) {
-			try {
-				toRich();
-			} catch (e) {
-				return;
-			}
-			modeRich = true;
+		try {
+			ensureRich();
+		} catch (e) {
+			return;
 		}
 		const vw = wikiUnpack(parse(text));
 		editRich(vw, valueWiki);
@@ -59,7 +56,30 @@
 			editRich(entries, valueWiki);
 		}
 	}
+	export function editField(
+		key: string,
+		value: string | string[],
+		{ editOnly = false } = {}
+	): boolean {
+		try {
+			ensureRich();
+		} catch (e) {
+			return false;
+		}
+		if (editOnly && !valueWiki.some(([k, _]) => k === key)) {
+			return false;
+		}
+		const val = Array.isArray(value) ? value.map((v) => ['', v] as [string, string]) : value;
+		editRich([[key, val]], valueWiki);
+		return true;
+	}
 
+	function ensureRich(): void {
+		if (!modeRich) {
+			toRich();
+			modeRich = true;
+		}
+	}
 	function toRich(): void {
 		try {
 			valueWiki = wikiUnpack(parse(value));
@@ -82,11 +102,11 @@
 
 <script lang="ts">
 	import 'uno.css';
+	import { setContext } from 'svelte';
 	import { parse, stringify } from '@bgm38/wiki';
 
 	import { toast } from './Toast.svelte';
 	import { debounce, throttle } from './utils.svelte.ts';
-	import { setContext } from 'svelte';
 
 	interface InfoBoxProps {
 		value: string;
