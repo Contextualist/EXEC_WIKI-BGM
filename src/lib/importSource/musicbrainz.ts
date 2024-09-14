@@ -1,12 +1,12 @@
-import type { ImportSource, AutoEditor, Track } from "./common";
-import { warningTemplate3rdPartyWiki } from "./common";
+import type { ImportSource, AutoEditor } from "./common";
+import { DefaultDict, warningTemplate3rdPartyWiki } from "./common";
 
 export class MusicBrainz implements ImportSource {
     name = "MusicBrainz";
     match = /^https:\/\/musicbrainz.org\/release\/([0-9a-f-]+)$/;
     warning = warningTemplate3rdPartyWiki("MusicBrainz");
     options = [
-        //{ id: "trackListCredits", text: "曲目列表与制作人员", default: true },
+        { id: "trackListCredits", text: "曲目列表与制作人员", default: true },
         { id: "title", text: "标题", default: true },
         { id: "length", text: "播放时长", default: true },
         { id: "labelSerial", text: "厂牌与编号/品番", default: true },
@@ -23,6 +23,69 @@ export class MusicBrainz implements ImportSource {
     }
 
     async apply(opts: { [key: string]: any }, editor: AutoEditor): Promise<void> {
+        let labelVal: string[] = [];
+        if (opts.labelSerial) {
+            const { "label-info": ls } = await this.releaseInfo!;
+            const labels = ls.map((li) => li?.label?.name).filter((x) => x);
+            labelVal = Array.from(new Set(labels));
+            const serials = ls.map((li) => li["catalog-number"]).filter((x) => x);
+            const serialVal = serials.length > 1 ? serials : serials[0] || "";
+            if (!editor.setInfoBoxField("品番", serialVal, { editOnly: true })) {
+                editor.setInfoBoxField("编号", serialVal);
+            }
+        }
+
+        if (opts.trackListCredits) {
+            const { media, relations } = await this.releaseInfo!;
+            let designers: string[] = [];
+
+            function addArtist(m: Record<string, string[]>, rela: ArtistRelation) {
+                let kw = ROLE2KEYWORD[rela.type] || rela.type;
+                if (kw === 'EXCLUDE') return;
+                let name = rela['target-credit'] || rela.artist.name;
+                if (kw === 'vocal') {
+                    if (rela.attributes.length > 0 && ['background vocals', 'choir vocals', 'spoken vocals'].includes(rela.attributes[0])) {
+                        kw = 'chorus';
+                    }
+                } else if (kw === 'instrument') {
+                    // TODO:
+                } else if (kw === 'design') {
+                    designers.push(name);
+                    return;
+                }
+                m[kw].push(name);
+            }
+
+            const relaMap0 = DefaultDict(() => [] as string[]); // relation -> names
+            relations.forEach((rela) => {
+                if (rela['target-type'] !== 'artist') return;
+                addArtist(relaMap0, rela);
+            });
+            if (labelVal.length > 0) relaMap0["label"] = labelVal;
+
+            const discs = media.map(({ tracks }) => ({
+                tracks: tracks.map(({ title, recording: { relations } }) => {
+                    const relaMapi = DefaultDict(() => [] as string[]); // relation -> names
+                    relations.forEach((rela) => {
+                        if (rela['target-type'] === 'artist') {
+                            addArtist(relaMapi, rela);
+                            return;
+                        }
+                        if (rela['target-type'] !== 'work') return;
+                        rela.work.relations.forEach((rela) => {
+                            if (rela['target-type'] !== 'artist') return;
+                            addArtist(relaMapi, rela);
+                        });
+                    });
+                    return { title, comment: '', credits: relaMapi };
+                })
+            }));
+
+            editor.setTrackInfo({ credits: relaMap0, discs });
+            if (designers.length > 0) {
+                editor.setInfoBoxField("设计", designers.join("、"));
+            }
+        }
 
         if (opts.title) {
             const { title } = await this.releaseInfo!;
@@ -34,18 +97,6 @@ export class MusicBrainz implements ImportSource {
             const timeMs = media.flatMap(({ tracks }) => tracks.map(({ length }) => length)).reduce((a, b) => a + b, 0);
             const time = new Date(Math.round(timeMs / 1000) * 1000).toISOString().slice(11, 19);
             editor.setInfoBoxField("播放时长", time);
-        }
-
-        if (opts.labelSerial) {
-            const { "label-info": ls } = await this.releaseInfo!;
-            const labels = ls.map(({ label: { name } }) => name)
-            const labelVal = Array.from(new Set(labels)).join("、");
-            // TODO: write labels
-            const serials = ls.map(({ "catalog-number": cat }) => cat);
-            const serialVal = serials.length > 1 ? serials : serials[0];
-            if (!editor.setInfoBoxField("品番", serialVal, { editOnly: true })) {
-                editor.setInfoBoxField("编号", serialVal);
-            }
         }
 
         if (opts.releaseDate) {
@@ -64,6 +115,17 @@ export class MusicBrainz implements ImportSource {
     }
 }
 
+const ROLE2KEYWORD: Record<string, string> = {
+    'instrument': 'EXCLUDE', // TODO: will include once we have grammar for specific instruments
+    'mix': 'mixing',
+    'remixer': 'EXCLUDE',
+    'engineer': 'EXCLUDE',
+    'conductor': 'EXCLUDE',
+    'programming': 'EXCLUDE',
+    'translator': 'EXCLUDE',
+    'misc': 'EXCLUDE',
+}
+
 const ENDPOINT = "https://musicbrainz.org/ws/2";
 
 interface MusicBrainzRelease {
@@ -71,6 +133,7 @@ interface MusicBrainzRelease {
     date: string;
     "label-info": LabelInfo[];
     media: MediaInfo[];
+    relations: Relation[];
     "release-group": ReleaseGroupInfo;
 }
 
@@ -87,6 +150,24 @@ interface MediaInfo {
 interface TrackInfo {
     title: string;
     length: number;
+    recording: {
+        relations: Relation[];
+    };
+}
+
+type Relation = ArtistRelation | WorkRelation | { 'target-type': 'recording' };
+interface ArtistRelation {
+    'target-type': 'artist';
+    'target-credit': string; // alias used
+    type: string; // role
+    attributes: string[]; // more specific role; usually for type=instrument/vocal
+    artist: { name: string; };
+}
+interface WorkRelation {
+    'target-type': 'work';
+    work: {
+        relations: Relation[];
+    };
 }
 
 interface ReleaseGroupInfo {

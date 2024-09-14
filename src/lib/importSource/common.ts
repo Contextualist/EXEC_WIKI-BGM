@@ -54,3 +54,10 @@ export function warningTemplate3rdPartyWiki(name: string): string {
 <li>网上能找到的信息实在太少，连用 Wayback Machine 都翻不出任何信息</li></ol>
 `.trim().split("\n").join("<br />");
 }
+
+type DefaultDictType<K extends PropertyKey, V> = { [P in K]: V; } & { [key: PropertyKey]: V; };
+export function DefaultDict<K extends PropertyKey, V>(defaultInit: () => V): DefaultDictType<K, V> {
+    return new Proxy({} as DefaultDictType<K, V>, {
+        get: (target, name: PropertyKey) => name in target ? target[name] : ((target as any)[name] = defaultInit())
+    })
+}

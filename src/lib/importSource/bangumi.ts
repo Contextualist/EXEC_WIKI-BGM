@@ -1,4 +1,5 @@
 import type { ImportSource, AutoEditor, Track } from "./common";
+import { DefaultDict } from "./common";
 import { getSubjectInfo, getSubjectEpInfo, getSubjectRelaPerson, type SubjectInfo, type SubjectRelaPerson } from "$lib/client";
 
 export class Bangumi implements ImportSource {
@@ -7,8 +8,8 @@ export class Bangumi implements ImportSource {
     warning = "";
     options = [
         { id: "trackListCredits", text: "曲目列表与制作人员", default: true },
-        { id: "titleIntro", text: "标题与简介", default: true },
         { id: "importRela", text: "导入关联的人物", default: true },
+        { id: "titleIntro", text: "标题与简介", default: true },
         { id: "infobox", text: "Infobox", default: true },
         { id: "infoboxKeepRelaField", text: "保留「艺术家」字段的内容", default: false },
         { id: "infoboxOverride", text: "完全覆写现有的 Infobox", default: false },
@@ -108,13 +109,6 @@ export class Bangumi implements ImportSource {
 const ROLE2KEYWORD: Record<string, string> = {
     '艺术家': 'Performer',
     'unknown': 'UNKNOWN',
-}
-
-type DefaultDictType<K extends PropertyKey, V> = { [P in K]: V; } & { [key: PropertyKey]: V; };
-function DefaultDict<K extends PropertyKey, V>(defaultInit: () => V): DefaultDictType<K, V> {
-    return new Proxy({} as DefaultDictType<K, V>, {
-        get: (target, name: PropertyKey) => name in target ? target[name] : ((target as any)[name] = defaultInit())
-    })
 }
 
 /// Parse track number list in single disc (e.g. `1,3-5,7`) or multiple discs (e.g. `1.1, 1.3-5, 2.7`) format
