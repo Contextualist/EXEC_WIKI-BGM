@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
 	interface TooltipOptions {
 		title: string;
+		safeHTML?: boolean;
 		attachment?: 'top' | 'bottom' | 'left' | 'right';
 		widthUnbound?: boolean;
 	}
@@ -12,7 +13,8 @@
 		function mouseEnter(event: MouseEvent) {
 			if (event.target !== element) return;
 			div = document.createElement('div');
-			div.innerHTML = options.title;
+			if (options.safeHTML) div.innerHTML = options.title;
+			else div.textContent = options.title;
 			document.body.appendChild(div);
 			const anchor = () => {
 				const view = { height: window.innerHeight, width: window.innerWidth };
@@ -78,14 +80,15 @@
 
 	interface TooltipProps {
 		title: string;
+		safeHTML?: boolean;
 		class?: string;
 	}
-	let { title, class: class_ = '' }: TooltipProps = $props();
+	let { title, safeHTML = false, class: class_ = '' }: TooltipProps = $props();
 </script>
 
 <span
 	class="{class_} inline-block w-[18px] h-[18px] vertical-middle cursor-help"
-	use:tooltip={{ title, widthUnbound: false }}
+	use:tooltip={{ title, safeHTML, widthUnbound: false }}
 >
 	<svg
 		class="cursor-help"

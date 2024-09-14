@@ -38,7 +38,10 @@
 	<div class="flex flex-row align-start items-center gap-2">
 		<h2 class="text-bgm-pink">导入</h2>
 		{#if currentSource?.warning}
-			<div use:tooltip={{ title: currentSource.warning, widthUnbound: false }} class="cursor-help">
+			<div
+				use:tooltip={{ title: currentSource.warning, safeHTML: true, widthUnbound: false }}
+				class="cursor-help"
+			>
 				⚠️
 			</div>
 		{/if}
