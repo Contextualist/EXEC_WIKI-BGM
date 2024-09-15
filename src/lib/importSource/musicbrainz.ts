@@ -37,7 +37,7 @@ export class MusicBrainz implements ImportSource {
 
         if (opts.trackListCredits) {
             const { media, relations } = await this.releaseInfo!;
-            let designers: string[] = [];
+            const extraRoles = DefaultDict(() => [] as string[]);
 
             function addArtist(m: Record<string, string[]>, rela: ArtistRelation) {
                 let kw = ROLE2KEYWORD[rela.type] || rela.type;
@@ -49,8 +49,8 @@ export class MusicBrainz implements ImportSource {
                     }
                 } else if (kw === 'instrument') {
                     // TODO:
-                } else if (kw === 'design') {
-                    designers.push(name);
+                } else if (kw.startsWith('EX-')) {
+                    extraRoles[kw].push(name);
                     return;
                 }
                 m[kw].push(name);
@@ -82,9 +82,9 @@ export class MusicBrainz implements ImportSource {
             }));
 
             editor.setTrackInfo({ credits: relaMap0, discs });
-            if (designers.length > 0) {
-                editor.setInfoBoxField("设计", designers.join("、"));
-            }
+            Object.entries(extraRoles).forEach(([kw, names]) => {
+                editor.setInfoBoxField(kw.slice(3), Array.from(new Set(names)).join("、"));
+            });
         }
 
         if (opts.title) {
@@ -118,7 +118,8 @@ export class MusicBrainz implements ImportSource {
 const ROLE2KEYWORD: Record<string, string> = {
     'instrument': 'EXCLUDE', // TODO: will include once we have grammar for specific instruments
     'mix': 'mixing',
-    'remixer': 'EXCLUDE',
+    'remixer': 'EX-Remix',
+    'design': 'EX-设计',
     'engineer': 'EXCLUDE',
     'conductor': 'EXCLUDE',
     'programming': 'EXCLUDE',
