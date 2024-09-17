@@ -41,6 +41,14 @@
 
 	async function addPerson(p: Staff) {
 		p.aliases = p.aliases.map((a) => a.replace(/[\s*(（].+[）)]$/, '')); // trim circle names
+		p.aliases = p.aliases.flatMap((a) => {
+			// split =-joined aliases
+			const xs = a.replaceAll('＝', '=').split('=');
+			if (xs.length > 1) {
+				return xs.map((x) => x.trim()).filter((x) => x !== p.name);
+			}
+			return [a];
+		});
 		try {
 			await db.staff.add(p);
 			updateCount();
