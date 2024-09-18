@@ -371,6 +371,30 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "SYMBOL",
+          "name": "_role_instrument"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_role"
+        }
+      ]
+    },
+    "_role_instrument": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "PATTERN",
+          "value": "乐器-([^ 　\t&＆:：/・、；,]| )+"
+        }
+      }
+    },
+    "_role": {
+      "type": "CHOICE",
+      "members": [
+        {
           "type": "FIELD",
           "name": "role",
           "content": {
@@ -544,22 +568,6 @@
           "content": {
             "type": "STRING",
             "value": "vocal"
-          }
-        },
-        {
-          "type": "FIELD",
-          "name": "role",
-          "content": {
-            "type": "STRING",
-            "value": "Vo"
-          }
-        },
-        {
-          "type": "FIELD",
-          "name": "role",
-          "content": {
-            "type": "STRING",
-            "value": "vo"
           }
         },
         {
@@ -791,6 +799,14 @@
           "name": "role",
           "content": {
             "type": "STRING",
+            "value": "艺术家"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
             "value": "歌唱"
           }
         },
@@ -993,13 +1009,6 @@
       "content": {
         "type": "PATTERN",
         "value": "[ 　\t&＆:：/・、；,]+"
-      }
-    },
-    "_ssep": {
-      "type": "IMMEDIATE_TOKEN",
-      "content": {
-        "type": "PATTERN",
-        "value": "[ 　\t&＆・、；,]+"
       }
     }
   },

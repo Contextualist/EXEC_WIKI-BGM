@@ -23,8 +23,6 @@ const roles = [
   'arrange',
   'Vocal',
   'vocal',
-  'Vo',
-  'vo',
   'Performer',
   'performer',
   'Illustration',
@@ -53,6 +51,7 @@ const roles = [
   'イラスト',
   'レーベル',
   'マスタリング',
+  '艺术家',
   '歌唱',
   '作詞作編曲',
   '作词作编曲',
@@ -141,7 +140,14 @@ module.exports = grammar({
       field('creator', $.creator_name),
     ),
     creator_name: _ => token.immediate(new RegExp(`[^${separators}《》\n]+`)),
-    role: _ => choice(...roles.map(r => field('role', r))),
+
+    role: $ => choice(
+      $._role_instrument,
+      $._role,
+    ),
+    _role_instrument: _ => token.immediate(prec(1, new RegExp(`乐器-([^${separators}]| )+`))),
+    _role: _ => choice(...roles.map(r => field('role', r))),
+
     _sep: _ => token.immediate(new RegExp(`[${separators}]+`)),
   }
 });

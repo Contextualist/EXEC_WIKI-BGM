@@ -1,0 +1,49 @@
+
+===
+instrument role annotation
+===
+
+乐器：npc
+乐器-violin：npc2
+乐器-drum set：npc3
+曲 乐器：npc4 / 乐器-violin：npc5 / 乐器-drum set：npc6
+曲2
+乐器-drum set：npc7 / 乐器-violin：npc8 / 乐器：npc9
+
+---
+
+(source_file
+  (credit_block
+    (credit_field
+      (role)
+      creator: (creator_name))
+    (credit_field
+      (role)
+      creator: (creator_name))
+    (credit_field
+      (role)
+      creator: (creator_name)))
+  (song
+    title: (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        creator: (creator_name))
+      (credit_field
+        (role)
+        creator: (creator_name))
+      (credit_field
+        (role)
+        creator: (creator_name))))
+  (song
+    title: (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        creator: (creator_name))
+      (credit_field
+        (role)
+        creator: (creator_name))
+      (credit_field
+        (role)
+        creator: (creator_name)))))

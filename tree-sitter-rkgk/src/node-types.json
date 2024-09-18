@@ -71,7 +71,7 @@
     "fields": {
       "role": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "Arrange",
@@ -162,10 +162,6 @@
             "named": false
           },
           {
-            "type": "Vo",
-            "named": false
-          },
-          {
             "type": "Vocal",
             "named": false
           },
@@ -251,10 +247,6 @@
           },
           {
             "type": "recording",
-            "named": false
-          },
-          {
-            "type": "vo",
             "named": false
           },
           {
@@ -379,6 +371,10 @@
           },
           {
             "type": "脚本",
+            "named": false
+          },
+          {
+            "type": "艺术家",
             "named": false
           }
         ]
@@ -544,10 +540,6 @@
     "named": false
   },
   {
-    "type": "Vo",
-    "named": false
-  },
-  {
     "type": "Vocal",
     "named": false
   },
@@ -645,10 +637,6 @@
   },
   {
     "type": "recording",
-    "named": false
-  },
-  {
-    "type": "vo",
     "named": false
   },
   {
@@ -781,6 +769,10 @@
   },
   {
     "type": "脚本",
+    "named": false
+  },
+  {
+    "type": "艺术家",
     "named": false
   }
 ]

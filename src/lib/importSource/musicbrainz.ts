@@ -48,7 +48,9 @@ export class MusicBrainz implements ImportSource {
                         kw = 'chorus';
                     }
                 } else if (kw === 'instrument') {
-                    // TODO:
+                    if (rela.attributes.length > 0) {
+                        kw = `乐器-${rela.attributes[0]}`;
+                    }
                 } else if (kw.startsWith('EX-')) {
                     extraRoles[kw].push(name);
                     return;
@@ -116,7 +118,6 @@ export class MusicBrainz implements ImportSource {
 }
 
 const ROLE2KEYWORD: Record<string, string> = {
-    'instrument': 'EXCLUDE', // TODO: will include once we have grammar for specific instruments
     'mix': 'mixing',
     'remixer': 'EX-Remix',
     'design': 'EX-设计',
@@ -177,6 +178,7 @@ interface ReleaseGroupInfo {
 }
 
 async function fetchReleaseInfo(mbid: string): Promise<MusicBrainzRelease> {
+    // ref: https://community.metabrainz.org/t/looking-for-api-call-providing-writer-composer-cover-recording-details/478652/6
     const res = await fetch(
         `${ENDPOINT}/release/${mbid}?inc=artist-credits+labels+recordings+release-groups+artist-rels+recording-level-rels+work-level-rels+recording-rels+work-rels`,
         { headers: { "Accept": "application/json" } }

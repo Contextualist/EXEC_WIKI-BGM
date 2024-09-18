@@ -176,6 +176,13 @@ NORN                  performer: Rigël Theatre</pre>
 <span class="text-bgm-pink">//</span> <span class="text-bgm-grey">Bonus track</span>
 法界之锅 <span class="text-bgm-grey">原曲：法界の火</span></pre>
 		</section>
+		<section>
+			<h3 id="grammar-comment">乐器标注</h3>
+			<p>
+				例如，下面的写法会在 infobox 中的「乐器」字段里填上 <code>JungMato (guitar)</code>
+			</p>
+			<pre><span class="text-bgm-pink">乐器-guitar</span>：JungMato</pre>
+		</section>
 	</section>
 
 	<section>

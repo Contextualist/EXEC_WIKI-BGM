@@ -37,7 +37,6 @@ export const ROLE_MAP: { [name: string]: Role[] } = {
     'arranger': [Role.A],
     'arrange': [Role.A],
     'vocal': [Role.V],
-    'vo': [Role.V],
     'performer': [Role.V],
     'illustration': [Role.I],
     'illust': [Role.I],
@@ -54,6 +53,7 @@ export const ROLE_MAP: { [name: string]: Role[] } = {
     'イラスト': [Role.I],
     'レーベル': [Role.RL],
     'マスタリング': [Role.MA],
+    '艺术家': [Role.V],
     '歌唱': [Role.V],
     '作詞作編曲': [Role.L, Role.C, Role.A],
     '作词作编曲': [Role.L, Role.C, Role.A],
@@ -148,14 +148,16 @@ export class Release {
         const r = new Map<string, Set<string>>(Object.values(Role).map(k => [k, new Set()]));
         function setCredits(credits: Credits) {
             Object.entries(credits).forEach(([roleID, creators]) => {
-                creators.forEach(creator => r.get(roleID)?.add(creator));
+                const rx = r.get(roleID) || r.set(roleID, new Set<string>()).get(roleID)!;
+                creators.forEach(creator => rx.add(creator));
             });
         }
         setCredits(this.credits);
         this.tracks.forEach(d => d.forEach(t => setCredits(t.credits)));
         r.delete(Role.undef);
-        return Array.from(r.entries())
+        const rs: [string, string[]][] = Array.from(r.entries())
             .map(([roleID, creators]) => [roleID, Array.from(creators).map((c) => this.formatCreator(c, name2staff.get(c)![0]?.name))]);
+        return this.coalesceInstrumentalRoles(rs);
     }
 
     private formatCreator(name: string, primaryName: string | undefined): string {
@@ -163,6 +165,20 @@ export class Release {
             return `${name} (${primaryName})`;
         }
         return name;
+    }
+
+    private coalesceInstrumentalRoles(rs: [string, string[]][]): [string, string[]][] {
+        if (rs.every(([roleID, _]) => !roleID.startsWith("乐器-"))) {
+            return rs;
+        }
+        let insEntry = rs.find(([roleID, _]) => roleID === "乐器");
+        if (!insEntry) rs.push(insEntry = ["乐器", []]);
+        return rs.flatMap(([roleID, creators]) => {
+            if (!roleID.startsWith("乐器-")) return [[roleID, creators]];
+            const insName = roleID.slice(3);
+            insEntry![1].push(...creators.map(c => `${c} (${insName})`));
+            return [];
+        });
     }
 
     /**
@@ -174,6 +190,7 @@ export class Release {
         let r = new Map<number, Map<string, number[][]>>();  // staff_id -> { role -> tracks }
         function setCredits(credits: Credits, fn: (roleID: string, rtm: Map<string, number[][]>) => void) {
             Object.entries(credits).forEach(([roleID, creators]) => {
+                if (roleID.startsWith("乐器-")) roleID = "乐器";
                 creators.forEach(creator => {
                     const staff = name2staff.get(creator)![0];
                     if (!staff) { return; }
@@ -189,7 +206,10 @@ export class Release {
                 setCredits(t.credits, (roleID, rtm) => {
                     let rt = rtm.get(roleID)
                     rt = !rt || rt.length === 0 ? Array.from({ length: nTracks }, () => []) : rt;
-                    rt[i].push(j + 1);
+                    const rti = rt[i];
+                    if (rti.length === 0 || rti[rti.length - 1] !== j + 1) {
+                        rti.push(j + 1);
+                    }
                     rtm.set(roleID, rt);
                 });
             })
@@ -243,18 +263,27 @@ function parseSongCredit(
     for (let i = 0; i < chunks.length / 2; i++) {
         const [roleTags, creators] = [chunks[i * 2], chunks[i * 2 + 1]];
         if (!roleTags || !creators) { continue; }
-        creators.forEach(creator =>
-            roleTags.forEach(roleTag => {
-                const roleIDs = ROLE_MAP[roleTag.value.trim().toLowerCase()];
-                if (!roleIDs) { console.warn(`Unknown role tag: ${roleTag.value}`); return; }
-                roleIDs.forEach(roleID => {
-                    const v = trimCircle ? creator.value.replace(/[(（].+[）)]$/, "") : creator.value;
-                    if (!v) { return; }  // don't include "trimmed circle"
-                    credits[roleID] = credits[roleID] || [];
-                    credits[roleID].push(v);
-                })
-            })
-        )
+        const roleIDs = roleTags.flatMap(roleTag => {
+            const roleName = roleTag.value.trim();
+            if (roleName.startsWith("乐器-")) {
+                return [roleName];
+            }
+            const roleIDs = ROLE_MAP[roleName.toLowerCase()];
+            if (!roleIDs) { console.warn(`Unknown role tag: ${roleTag.value}`); return []; }
+            return roleIDs;
+        });
+        const creatorNames = creators.flatMap(creator => {
+            let name = creator.value;
+            if (trimCircle) {
+                name = name.replace(/[(（].+[）)]$/, "");
+                if (!name) { return []; }  // don't include "trimmed circle"
+            }
+            return [name];
+        });
+        Array.from(new Set(roleIDs)).forEach(roleID => {
+            credits[roleID] = credits[roleID] || [];
+            credits[roleID].push(...creatorNames);
+        });
     }
     if (autofillArrangement && !credits[Role.A] && credits[Role.C]) {
         credits[Role.A] = credits[Role.C];

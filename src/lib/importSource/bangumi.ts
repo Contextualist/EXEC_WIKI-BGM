@@ -107,7 +107,6 @@ export class Bangumi implements ImportSource {
 }
 
 const ROLE2KEYWORD: Record<string, string> = {
-    '艺术家': 'Performer',
     'unknown': 'UNKNOWN',
 }
 
