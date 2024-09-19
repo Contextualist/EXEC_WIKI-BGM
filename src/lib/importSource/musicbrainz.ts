@@ -48,6 +48,7 @@ export class MusicBrainz implements ImportSource {
                         kw = 'chorus';
                     }
                 } else if (kw === 'instrument') {
+                    kw = '乐器';
                     if (rela.attributes.length > 0) {
                         kw = `乐器-${rela.attributes[0]}`;
                     }
@@ -118,14 +119,21 @@ export class MusicBrainz implements ImportSource {
 }
 
 const ROLE2KEYWORD: Record<string, string> = {
+    'instrument arranger': 'arranger',
+    'orchestrator': 'arranger',
+    'vocal arranger': 'arranger',
     'mix': 'mixing',
+    'audio director': '录音',
     'remixer': 'EX-Remix',
     'design': 'EX-设计',
     'engineer': 'EXCLUDE',
+    'sound': 'EXCLUDE',
     'conductor': 'EXCLUDE',
     'programming': 'EXCLUDE',
     'translator': 'EXCLUDE',
     'misc': 'EXCLUDE',
+    'chorus master': 'EXCLUDE',
+    'concertmaster': 'EXCLUDE',
 }
 
 const ENDPOINT = "https://musicbrainz.org/ws/2";
