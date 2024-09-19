@@ -54,6 +54,7 @@
 				position: 'absolute',
 				'z-index': '100',
 				'max-width': '30em',
+				'margin-right': '0.5rem',
 				...(options.widthUnbound ? { width: 'max-content' } : {})
 			});
 			Object.assign(div.style, anchor());
