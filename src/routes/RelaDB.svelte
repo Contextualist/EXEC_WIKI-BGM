@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export async function importBulk(lines: string[]) {
 		const data = lines.map((line) => {
 			const [id, pfp, name, ...aliases] = line.split('\t');
@@ -40,7 +40,7 @@
 	let { bgmUID = $bindable(), closeRelaDB, class: class_ = '' }: RelaDBProps = $props();
 
 	async function addPerson(p: Staff) {
-		p.aliases = p.aliases.map((a) => a.replace(/[\s*(（].+[）)]$/, '')); // trim circle names
+		p.aliases = p.aliases.map((a) => a.replace(/\s*[(（].+[）)]$/, '')); // trim circle names
 		p.aliases = p.aliases.flatMap((a) => {
 			// split =-joined aliases
 			const xs = a.replaceAll('＝', '=').split('=');
@@ -184,7 +184,12 @@
 					class="text-bgm-darkgrey text-sm py-3 w-full border-1 border-t-solid border-bgm-grey flex flex-row"
 				>
 					<div class="flex-basis-15">
-						<a href={`https://bgm.tv/person/${id}`} target="_blank" rel="noopener noreferrer">
+						<a
+							href={`https://bgm.tv/person/${id}`}
+							aria-label={name}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
 							<img
 								src={pfp === '' ? 'https://lain.bgm.tv/img/no_icon_subject.png' : pfp}
 								alt={name}
@@ -206,6 +211,7 @@
 						class={'text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
 							'border-none bg-transparent ml-1 h-[20px] w-[20px] p-0 flex-basis-[20px] flex-self-center'}
 						title="添加/更新这个人物"
+						aria-label="添加/更新这个人物"
 						onclick={() =>
 							addPerson({ id, pfp, name, aliases: aliases.filter((a) => a !== name) }).then(() =>
 								closeRelaDB()

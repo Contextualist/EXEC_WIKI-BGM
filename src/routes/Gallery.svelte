@@ -73,8 +73,11 @@
 	style="scrollbar-width: none;"
 >
 	{#each relaEntries as { name, m, pfp } ([name, m])}
+		{@const title =
+			m === Match.None ? `搜索「${name}」` : m !== Match.OK ? `「${name}」，有重名` : name}
 		<div class="static">
 			<button
+				aria-label={title}
 				class={'p-0 border-none bg-transparent text-size-base ' +
 					(m === Match.None ? 'cursor-copy' : m !== Match.OK ? 'cursor-context-menu' : '')}
 				onclick={m === Match.None
@@ -91,11 +94,7 @@
 				<img
 					src={pfp}
 					alt={name}
-					use:tooltip={{
-						attachment: 'bottom',
-						title:
-							m === Match.None ? `搜索「${name}」` : m !== Match.OK ? `「${name}」，有重名` : name
-					}}
+					use:tooltip={{ attachment: 'bottom', title }}
 					class={'execwb-prevent-click-outside rounded-xl w-13 h-13 mx-1.2 my-0.8 object-cover ' +
 						(m !== Match.OK ? 'drop-shadow-color-bgm-pink ' : ' ') +
 						(m === Match.Conflict || m === Match.ConflictResolved
@@ -120,6 +119,7 @@
 									class="mx-2 text-sm">{staff.name}</a
 								>
 								<button
+									aria-label={staff.name}
 									class="p-0 border-none bg-transparent cursor-pointer"
 									onclick={() => {
 										dupResolution.set(name, i);

@@ -1,19 +1,20 @@
-<script lang="ts" context="module">
-	export enum Direction {
-		Up,
-		Down,
-		Left,
-		Right
-	}
+<script lang="ts" module>
+	export const Direction = {
+		Up: 'up',
+		Down: 'down',
+		Left: 'left',
+		Right: 'right'
+	} as const;
+	export type DirectionKey = (typeof Direction)[keyof typeof Direction];
 	export interface CellActions {
 		/** Submit content or structure changes for persistence */
 		update: () => void;
 		/** Insert a new entry before/after this one */
 		insert: (before: boolean) => void;
 		/** Swap this entry with the previous or next one */
-		swap: (updown: Direction, el: HTMLElement) => void;
+		swap: (updown: DirectionKey, el: HTMLElement) => void;
 		/** Navigate to the previous or next entry */
-		navigate: (direction: Direction, el: HTMLElement, offset: number) => void;
+		navigate: (direction: DirectionKey, el: HTMLElement, offset: number) => void;
 		/** Convert array entry to string entry and vice versa */
 		arraySwitch: () => void;
 		/** Structural deletion, if applicable */

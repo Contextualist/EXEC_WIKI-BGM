@@ -2,7 +2,12 @@
 	import 'uno.css';
 	import { flip } from 'svelte/animate';
 	import { type Snippet, getContext } from 'svelte';
-	import Cell, { type CellActions, Direction, type CellConfig } from './Cell.svelte';
+	import Cell, {
+		type CellActions,
+		Direction,
+		type DirectionKey,
+		type CellConfig
+	} from './Cell.svelte';
 
 	interface PlainArrayProps {
 		value: [string, [string, string][]];
@@ -26,7 +31,7 @@
 				action.update();
 				setTimeout(() => focusIth(newI), 0);
 			},
-			swap: (updown: Direction, el: HTMLElement) => {
+			swap: (updown: DirectionKey, el: HTMLElement) => {
 				if (updown === Direction.Up) {
 					if (i === 0) return;
 					value.splice(i - 1, 2, value[i], value[i - 1]);

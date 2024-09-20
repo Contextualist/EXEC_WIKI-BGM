@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { type Wiki, WikiItem, WikiArrayItem } from '@bgm38/wiki';
 
 	type KV<T> = [string, T];
@@ -64,7 +64,7 @@
 	import Reactive from './Reactive.svelte';
 	import ComboBox from './ComboBox.svelte';
 	import { COMBO_CONFIG } from './comboConfig.ts';
-	import { Direction } from './Cell.svelte';
+	import { Direction, type DirectionKey } from './Cell.svelte';
 	import { moveCursorTo, altOrOpt } from '../utils.ts';
 	import { AUTOFIX_CONFIG } from './lintConfig.ts';
 
@@ -109,7 +109,7 @@
 					setTimeout(() => selectElementContents(keyEl as HTMLElement), 0);
 				}, 250);
 			},
-			swap: (updown: Direction, el: HTMLElement) => {
+			swap: (updown: DirectionKey, el: HTMLElement) => {
 				if (updown === Direction.Up) {
 					if (i === 0) return;
 					value.splice(i - 1, 2, value[i], value[i - 1]);
@@ -137,7 +137,7 @@
 			}
 		};
 	}
-	function navigate(direction: Direction, el: HTMLElement, offset: number) {
+	function navigate(direction: DirectionKey, el: HTMLElement, offset: number) {
 		let query = "#rich-infobox [tabindex='0']";
 		if (direction === Direction.Up || direction === Direction.Down) {
 			if (el.classList.contains('rich-infobox-key')) {

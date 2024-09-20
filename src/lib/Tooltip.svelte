@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	interface TooltipOptions {
 		title: string;
 		safeHTML?: boolean;

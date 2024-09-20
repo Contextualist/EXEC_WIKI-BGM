@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	/**
     Adapted from https://github.com/touchifyapp/svelte-codemirror-editor
     */

@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export interface Settings extends Record<string, any> {
 		bgmUID: string;
 		newInfoBox: string;

@@ -4,12 +4,12 @@
 	import { type Staff } from '$lib/db';
 	import { Match, type ResolvedRelaMap } from './disambiguation';
 
-	interface TrackInfoProps {
+	interface PreviewProps {
 		release: Readonly<Release>;
 		name2staff: ResolvedRelaMap;
 		class?: string;
 	}
-	let { release, name2staff, class: class_ = '', ...rest }: TrackInfoProps = $props();
+	let { release, name2staff, class: class_ = '', ...rest }: PreviewProps = $props();
 
 	let creditTopFormatted = $derived(
 		mergeKeys(Object.entries(release.credits), (ps) => ps.join('、'))
