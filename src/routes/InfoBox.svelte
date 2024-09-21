@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { parse, stringify } from '@bgm38/wiki';
 	import RichInfoBox, {
 		type ArrayWiki,
 		wikiUnpack,
@@ -12,13 +13,16 @@
 
 	let value = $state('');
 	let modeRich = $state(false);
-	let valueWiki: ArrayWiki = $state([]);
+	let valueWiki: ArrayWiki = $state({ type: 'Album', data: [] });
 
 	export function init(val: string): void {
 		value = val;
-		modeRich = val.startsWith('[');
+		modeRich = val.startsWith('{"');
 		if (modeRich) {
-			valueWiki = JSON.parse(val);
+			const valueWikiMaybeOld = JSON.parse(val);
+			valueWiki = valueWikiMaybeOld.type
+				? valueWikiMaybeOld
+				: { type: 'Album', data: valueWikiMaybeOld };
 		}
 	}
 	export function reset(text: string): void {
@@ -34,8 +38,8 @@
 		} catch (e) {
 			return;
 		}
-		const vw = wikiUnpack(parse(text));
-		editRich(vw, valueWiki);
+		const { data: vw } = wikiUnpack(parse(text));
+		editRich(vw, valueWiki.data);
 	}
 
 	export function edit(entries: [string, string][]): void {
@@ -53,7 +57,7 @@
 			});
 			value = lines.join('\n');
 		} else {
-			editRich(entries, valueWiki);
+			editRich(entries, valueWiki.data);
 		}
 	}
 	export function editField(
@@ -66,11 +70,11 @@
 		} catch (e) {
 			return false;
 		}
-		if (editOnly && !valueWiki.some(([k, _]) => k === key)) {
+		if (editOnly && !valueWiki.data.some(([k, _]) => k === key)) {
 			return false;
 		}
 		const val = Array.isArray(value) ? value.map((v) => ['', v] as [string, string]) : value;
-		editRich([[key, val]], valueWiki);
+		editRich([[key, val]], valueWiki.data);
 		return true;
 	}
 
@@ -103,7 +107,6 @@
 <script lang="ts">
 	import 'uno.css';
 	import { setContext } from 'svelte';
-	import { parse, stringify } from '@bgm38/wiki';
 
 	import { toast } from './Toast.svelte';
 	import { debounce, throttle } from './utils.svelte.ts';
@@ -183,7 +186,7 @@
 	{#if modeRich}
 		<RichInfoBox
 			class="input-bgm border-none focus:drop-shadow-[_] w-[96.5%] h-[calc(100%-1.2rem)] pr-[0.5rem] py-[0.5rem] text-sm break-all overflow-auto"
-			bind:value={valueWiki}
+			bind:value={valueWiki.data}
 			{reactiveFields}
 			{update}
 		/>

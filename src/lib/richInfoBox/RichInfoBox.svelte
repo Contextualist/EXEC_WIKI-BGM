@@ -2,16 +2,23 @@
 	import { type Wiki, WikiItem, WikiArrayItem } from '@bgm38/wiki';
 
 	type KV<T> = [string, T];
-	export type ArrayWiki = KV<string | KV<string>[]>[];
+	export type ArrayWikiData = KV<string | KV<string>[]>[];
+	export interface ArrayWiki {
+		type: string;
+		data: ArrayWikiData;
+	}
 
 	export function wikiUnpack(w: Wiki): ArrayWiki {
-		return w.data.map((item) => {
-			if (item.array) {
-				return [item.key, item.values!.map((v) => [v.k ?? '', v.v ?? ''])];
-			} else {
-				return [item.key, item.value!];
-			}
-		});
+		return {
+			type: w.type,
+			data: w.data.map((item) => {
+				if (item.array) {
+					return [item.key, item.values!.map((v) => [v.k ?? '', v.v ?? ''])];
+				} else {
+					return [item.key, item.value!];
+				}
+			})
+		};
 	}
 	export function wikiRepack(w: ArrayWiki): Wiki {
 		function cleanValue(v: string): string {
@@ -23,8 +30,8 @@
 			return r;
 		}
 		return {
-			type: 'Album',
-			data: w.map(([key, value]) =>
+			type: w.type,
+			data: w.data.map(([key, value]) =>
 				Array.isArray(value) ? arr(key, value) : new WikiItem(key, cleanValue(value), 'object')
 			)
 		};
@@ -32,7 +39,7 @@
 
 	let reactiveFieldsUnlinked: Record<string, boolean> = $state({});
 
-	export function edit(entries: ArrayWiki, valueWiki: ArrayWiki): void {
+	export function edit(entries: ArrayWikiData, valueWiki: ArrayWikiData): void {
 		entries.forEach(([key, val]) => {
 			if (reactiveFieldsUnlinked[key]) return;
 			const i = valueWiki.findIndex(([k, _]) => k === key);
@@ -69,7 +76,7 @@
 	import { AUTOFIX_CONFIG } from './lintConfig.ts';
 
 	interface RichInfoBoxProps {
-		value: ArrayWiki;
+		value: ArrayWikiData;
 		reactiveFields: Set<string>;
 		update: () => void;
 		class?: string;
@@ -97,7 +104,7 @@
 		(valEl as HTMLElement).focus();
 	}
 
-	function actAs(value: ArrayWiki, i: number) {
+	function actAs(value: ArrayWikiData, i: number) {
 		return {
 			insert: (before: boolean) => {
 				const newI = before ? i : i + 1;
