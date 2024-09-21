@@ -56,6 +56,7 @@
 	bind:innerText={value}
 	oninput={() => action.update()}
 	onkeydown={(e) => {
+		if (e.isComposing) return;
 		function alt(fn: () => void) {
 			e.preventDefault();
 			fn();
