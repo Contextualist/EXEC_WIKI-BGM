@@ -17,7 +17,7 @@
 
 	export function init(val: string): void {
 		value = val;
-		modeRich = val.startsWith('{"');
+		modeRich = !val.startsWith('{{');
 		if (modeRich) {
 			const valueWikiMaybeOld = JSON.parse(val);
 			valueWiki = valueWikiMaybeOld.type
