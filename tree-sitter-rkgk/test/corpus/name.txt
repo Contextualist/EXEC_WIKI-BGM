@@ -47,3 +47,48 @@ instrument role annotation
       (credit_field
         (role)
         creator: (creator_name)))))
+
+
+===
+parts
+===
+
+Compose / Jeet Singh(tr.01-04,08), Salita(Tr.06), ルシュカ (M05), Cherose(m 07)
+Arrangement / pine(Tree), another (muse track), Cherose(2.7)
+01.Spirit Infinity
+
+---
+
+(source_file
+  (credit_block
+    (credit_field
+      (role)
+      (creator_name)
+      (creator_sep)
+      (creator_name)
+      (parts)
+      (creator_sep)
+      (creator_name)
+      (parts)
+      (creator_sep)
+      (creator_name)
+      (creator_sep)
+      (parts)
+      (creator_sep)
+      (creator_name)
+      (parts))
+    (credit_field
+      (role)
+      (creator_name)
+      (creator_sep)
+      (creator_name)
+      (creator_sep)
+      (creator_name)
+      (creator_sep)
+      (creator_name)
+      (creator_sep)
+      (creator_name)
+      (parts)))
+  (song
+    (song_title)))
+

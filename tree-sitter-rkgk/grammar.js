@@ -1,5 +1,5 @@
 
-const separators = ` 　\t&＆:：\/・、；,`;
+const separators = ` 　\t&＆:：\/／・、；,`;
 const roles = [
   'Music',
   'music',
@@ -84,7 +84,7 @@ module.exports = grammar({
 
   rules: {
     source_file: $ => seq(
-      optional($.credit_block),
+      optional(alias($.credit_block_maybeparts, $.credit_block)),
       choice(
         repeat1($.disc),
         $._disc,
@@ -104,6 +104,19 @@ module.exports = grammar({
       optional($.credit_block),
     ),
 
+    credit_block_maybeparts: $ => prec(-1, repeat1(alias($.credit_field_maybeparts, $.credit_field))),
+    credit_field_maybeparts: $ => prec.left(seq(
+      repeat1(seq(
+        $.role,
+        $._sep,
+      )),
+      $._quotable_creator_name_maybeparts,
+      repeat(seq(
+        field('creatorSeparator', alias($._sep, $.creator_sep)),
+        $._quotable_creator_name_maybeparts,
+      )),
+      choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep))
+    )),
     credit_block: $ => prec(-1, repeat1($.credit_field)),
     credit_field: $ => prec.left(seq(
       repeat1(seq(
@@ -133,13 +146,23 @@ module.exports = grammar({
       seq('《', field('title', $.song_title), '》'),  // quoting
       field('title', $.song_title),
     ),
-    song_title: _ => prec.right(repeat1(/[^\n]/)),
+    song_title: _ => prec.right(repeat1(
+      // lexically, creator_name > song_title
+      token(prec(-1, /[^\n]/))
+    )),
 
+    _quotable_creator_name_maybeparts: $ => choice(
+      seq($._quotable_creator_name, optional($.parts)),
+      $.parts,
+    ),
     _quotable_creator_name: $ => choice(
       seq('《', field('creator', alias(/[^》\n]+/, $.creator_name)), '》'),  // quoting
       field('creator', $.creator_name),
     ),
-    creator_name: _ => token.immediate(new RegExp(`[^${separators}《》\n]+`)),
+    creator_name: _ => prec.right(repeat1(
+      // lexically, creator_name > song_title
+      token(prec(0, new RegExp(`[^${separators}《》\n]`)))
+    )),
 
     role: $ => choice(
       $._role_instrument,
@@ -147,6 +170,8 @@ module.exports = grammar({
     ),
     _role_instrument: _ => token.immediate(prec(1, new RegExp(`乐器-([^${separators}]| )+`))),
     _role: _ => choice(...roles.map(r => field('role', r))),
+
+    parts: _ => /\((Tr|tr|M|m)?\.? ?[0-9,-.]+\)/,
 
     _sep: _ => token.immediate(new RegExp(`[${separators}]+`)),
   }
