@@ -59,6 +59,7 @@ const FIELD2NODETYPE: { [name: string]: lezer.NodeType } = {
     "": NODE_TYPES[""],
     "role": NODE_TYPES.typeName,
     "creator": NODE_TYPES.literal,
+    "parts": NODE_TYPES.annotation,
     "《": NODE_TYPES.keyword,
     "》": NODE_TYPES.keyword,
     "title": NODE_TYPES.heading,
@@ -72,12 +73,13 @@ const SEMANTIC_TYPES = [
     "role",
     "creator",
     "creatorSeparator",
+    "parts",
     "title",
     "comment",
 ];
 
 export interface CreditField {
-    type: "role" | "creator" | "creatorSeparator";
+    type: "role" | "creator" | "creatorSeparator" | "parts";
     value: string;
 }
 
@@ -165,7 +167,7 @@ export async function rkgk(onUpdate: (disc: RawRelease) => void) {
         autocomplete: completeFromList([
             ...TYPE_COMPLETIONS.map(tp => ({ ...tp, type: "type", apply: applyTypeCompletion })),
         ]),
-        closeBrackets: { brackets: ["《",] }
+        closeBrackets: { brackets: ["《", "("] },
     });
     const _onUpdate = (root: NodeInfo) => onUpdate(intoRawRelease(root));
     const parser = new TreeSitterParser(tsp, docID(langData), FIELD2NODETYPE, SEMANTIC_TYPES, _onUpdate);

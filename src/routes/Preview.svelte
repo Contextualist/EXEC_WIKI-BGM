@@ -11,14 +11,13 @@
 	}
 	let { release, name2staff, class: class_ = '', ...rest }: PreviewProps = $props();
 
-	let creditTopFormatted = $derived(
-		mergeKeys(Object.entries(release.credits), (ps) => ps.join('、'))
-	);
-	let creditFormatted = $derived(
-		release.tracks.map((disc) =>
-			disc.map((tr) => mergeKeys(Object.entries(tr.credits), (ps) => ps.join('、')))
-		)
-	);
+	let [creditTopMerged, creditMerged] = $derived.by(() => {
+		const [creditTop, credit] = release.intoTrackSummary();
+		return [
+			mergeKeys(Object.entries(creditTop), (ps) => ps.join('、')),
+			credit.map((dc) => dc.map((tc) => mergeKeys(Object.entries(tc), (ps) => ps.join('、'))))
+		];
+	});
 
 	/// Merge keys with the same value
 	function mergeKeys<V>(objEntries: [string, V][], keyFn: (v: V) => string): [string, V][] {
@@ -66,7 +65,7 @@
 >
 	{#if release.tracks.length > 0 && release.tracks[0].length > 0}
 		<div class="py-2 px-1">
-			{@render formattedCredits(creditTopFormatted)}
+			{@render formattedCredits(creditTopMerged)}
 		</div>
 		{#each release.tracks as disc, i}
 			<div class="p-1 font-size-xs color-bgm-grey border-b-solid border-1 border-color-gray">
@@ -81,7 +80,7 @@
 							<span class="font-size-xs color-bgm-darkgrey">/ {track.comment}</span>
 						{/if}
 					</div>
-					{@render formattedCredits(creditFormatted[i][j])}
+					{@render formattedCredits(creditMerged[i][j])}
 				</div>
 			{/each}
 		{/each}

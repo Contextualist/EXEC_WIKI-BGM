@@ -4,6 +4,7 @@
 import type { RawRelease, CreditField } from "./lang-rkgk";
 import { queryNameOrAliasBulk, type Staff } from "$lib/db";
 import { type ResolvedRelaMap } from "./disambiguation";
+import { parsePart } from "$lib/bangumiUtils";
 
 export enum Role {
     undef = "",
@@ -89,19 +90,28 @@ export interface PostProcessOptions {
     shouldAutofillArrangment: boolean;
 }
 
-interface Credits { [roleID: string]: string[] }
+interface PersonData {
+    parts: number[][];
+}
+
+interface Credits {
+    [roleID: string]: {
+        [name: string]: PersonData;
+    }
+}
+
+interface CreditsText { [roleID: string]: string[]; } // { roleID: [name, ...] }
 
 export interface Track {
     title: string;
     comment: string;
-    credits: Credits;
 }
 
 export class Release {
     credits: Credits;
     tracks: Track[][];
     relaMap: Map<string, Staff[]> = new Map();
-    constructor(credits?: { [roleID: string]: string[] }, tracks?: Track[][]) {
+    constructor(credits?: Credits, tracks?: Track[][]) {
         this.credits = credits || {};
         this.tracks = tracks || []
     }
@@ -115,26 +125,42 @@ export class Release {
         }
 
         const credits = _parseSongCredit(raw.credits);
-        const all_tracks = raw.discs.map(disc => {
-            const tracks = disc.tracks.map(rt => ({
-                title: rt.title,
-                comment: rt.comment,
-                credits: _parseSongCredit(rt.credits),
-            }))
+        const all_tracks = raw.discs.map((disc, i) => {
+            const tracks = disc.tracks.map((rt, j) => {
+                const trackCredits = _parseSongCredit(rt.credits);
+                Object.entries(trackCredits).forEach(([roleID, creators]) => {
+                    const rs = credits[roleID] = credits[roleID] || {};
+                    Object.entries(creators).forEach(([name, pd]) => {
+                        const pd0 = rs[name] = rs[name] || { parts: [] };
+                        pd0.parts.push([i + 1, j + 1]);
+                    });
+                });
+                return {
+                    title: rt.title,
+                    comment: rt.comment,
+                }
+            })
             if (tracks.length > 1) {
                 normalizeTitles(tracks.map(t => t.title))
                     .forEach((title, i) => tracks[i].title = title);
             }
             return tracks.filter(t => t.title); // remove empty lines from normalization
         });
+        // convert parts from [disc, track][] to number[disc-1][track]
+        Object.values(credits).forEach(creatorData => Object.values(creatorData).forEach(pd => {
+            if (pd.parts.length === 0) return; // empty parts means participation in all tracks
+            const p = Array.from({ length: all_tracks.length }, () => new Set<number>());
+            pd.parts.forEach(([d, t]) => p[d - 1]?.add(t));
+            pd.parts = p.map(s => Array.from(s));
+        }));
+
         const release = new Release(credits, all_tracks);
         await release.assignRelaMap();
         return release;
     }
     private async assignRelaMap() {
         const allCreators = Array.from(new Set<string>([
-            ...Object.values(this.credits).flat(),
-            ...this.tracks.flatMap(d => d.flatMap(t => Object.values(t.credits).flat())),
+            ...Object.values(this.credits).flatMap(Object.keys),
         ]));
         const qr = await queryNameOrAliasBulk(allCreators);
         this.relaMap = new Map(allCreators.map((creator, i) => [creator, qr[i]]));
@@ -145,19 +171,16 @@ export class Release {
      * e.g. [["作曲", ["A", "B"]], ["作词", ["A", ...
      */
     intoRoleSummary(name2staff: ResolvedRelaMap): [string, string[]][] {
-        const r = new Map<string, Set<string>>(Object.values(Role).map(k => [k, new Set()]));
-        function setCredits(credits: Credits) {
-            Object.entries(credits).forEach(([roleID, creators]) => {
-                const rx = r.get(roleID) || r.set(roleID, new Set<string>()).get(roleID)!;
-                creators.forEach(creator => rx.add(creator));
-            });
-        }
-        setCredits(this.credits);
-        this.tracks.forEach(d => d.forEach(t => setCredits(t.credits)));
-        r.delete(Role.undef);
-        const rs: [string, string[]][] = Array.from(r.entries())
-            .map(([roleID, creators]) => [roleID, Array.from(creators).map((c) => this.formatCreator(c, name2staff.get(c)![0]?.name))]);
-        return this.coalesceInstrumentalRoles(rs);
+        const rs = Object.entries(this.credits).map(([roleID, creators]) =>
+            [
+                roleID,
+                Object.keys(creators).map(c => this.formatCreator(c, name2staff.get(c)![0]?.name))
+            ] as [string, string[]]
+        );
+        const rsc = this.coalesceInstrumentalRoles(rs);
+        const emptyRoles = new Set<string>(Object.values(Role).slice(1))
+        rsc.forEach(([roleID, _]) => emptyRoles.delete(roleID));
+        return rsc.concat(Array.from(emptyRoles).map(roleID => [roleID, []]));
     }
 
     private formatCreator(name: string, primaryName: string | undefined): string {
@@ -186,35 +209,18 @@ export class Release {
      * e.g. [[10042, ["作曲#1,3", "作词#2"]], ...
      */
     intoCreatorSummary(name2staff: ResolvedRelaMap): [number, string[]][] {
-        const nTracks = this.tracks.length;
         let r = new Map<number, Map<string, number[][]>>();  // staff_id -> { role -> tracks }
-        function setCredits(credits: Credits, fn: (roleID: string, rtm: Map<string, number[][]>) => void) {
-            Object.entries(credits).forEach(([roleID, creators]) => {
-                if (roleID.startsWith("乐器-")) roleID = "乐器";
-                creators.forEach(creator => {
-                    const staff = name2staff.get(creator)![0];
-                    if (!staff) { return; }
-                    const rtm = r.get(staff.id) ?? new Map<string, number[][]>();
-                    fn(roleID, rtm);
-                    r.set(staff.id, rtm);
-                });
+        Object.entries(this.credits).forEach(([roleID, creators]) => {
+            if (roleID.startsWith("乐器-")) roleID = "乐器";
+            Object.entries(creators).forEach(([creator, pd]) => {
+                const staff = name2staff.get(creator)![0];
+                if (!staff) return;
+                const rtm = r.get(staff.id) ?? new Map<string, number[][]>();
+                rtm.set(roleID, pd.parts);
+                r.set(staff.id, rtm);
             });
-        }
-        setCredits(this.credits, (roleID, rtm) => rtm.set(roleID, []));
-        this.tracks.forEach((d, i) =>
-            d.forEach((t, j) => {
-                setCredits(t.credits, (roleID, rtm) => {
-                    let rt = rtm.get(roleID)
-                    rt = !rt || rt.length === 0 ? Array.from({ length: nTracks }, () => []) : rt;
-                    const rti = rt[i];
-                    if (rti.length === 0 || rti[rti.length - 1] !== j + 1) {
-                        rti.push(j + 1);
-                    }
-                    rtm.set(roleID, rt);
-                });
-            })
-        );
-        const isMultiDisc = nTracks > 1;
+        });
+        const isMultiDisc = this.tracks.length > 1;
         return Array.from(r.entries())
             .map(([staffID, rtm]) => {
                 const rts = Array.from(rtm.entries())
@@ -225,6 +231,30 @@ export class Release {
                 return [staffID, rts];
             });
     }
+
+    /**
+     * List per-track creator info.
+     */
+    intoTrackSummary(): [CreditsText, CreditsText[][]] {
+        const r0: CreditsText = {};
+        const r = this.tracks.map((disc) => Array.from({ length: disc.length }, () => ({} as CreditsText)));
+        Object.entries(this.credits).forEach(([roleID, creators]) => {
+            Object.entries(creators).forEach(([creator, pd]) => {
+                if (pd.parts.length === 0) {
+                    r0[roleID] = r0[roleID] || [];
+                    r0[roleID].push(creator);
+                    return;
+                }
+                pd.parts.forEach((p, i) => p.forEach(j => {
+                    const rij = r[i]?.[j - 1];
+                    if (!rij) return;
+                    rij[roleID] = rij[roleID] || [];
+                    rij[roleID].push(creator);
+                }));
+            });
+        });
+        return [r0, r];
+    }
 }
 
 
@@ -233,7 +263,7 @@ function parseSongCredit(
     trimCircle: boolean = true,
     preserveAllSpace: boolean = false,
     autofillArrangement: boolean = true,
-): { [roleID: string]: string[] } {
+): Credits {
     const testEdge: (c0: string, c2: string) => boolean
         = preserveAllSpace ? (_) => true : (c0, c2) => /[a-zA-Z]$/.test(c0) && /^[a-zA-Z]/.test(c2);
     let cfs_ = [...cfs];
@@ -249,42 +279,53 @@ function parseSongCredit(
             cfs_.splice(i, 1);
         }
     }
-    // group cfs by type
-    const chunks = cfs_.reduce((ch, cf) => {
-        if (ch.length === 0 || ch[ch.length - 1][0].type !== cf.type) {
-            ch.push([cf]);
-        } else {
-            ch[ch.length - 1].push(cf);
+    // assign creators to roles (and mental gymnastics for parts)
+    let credits: Credits = {};
+    let roleIDs = new Set<string>();
+    let lastPersonData: PersonData[] | null = null; // role: creator(parts), ...
+    let lastRoleParts: [number, number][] | null = null; // role(parts): creator
+    cfs_.forEach(cf => {
+        switch (cf.type) {
+            case "role":
+                if (lastPersonData) {
+                    roleIDs.clear();
+                    lastPersonData = null;
+                }
+                lastRoleParts = null;
+                const roleName = cf.value.trim();
+                if (roleName.startsWith("乐器-")) {
+                    roleIDs.add(roleName);
+                    break;
+                }
+                const rids = ROLE_MAP[roleName.toLowerCase()];
+                if (!rids) { console.warn(`Unknown role tag: ${cf.value}`); break; }
+                rids.forEach(rid => roleIDs.add(rid));
+                break;
+            case "creator":
+                let name = cf.value;
+                if (trimCircle) {
+                    name = name.replace(/[(（].+[）)]$/, "");
+                    if (!name) break; // don't include "trimmed circle"
+                }
+                lastPersonData = Array.from(roleIDs).map(rid => {
+                    const rs = credits[rid] = credits[rid] || {};
+                    return rs[name] = rs[name] || { parts: [] };
+                });
+                if (lastRoleParts) {
+                    lastPersonData.forEach(p => p.parts.push(...lastRoleParts!));
+                }
+                break;
+            case "parts":
+                const partsString = cf.value.slice(1, -1).replace(/^(Tr|tr|M|m)\.?\s*/, "");
+                const parts = parsePart(partsString); // for now it's [disc, track][]; will be converted number[disc-1][track]
+                if (!lastPersonData) {
+                    lastRoleParts = parts;
+                    break;
+                }
+                lastPersonData.forEach(p => p.parts.push(...parts));
+                break;
         }
-        return ch;
-    }, [] as CreditField[][]);
-    // assign creators to roles
-    let credits: { [roleID: string]: string[] } = {};
-    for (let i = 0; i < chunks.length / 2; i++) {
-        const [roleTags, creators] = [chunks[i * 2], chunks[i * 2 + 1]];
-        if (!roleTags || !creators) { continue; }
-        const roleIDs = roleTags.flatMap(roleTag => {
-            const roleName = roleTag.value.trim();
-            if (roleName.startsWith("乐器-")) {
-                return [roleName];
-            }
-            const roleIDs = ROLE_MAP[roleName.toLowerCase()];
-            if (!roleIDs) { console.warn(`Unknown role tag: ${roleTag.value}`); return []; }
-            return roleIDs;
-        });
-        const creatorNames = creators.flatMap(creator => {
-            let name = creator.value;
-            if (trimCircle) {
-                name = name.replace(/[(（].+[）)]$/, "");
-                if (!name) { return []; }  // don't include "trimmed circle"
-            }
-            return [name];
-        });
-        Array.from(new Set(roleIDs)).forEach(roleID => {
-            credits[roleID] = credits[roleID] || [];
-            credits[roleID].push(...creatorNames);
-        });
-    }
+    });
     if (autofillArrangement && !credits[Role.A] && credits[Role.C]) {
         credits[Role.A] = credits[Role.C];
     }
