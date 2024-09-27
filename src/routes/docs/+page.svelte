@@ -177,6 +177,29 @@ An Innocent Breeze    performer: Nego_tiator
 <span class="text-bgm-pink">DISC</span>
 NORN                  performer: Rigël Theatre</pre>
 		</section>
+		<section>
+			<h3 id="grammar-parts">直接标注参与曲目</h3>
+			<p>
+				有时候，发布者会很贴心地帮你整理好每个人参与的曲目。这里支持“人名(参与)”和“职位(参与)”两类标记方式：
+			</p>
+			<pre>
+Compose／Jeet Singh<span class="text-bgm-pink">(1-4,8)</span>, Salita<span class="text-bgm-pink"
+					>(6)</span
+				>
+Lyrics／Salita<span class="text-bgm-pink">(3,6)</span>, ルシュカ<span class="text-bgm-pink"
+					>(2,5)</span
+				>, Cherose<span class="text-bgm-pink">(7)</span></pre>
+			<pre>
+Vocal<span class="text-bgm-pink">(4,5,8)</span>:  Cherose
+Vocal<span class="text-bgm-pink">(7,10)</span>:   Cathy</pre>
+			<p>带 Tr. 或者 M 之类的前缀都可以</p>
+			<pre>
+Compose／Jeet Singh<span class="text-bgm-pink">(Tr.1-4,8)</span>, Salita<span class="text-bgm-pink"
+					>(tr 6)</span
+				>, ルシュカ<span class="text-bgm-pink">(M5)</span>, Cherose<span class="text-bgm-pink"
+					>(m7)</span
+				></pre>
+		</section>
 		<blockquote>
 			“至此，为了满足维基人对补完信息那无休止的欲望，小小的 rkgk
 			语言被缝上了怪诞的语法枝……它蜷缩着……不住地颤抖着……”
@@ -196,7 +219,7 @@ NORN                  performer: Rigël Theatre</pre>
 法界之锅 <span class="text-bgm-grey">原曲：法界の火</span></pre>
 		</section>
 		<section>
-			<h3 id="grammar-comment">乐器标注</h3>
+			<h3 id="grammar-instrument">乐器标注</h3>
 			<p>
 				例如，下面的写法会在 infobox 中的「乐器」字段里填上 <code>JungMato (guitar)</code>
 			</p>
