@@ -15,8 +15,8 @@
 
 	//            ┌----> rawValueView
 	// (edit) > value <--rawValue < (edit)
-	let rawValue: string[] = $state(config.toRaw(value));
-	let rawValueView: string[] = $derived(config.toRaw(value));
+	let rawValue: [string, string][] = $state(config.toRaw(value));
+	let rawValueView: [string, string][] = $derived(config.toRaw(value));
 	$effect(() => {
 		value = config.fromRaw(rawValue);
 		action.update();
@@ -31,7 +31,7 @@
 	}
 
 	let optionsFiltered = $derived.by(() => {
-		const selected = new Set(rawValue);
+		const selected = new Set(rawValue.map((v) => v[1]));
 		let opts = config.options.filter((v) => !selected.has(optionText(v)));
 		if (inputValue !== '') {
 			const sp = inputValue.toLowerCase();
@@ -47,11 +47,12 @@
 			if (optionsFiltered.length === 1) {
 				inputValue = optionText(optionsFiltered[0]);
 			}
-			const i = rawValue.findIndex((v) => v === inputValue);
+			const i = rawValue.map((v) => v[1]).findIndex((v) => v === inputValue);
 			if (i !== -1) {
 				return;
 			}
-			rawValue.push(inputValue);
+			const [, v, k] = /([^\s]+?)\s*[（(](.+)[）)]/.exec(inputValue) ?? ['', inputValue, ''];
+			rawValue.push([k, v]);
 			inputValue = '';
 		},
 		delete: (hard: boolean) => {
@@ -95,7 +96,7 @@
 		>
 			{#if optionsFiltered.length === 0 && inputValue !== ''}
 				<div class="bg-bgm-grey/10 border-none px-3 py-2 w-full text-sm text-align-start">
-					回车添加 {@render Tag(inputValue, rawValue.length)}
+					回车添加 {@render Tag(['', inputValue], rawValue.length)}
 				</div>
 			{:else}
 				{#each optionsFiltered as v, i}
@@ -104,13 +105,13 @@
 						class="bg-bgm-lightgrey hover:bg-bgm-grey/10 focus:bg-bgm-grey/10 focus:outline-none border-none px-3 py-2 w-full text-sm text-align-start cursor-pointer"
 						tabindex="0"
 						onmousedown={() => {
-							rawValue.push(text);
+							rawValue.push(['', text]);
 							inputValue = '';
 							setTimeout(inputFocus, 0);
 						}}
 						onkeydown={(e) => {
 							if (e.key === 'Enter') {
-								rawValue.push(text);
+								rawValue.push(['', text]);
 								inputValue = '';
 								setTimeout(inputFocus, 0);
 							} else if (e.key === 'ArrowDown') {
@@ -139,11 +140,13 @@
 	{/if}
 </div>
 
-{#snippet Tag(text: string, i: number)}
+{#snippet Tag(text: [string, string], i: number)}
+	{@const rep = text[0] === '' ? text[1] : `${text[1]} (${text[0]})`}
 	<span class="inline-block px-1.5 py-1 bg-bgm-lightgrey rounded-lg mr-1 my-1.0 align-center">
-		{text}
+		{rep}
 		<button
 			title="删除标签"
+			aria-label="删除标签「{rep}」"
 			class="color-bgm-grey border-none bg-transparent p-0 cursor-pointer"
 			tabindex="-1"
 			onclick={() => {

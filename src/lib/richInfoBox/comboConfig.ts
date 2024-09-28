@@ -1,8 +1,8 @@
 
 export interface ComboConfig<V> {
     options: (string | { text: string, note: string })[]
-    toRaw: (value: V) => string[]
-    fromRaw: (rawValue: string[]) => V
+    toRaw: (value: V) => [string, string][]
+    fromRaw: (rawValue: [string, string][]) => V
 }
 
 export const COMBO_CONFIG: {
@@ -22,11 +22,14 @@ export const COMBO_CONFIG: {
             "DL Card",
             "Maxi",
         ],
-        toRaw(value: string): string[] {
-            return value ? value.split(',').map((v) => v.trim()) : [];
+        toRaw(value: string): [string, string][] {
+            if (Array.isArray(value)) {
+                return value.map(([_, v]) => ["", v]);
+            }
+            return value ? value.split(',').map((v) => ["", v.trim()]) : [];
         },
-        fromRaw(rawValue: string[]): string {
-            return rawValue.join(', ');
+        fromRaw(rawValue: [string, string][]): string {
+            return rawValue.map((v) => v[1]).join(', ');
         },
     },
     平台: {
@@ -48,11 +51,14 @@ export const COMBO_CONFIG: {
             "Xbox One",
             "Xbox Series X/S",
         ],
-        toRaw(value: [string, string][]): string[] {
-            return value.map((v) => v[1]);
+        toRaw(value: [string, string][]): [string, string][] {
+            if (typeof value === 'string') {
+                return value === "" ? [] : [["", value]];
+            }
+            return value;
         },
-        fromRaw(rawValue: string[]): [string, string][] {
-            return rawValue.map((v) => ['', v]);
+        fromRaw(rawValue: [string, string][]): [string, string][] {
+            return rawValue;
         },
     },
 }
