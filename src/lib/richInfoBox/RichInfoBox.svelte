@@ -129,9 +129,12 @@
 			},
 			arraySwitch: () => {
 				if (!Array.isArray(value[i][1])) {
-					value[i][1] = value[i][1].split('、').map((v) => ['', v]);
+					value[i][1] = value[i][1]
+						.split('、')
+						.map((v) => /([^\s]+?)\s*[（(](.+)[）)]/.exec(v) ?? ['', v, ''])
+						.map(([, v, k]) => [k, v]);
 				} else {
-					value[i][1] = value[i][1].map(([_, v]) => v).join('、');
+					value[i][1] = value[i][1].map(([k, v]) => (k ? `${v} (${k})` : v)).join('、');
 				}
 				update();
 				setTimeout(() => focusIth(i), 0);

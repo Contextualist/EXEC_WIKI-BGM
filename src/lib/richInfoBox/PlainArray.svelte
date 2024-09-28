@@ -18,8 +18,21 @@
 	let { keyClass } = getContext<CellConfig>('cell-config');
 	let currContainer: HTMLElement | null = null;
 
+	const canvas = document.createElement('canvas');
+	const ctx = canvas.getContext('2d')!;
+	ctx.font = '14px sans-serif';
+	let maxKeyWidth = $derived.by(() => {
+		let max = 0;
+		value[1].forEach(([k, _]) => {
+			if (!k) return;
+			const w = ctx.measureText(k).width;
+			if (w > max) max = w;
+		});
+		return max;
+	});
+
 	function focusIth(i: number) {
-		const keyEls = currContainer!.querySelectorAll('.rich-infobox-array > div');
+		const keyEls = currContainer!.querySelectorAll('.rich-infobox-array > div:nth-child(2)');
 		(keyEls[i] as HTMLElement)?.focus();
 	}
 
@@ -74,18 +87,27 @@
 			{/if}
 		</div>
 		{#each value[1] as val_i, i (val_i)}
-			<div animate:flip={{ duration: 200 }} class="rich-infobox-array relative">
+			<div animate:flip={{ duration: 200 }} class="rich-infobox-array flex relative">
+				<Cell
+					bind:value={value[1][i][0]}
+					action={{
+						...action,
+						...actAs(value[1], i)
+					}}
+					class="rich-infobox-key p-0 mt-2 pr-1 min-w-[1em] max-w-[5em] focus:outline-none"
+					style="width: {maxKeyWidth}px;"
+				/>
 				<Cell
 					bind:value={value[1][i][1]}
 					action={{
 						...action,
 						...actAs(value[1], i)
 					}}
-					class="mt-2 pl-1 border-l-solid border-bgm-grey border-1 focus:outline-none"
+					class="mt-2 pl-1 border-l-solid border-bgm-grey border-2 focus:outline-none"
 				/>
 				<button
 					title="删除列表项"
-					class="absolute left--5 top-[calc(50%-0.5rem)] color-bgm-teal/50 border-none bg-transparent p-0 cursor-pointer"
+					class="absolute left--5 top-[calc(50%-0.25rem)] color-bgm-teal/50 border-none bg-transparent p-0 cursor-pointer"
 					tabindex="-1"
 					onclick={() => {
 						value[1].splice(i, 1);

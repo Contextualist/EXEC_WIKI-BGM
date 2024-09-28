@@ -30,15 +30,15 @@
 <script lang="ts">
 	import 'uno.css';
 	import { onMount } from 'svelte';
+	import { type HTMLAttributes } from 'svelte/elements';
 	import { isMac, isFirefox } from '../utils.ts';
 
-	interface CellProps {
+	interface CellProps extends HTMLAttributes<HTMLDivElement> {
 		value: string;
 		action: CellActions;
-		class: string;
 		this_?: HTMLElement;
 	}
-	let { value = $bindable(), action, class: class_, this_ = $bindable() }: CellProps = $props();
+	let { value = $bindable(), action, this_ = $bindable(), ...rest }: CellProps = $props();
 	onMount(() => {
 		if (isFirefox && this_) {
 			this_.contentEditable = 'true';
@@ -124,5 +124,5 @@
 	role="textbox"
 	tabindex="0"
 	spellcheck="false"
-	class={class_}
+	{...rest}
 ></div>
