@@ -111,7 +111,9 @@
 				value.splice(newI, 0, ['未命名项', '']);
 				update();
 				setTimeout(() => {
-					const keyEl = document.querySelectorAll('#rich-infobox .rich-infobox-key')[newI];
+					const keyEl = document.querySelectorAll('#rich-infobox .rich-infobox-key:not(.p-0)')[
+						newI
+					];
 					(keyEl as HTMLElement).focus();
 					setTimeout(() => selectElementContents(keyEl as HTMLElement), 0);
 				}, 250);
