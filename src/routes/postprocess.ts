@@ -151,7 +151,7 @@ export class Release {
             if (pd.parts.length === 0) return; // empty parts means participation in all tracks
             const p = Array.from({ length: all_tracks.length }, () => new Set<number>());
             pd.parts.forEach(([d, t]) => p[d - 1]?.add(t));
-            pd.parts = p.map(s => Array.from(s));
+            pd.parts = p.map(s => Array.from(s).sort((a, b) => a - b));
         }));
 
         const release = new Release(credits, all_tracks);
@@ -171,10 +171,17 @@ export class Release {
      * e.g. [["作曲", ["A", "B"]], ["作词", ["A", ...
      */
     intoRoleSummary(name2staff: ResolvedRelaMap): [string, string[]][] {
+        function firstAppear(p: number[][]): number {
+            if (p.length === 0) return -1;
+            const disc = p.findIndex(x => x.length > 0);
+            return 1000 * disc + p[disc][0];
+        }
         const rs = Object.entries(this.credits).map(([roleID, creators]) =>
             [
                 roleID,
-                Object.keys(creators).map(c => this.formatCreator(c, name2staff.get(c)![0]?.name))
+                Object.entries(creators)
+                    .sort(([_, da], [__, db]) => firstAppear(da.parts) - firstAppear(db.parts))
+                    .map(([c, _]) => this.formatCreator(c, name2staff.get(c)![0]?.name))
             ] as [string, string[]]
         );
         const rsc = this.coalesceInstrumentalRoles(rs);
