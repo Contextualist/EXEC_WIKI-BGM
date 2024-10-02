@@ -8,6 +8,7 @@
 		type DirectionKey,
 		type CellConfig
 	} from './Cell.svelte';
+	import { lintActions } from './lintConfig.ts';
 
 	interface PlainArrayProps {
 		value: [string, [string, string][]];
@@ -16,6 +17,10 @@
 	}
 	let { value = $bindable(), action, entryMod }: PlainArrayProps = $props();
 	let { keyClass } = getContext<CellConfig>('cell-config');
+	let actionWithLint = $derived.by(() => ({
+		...action,
+		...lintActions(value[0])
+	}));
 	let currContainer: HTMLElement | null = null;
 
 	const canvas = document.createElement('canvas');
@@ -100,7 +105,7 @@
 				<Cell
 					bind:value={value[1][i][1]}
 					action={{
-						...action,
+						...actionWithLint,
 						...actAs(value[1], i)
 					}}
 					class="mt-2 pl-1 border-l-solid border-bgm-grey border-2 focus:outline-none"

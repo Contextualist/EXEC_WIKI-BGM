@@ -188,11 +188,7 @@
 						{entryMod}
 					/>
 				{:else}
-					{@const actionWithLint = {
-						...action,
-						...(value[i][0] in AUTOFIX_CONFIG ? { autofix: AUTOFIX_CONFIG[value[i][0]] } : {})
-					}}
-					<Plain bind:value={value[i] as [string, string]} action={actionWithLint} {entryMod} />
+					<Plain bind:value={value[i] as [string, string]} {action} {entryMod} />
 				{/if}
 			{:else}
 				<PlainArray bind:value={value[i] as [string, [string, string][]]} {action} {entryMod} />

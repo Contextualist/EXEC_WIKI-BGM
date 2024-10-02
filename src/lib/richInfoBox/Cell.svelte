@@ -115,6 +115,7 @@
 	}}
 	onfocusout={() => {
 		if (!action.autofix) return;
+		if (typeof value !== 'string') return;
 		const fixed = action.autofix(value);
 		if (fixed) {
 			value = fixed;

@@ -1,6 +1,12 @@
 
+export function lintActions(key: string) {
+    return {
+        ...(key in AUTOFIX_CONFIG ? { autofix: AUTOFIX_CONFIG[key] } : {}),
+    }
+}
+
 export const AUTOFIX_CONFIG = ([
-    [autofixDate, ['发售日期', '发行日期', '连载开始', '放送开始', '开始', '结束']],
+    [autofixDate, ['发售日期', '发行日期', '连载开始', '放送开始', '开始', '播放结束', '结束']],
 ] as [any, string[]][]).reduce((obj, [fn, keys]) => {
     keys.forEach((key) => obj[key] = fn);
     return obj;
@@ -8,7 +14,7 @@ export const AUTOFIX_CONFIG = ([
 
 
 const RE_DATE = /(\d{4})\D+(\d+)\D+(\d+)/u;
-const RE_EVENT = /[\(（](.*?)[\)）]\w*$/u;
+const RE_EVENT = /[\(（](.*?)[\)）]\s*$/u;
 function autofixDate(value: string): string | void {
     const date = RE_DATE.exec(value);
     if (!date) return;
