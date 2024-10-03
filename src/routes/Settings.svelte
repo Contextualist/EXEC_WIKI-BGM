@@ -42,6 +42,7 @@
 	import LinkSvg from '$lib/LinkSvg.svelte';
 	import { toast } from './Toast.svelte';
 	import Tooltip from '$lib/Tooltip.svelte';
+	import { localStorage$state } from './utils.svelte';
 
 	interface SettingsProps {
 		settings: Settings;
@@ -93,6 +94,7 @@
 		}
 	];
 
+	let lastExportTime = localStorage$state('last-export-time', Date.now());
 	async function importBackup() {
 		let el = document.createElement('input');
 		el.type = 'file';
@@ -118,6 +120,7 @@
 		document.body.appendChild(el);
 		el.click();
 		document.body.removeChild(el);
+		lastExportTime.val = Date.now();
 	}
 
 	function closeRelaDB() {

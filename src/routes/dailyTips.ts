@@ -13,7 +13,8 @@ const TIPS = [
     "又写完一个条目啦，休息一下吧，去看个书好不好？",
     "您还有许多条目需要写，现在还不能休息哦～",
     '<a href="https://zh.wikipedia.org/wiki/刺猬"><b>刺猬</b></a>不能喝<a href="https://zh.wikipedia.org/wiki/牛奶">牛奶</a>。<a href="https://zh.wikipedia.org/wiki/柠檬"><b>柠檬</b></a>富含<a href="https://zh.wikipedia.org/wiki/维生素C">维生素C</a>。',
-    '「M3」とは「Music Media-Mix Market」の略<sup><a href="https://ja.wikipedia.org/wiki/M3_(同人)">[1]</a></sup>。'
+    '「M3」とは「Music Media-Mix Market」の略<sup><a href="https://ja.wikipedia.org/wiki/M3_(同人)">[1]</a></sup>。',
+    '大家好，我是本群的“提醒备份小助手”，希望此刻看到消息的人可以前往设置导出关联库备份。下一次清理浏览器缓存时，就用得上啦'
 ]
 
 export function getRandomTip() {

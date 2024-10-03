@@ -31,6 +31,7 @@
 	import { importPersonCreated, importRelaHistory } from './relaDB.ts';
 	import Button from './Button.svelte';
 	import { toast } from './Toast.svelte';
+	import { localStorage$state } from './utils.svelte';
 
 	interface RelaDBProps {
 		bgmUID: string;
@@ -38,6 +39,13 @@
 		class?: string;
 	}
 	let { bgmUID = $bindable(), closeRelaDB, class: class_ = '' }: RelaDBProps = $props();
+
+	let lastExportTime = localStorage$state('last-export-time', Date.now());
+	let exportReminder = $derived.by(() => {
+		return Date.now() - lastExportTime.val > 1000 * 60 * 60 * 24 * 30
+			? '有一段时间没有备份关联库了，前往设置导出备份吧'
+			: '';
+	});
 
 	async function addPerson(p: Staff) {
 		p.aliases = p.aliases.map((a) => a.replace(/\s*[(（].+[）)]$/, '')); // trim circle names
@@ -104,6 +112,9 @@
 
 <div class={class_}>
 	<div class="text-bgm-darkgrey text-sm mb-2">当前有 {numEntries} 个人物条目</div>
+	{#if exportReminder}
+		<div class="text-bgm-pink text-sm mb-2">{exportReminder}</div>
+	{/if}
 
 	<div class={relaElClass}>
 		<div class={labelClass}>从我的班古米同步...</div>

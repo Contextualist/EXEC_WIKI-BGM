@@ -21,6 +21,10 @@ export function throttle(fn: Function, delay: number) {
 }
 
 export function localStorage$state<T>(key: string, initialValue: T): { val: T, evolve: (fn: (v: T) => T) => void } {
+    const store = debounce((newValue: T) => {
+        window.localStorage.setItem(key, JSON.stringify(newValue));
+    }, 600);
+
     key = `execwb-${key}`
     let _value = initialValue;
     const item = window.localStorage.getItem(key);
@@ -29,12 +33,10 @@ export function localStorage$state<T>(key: string, initialValue: T): { val: T, e
         if (typeof _value === 'object' && !Array.isArray(_value) && _value !== null) {
             _value = { ...initialValue, ..._value };
         }
+    } else {
+        store(initialValue);
     }
     let value = $state(_value)
-
-    const store = debounce((newValue: T) => {
-        window.localStorage.setItem(key, JSON.stringify(newValue));
-    }, 600);
 
     return {
         get val() {
