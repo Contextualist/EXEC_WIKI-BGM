@@ -230,8 +230,8 @@
 				if (title) titleState.val = title;
 				if (intro) descState.val = intro;
 			},
-			setTrackInfo: (info: InfoRelease) => {
-				setTrackInfo(writeTrackInfo(info));
+			setTrackInfo: (info: InfoRelease, style: 'parts' | 'tracks' | 'default' = 'default') => {
+				setTrackInfo(writeTrackInfo(info, style));
 			},
 			setInfoBox: (content: string, override: boolean) => {
 				if (override) {

@@ -17,7 +17,7 @@ export interface ImportSourceOption {
 export interface AutoEditor {
     associableFields: Set<string>;
     editTitleIntro: (title: string, intro: string) => void;
-    setTrackInfo: (info: Release) => void;
+    setTrackInfo: (info: Release, style?: 'parts' | 'tracks') => void;
     setInfoBox: (content: string, override: boolean) => void;
     setInfoBoxField: (field: string, value: string | string[], options?: { editOnly?: boolean }) => boolean;
     unlinkInfoBoxField: (field: string) => void;

@@ -84,7 +84,7 @@ export class MusicBrainz implements ImportSource {
                 })
             }));
 
-            editor.setTrackInfo({ credits: relaMap0, discs });
+            editor.setTrackInfo({ credits: relaMap0, discs }, 'tracks');
             Object.entries(extraRoles).forEach(([kw, names]) => {
                 editor.setInfoBoxField(kw.slice(3), Array.from(new Set(names)).join("、"));
             });
@@ -126,6 +126,7 @@ const ROLE2KEYWORD: Record<string, string> = {
     'audio director': '录音',
     'remixer': 'EX-Remix',
     'design': 'EX-设计',
+    'graphic design': 'EX-设计',
     'engineer': 'EXCLUDE',
     'sound': 'EXCLUDE',
     'conductor': 'EXCLUDE',

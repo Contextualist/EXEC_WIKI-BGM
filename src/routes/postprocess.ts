@@ -364,11 +364,11 @@ function _pagenoJoin(arr: number[]): string[] {
 }
 
 /// e.g. [1, 2, 3, 5, 6, 7, 9, 10] => "1-3,5-7,9,10"
-function pagenoJoin(arr: number[]): string {
+export function pagenoJoin(arr: number[]): string {
     return _pagenoJoin(arr).join(",");
 }
 
-function multiDiscPageNoJoin(arr: number[][]): string {
+export function multiDiscPageNoJoin(arr: number[][]): string {
     const r = [];
     for (const [i, a] of arr.entries()) {
         if (a.length === 0) { continue; }
