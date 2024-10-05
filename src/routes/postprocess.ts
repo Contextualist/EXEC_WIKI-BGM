@@ -120,7 +120,6 @@ export class Release {
             return parseSongCredit(cfs,
                 options.shouldCleanCircleParentheses,
                 options.allowAllSpaceInCreatorName,
-                options.shouldAutofillArrangment
             );
         }
 
@@ -146,7 +145,28 @@ export class Release {
             }
             return tracks.filter(t => t.title); // remove empty lines from normalization
         });
-        // convert parts from [disc, track][] to number[disc-1][track]
+
+        if (options.shouldAutofillArrangment && Role.C in credits) {
+            const gather = (role: Role): string[][][] => {  // plist[disc-1][track-1][]
+                const plist: string[][][] = all_tracks.map(disc => Array.from({ length: disc.length }, () => []));
+                Object.entries(credits[role] ?? {}).forEach(([name, pd]) => {
+                    pd.parts.forEach(([d, t]) => plist[d - 1]?.[t - 1]?.push(name));
+                });
+                return plist;
+            }
+            const composers = gather(Role.C);
+            const arrangers = gather(Role.A);
+            const creditA = credits[Role.A] = credits[Role.A] ?? {};
+            arrangers.forEach((disc, i) => disc.forEach((names, j) => {
+                if (names.length > 0) return;
+                composers[i][j].forEach(name => {
+                    creditA[name] = creditA[name] ?? { parts: [] };
+                    creditA[name].parts.push([i + 1, j + 1]);
+                });
+            }));
+        }
+
+        // convert parts from [disc, track][] to (track[])[disc-1]
         Object.values(credits).forEach(creatorData => Object.values(creatorData).forEach(pd => {
             if (pd.parts.length === 0) return; // empty parts means participation in all tracks
             const p = Array.from({ length: all_tracks.length }, () => new Set<number>());
@@ -269,7 +289,6 @@ function parseSongCredit(
     cfs: CreditField[],
     trimCircle: boolean = true,
     preserveAllSpace: boolean = false,
-    autofillArrangement: boolean = true,
 ): Credits {
     const testEdge: (c0: string, c2: string) => boolean
         = preserveAllSpace ? (_) => true : (c0, c2) => /[a-zA-Z]$/.test(c0) && /^[a-zA-Z]/.test(c2);
@@ -333,9 +352,6 @@ function parseSongCredit(
                 break;
         }
     });
-    if (autofillArrangement && !credits[Role.A] && credits[Role.C]) {
-        credits[Role.A] = credits[Role.C];
-    }
     return credits;
 }
 
