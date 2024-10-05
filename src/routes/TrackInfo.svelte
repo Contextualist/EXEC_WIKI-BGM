@@ -8,15 +8,22 @@
 <script lang="ts">
 	import 'uno.css';
 	import CodeMirror, { HighlightStyle, tags } from './CodeMirror.svelte';
+	import { partsTracksConverter } from './codeMirrorExtension.ts';
 	import { localStorage$state } from './utils.svelte.ts';
 	import { rkgk, type RawRelease } from './lang-rkgk.ts';
 	import { getLinter } from './lint-rkgk.ts';
 
 	interface TrackInfoProps {
 		onUpdate: (disc: RawRelease) => void;
+		writeTrackInfoFromRelease: (style: 'tracks' | 'parts') => string;
 		class?: string;
 	}
-	let { onUpdate, class: class_ = '', ...rest }: TrackInfoProps = $props();
+	let {
+		onUpdate,
+		writeTrackInfoFromRelease,
+		class: class_ = '',
+		...rest
+	}: TrackInfoProps = $props();
 
 	const placeholder = '物凄い勢いでけーねが物凄いうた 編曲：sumijun 作詞：いずみん';
 	function filterPaste(text: string) {
@@ -40,7 +47,7 @@
 		{ tag: tags.comment, color: '#999' },
 		{ tag: tags.annotation, color: '#666' }
 	]);
-	const extensions = [getLinter()];
+	const extensions = [getLinter(), partsTracksConverter(writeTrackInfoFromRelease)];
 </script>
 
 <div {...rest} class="{class_} max-w-130">

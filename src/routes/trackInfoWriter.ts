@@ -1,5 +1,5 @@
 import { type Release } from "$lib/importSource";
-import { RE_ROLE_KEYWORD, pagenoJoin, multiDiscPageNoJoin } from "./postprocess";
+import { RE_ROLE_KEYWORD, pagenoJoin, multiDiscPageNoJoin, Release as FormalRelease } from "./postprocess";
 
 const RE_SEP = /[ 　\t&＆:：\/・、；,]/;
 const RE_LATIN_SPACE = /[A-Za-z] [A-Za-z]/;
@@ -79,6 +79,32 @@ function writeTrackInfoCreditParts(info: Release): string {
         return s;
     }).join('\n');
     return trackInfo;
+}
+
+export function fromFormalRelease(rf: Readonly<FormalRelease>): Release {
+    const r: Release = {
+        credits: {},
+        discs: rf.tracks.map((d) => ({
+            tracks: d.map((t) => ({ title: t.title, comment: t.comment, credits: {} }))
+        }))
+    }
+    Object.entries(rf.credits).forEach(([role, nameData]) => {
+        Object.entries(nameData).forEach(([name, pd]) => {
+            if (pd.parts.length === 0) {
+                r.credits[role] = r.credits[role] ?? [];
+                r.credits[role].push(name);
+                return;
+            }
+            pd.parts.forEach((discParts, i) => {
+                discParts.forEach((j) => {
+                    const trij = r.discs[i].tracks[j - 1].credits;
+                    trij[role] = trij[role] ?? [];
+                    trij[role].push(name);
+                });
+            });
+        });
+    });
+    return r
 }
 
 

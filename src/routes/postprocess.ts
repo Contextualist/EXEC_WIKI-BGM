@@ -339,7 +339,7 @@ function parseSongCredit(
     return credits;
 }
 
-const RE_TR = /^(Tr|tr)?\.?\d+\.?\s*/;
+const RE_TR = /^(Tr|tr)?[.．]?\d+[.．]?\s*/;
 function normalizeTitles(titles: string[]): string[] {
     titles = titles.map(title => title.trim());
     if (titles.length < 2) { return titles; }

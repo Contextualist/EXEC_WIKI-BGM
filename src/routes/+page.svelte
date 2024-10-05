@@ -21,7 +21,11 @@
 	import { importPersonCreated, importRelaHistory, importPersonBatch } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
 	import { getRandomTip } from './dailyTips.ts';
-	import { type Release as InfoRelease, writeTrackInfo } from './trackInfoWriter.ts';
+	import {
+		type Release as InfoRelease,
+		writeTrackInfo,
+		fromFormalRelease
+	} from './trackInfoWriter.ts';
 	import { localStorage$state } from './utils.svelte.ts';
 
 	const associableFields = new Set(Object.values(Role).slice(1));
@@ -156,7 +160,12 @@
 		</Button>
 	</div>
 	<div class="flex flex-wrap flex-justify-between h-66vh">
-		<TrackInfo {onUpdate} class="flex-basis-[38%] flex-grow-4 h-full" />
+		<TrackInfo
+			{onUpdate}
+			writeTrackInfoFromRelease={(style: 'parts' | 'tracks') =>
+				writeTrackInfo(fromFormalRelease(currentRelease), style)}
+			class="flex-basis-[38%] flex-grow-4 h-full"
+		/>
 		<div
 			class="flex-basis-[24%] flex-grow-3 h-full min-h-[30.5rem] mt-[0.8rem] flex flex-col flex-justify-between gap-row-xs"
 		>

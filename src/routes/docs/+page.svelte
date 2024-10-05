@@ -268,6 +268,10 @@ Compose／Jeet Singh<span class="text-bgm-pink">(Tr.1-4,8)</span>, Salita<span c
 						<td><kbd>{altOrOpt}</kbd> + <kbd>上/下</kbd></td>
 						<td>交换相邻的两行</td>
 					</tr>
+					<tr>
+						<td><kbd>{ctrlOrCmd}</kbd> + <kbd>shift</kbd> + <kbd>t</kbd></td>
+						<td>切换参与曲目标记方式</td>
+					</tr>
 				</tbody>
 			</table>
 		</section>
