@@ -18,6 +18,7 @@
 	import Toast, { toast } from './Toast.svelte';
 	import Scenario from '$lib/vn/Scenario.svelte';
 	import ImportDialog from './ImportDialog.svelte';
+	import SubmitDialog from './SubmitDialog.svelte';
 	import { importPersonCreated, importRelaHistory, importPersonBatch } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
 	import { getRandomTip } from './dailyTips.ts';
@@ -50,8 +51,7 @@
 			toast(`<b>嗯……？</b><br/>${getRandomTip()}`, { duration: 8000 });
 		}, 400);
 	}
-	async function pack() {
-		let text;
+	function marshal() {
 		const trackList = currentRelease.tracks.map((disc) => disc.map((tr) => tr.title).join('\n'));
 		const trackTable = currentRelease.tracks
 			.flatMap((disc, i) => disc.map((tr, j) => `${i + 1}|${j + 1}|${tr.title}|${tr.comment}|`))
@@ -60,19 +60,18 @@
 			.intoCreatorSummary(name2staff)
 			.map(([bid, rt]) => `https://bgm.tv/person/${bid}  ${rt.join('  ')}`)
 			.join('\n');
-		if (shouldPackRelaOnly) {
-			text = relaTable;
-		} else {
-			const data = {
-				title: titleState.val,
-				infoBox: infoBox.exportText(),
-				description: descState.val,
-				trackList: trackList.length > 1 ? trackList : trackList[0],
-				trackTable,
-				relaTable
-			};
-			text = JSON.stringify(data);
-		}
+		return {
+			title: titleState.val,
+			infoBox: infoBox.exportText(),
+			description: descState.val,
+			trackList: trackList.length > 1 ? trackList : trackList[0],
+			trackTable,
+			relaTable
+		};
+	}
+	async function pack() {
+		const data = marshal();
+		const text = shouldPackRelaOnly ? data.relaTable : JSON.stringify(data);
 		await navigator.clipboard.writeText(text);
 		toast('已复制到剪贴板');
 		if (shouldPackThenOpen) {
@@ -113,6 +112,7 @@
 	let showSettings = $state(false);
 	let showRelaDB = $state(false);
 	let showImportDialog = $state(false);
+	let showSubmitDialog = $state(false);
 	let showTour = $state(settingsState.val.bgmUID === '');
 
 	let optMode = $state(false);
@@ -132,6 +132,9 @@
 	onkeydown={(e: KeyboardEvent) => {
 		if (e.altKey) optMode = true;
 		if (e.shiftKey) shiftMode = true;
+		if (e.key === 'p' && (e.metaKey || e.ctrlKey) && e.shiftKey) {
+			showSubmitDialog = true;
+		}
 	}}
 	onkeyup={(e: KeyboardEvent) => {
 		if (!e.altKey) optMode = false;
@@ -273,4 +276,5 @@
 			}
 		}}
 	/>
+	<SubmitDialog bind:show={showSubmitDialog} getSubjectData={marshal} />
 </main>

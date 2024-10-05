@@ -1,5 +1,6 @@
 const CORS_ENDPOINT = 'https://exec-wiki-bgm-cors.hya.moe';
 const BGMAPI_ENDPOINT = 'https://api.bgm.tv';
+export const WRITE_GATEWAY_ENDPOINT = 'https://exec-wiki-bgm-write-gateway.hya.moe';
 
 import { type Staff } from './db';
 
@@ -144,6 +145,61 @@ export async function getUserNickname(username: string): Promise<string> {
     return result.nickname;
 }
 
+
+interface WriteSessionState {
+    nickname: string;
+    userID: number;
+    expiresAt: number;
+    isWikiEditor: boolean;
+}
+
+export interface SubjectInfoWrite {
+    type?: number;
+    platform?: number;
+    name?: string;
+    infobox?: string;
+    summary?: string;
+    nsfw?: boolean;
+    metaTags?: string;
+}
+
+export async function getWriteSessionState(token: string): Promise<WriteSessionState> {
+    const request = new Request(`${WRITE_GATEWAY_ENDPOINT}/client_hello`, auth(token, { method: 'GET', mode: 'cors' }));
+    const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
+    const result = await response.json();
+    return result as WriteSessionState;
+}
+
+export async function postSubjectInfo(token: string, subjectInfo: SubjectInfoWrite): Promise<number | string> {
+    const body = JSON.stringify(Object.assign({ summary: '', nsfw: false, platform: 0 }, subjectInfo));
+    const request = new Request(`${WRITE_GATEWAY_ENDPOINT}/p1/wiki/subjects`, auth(token, {
+        method: 'POST', mode: 'cors', body: body, headers: { 'Content-Type': 'application/json' }
+    }));
+    const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
+    const result = await response.json();
+    if (response.status === 401 || response.status === 500) {
+        const result = await response.json();
+        return `[${result.code}] ${result.message}`;
+    }
+    return result.subjectID;
+}
+
+export async function patchSubjectInfo(token: string, subjectID: number, commitMessage: string, subjectInfo: SubjectInfoWrite): Promise<void | string> {
+    const body = JSON.stringify({
+        commitMessage,
+        subject: subjectInfo
+    });
+    const request = new Request(`${WRITE_GATEWAY_ENDPOINT}/p1/wiki/subjects/${subjectID}`, auth(token, {
+        method: 'PATCH', mode: 'cors', body: body, headers: { 'Content-Type': 'application/json' }
+    }));
+    const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
+    if (response.status === 401 || response.status === 500) {
+        const result = await response.json();
+        return `[${result.code}] ${result.message}`;
+    }
+}
+
+
 function getBMGRGraphQLQuery(q: string): string {
     return JSON.stringify({
         "operationName": "CelebritySearch",
@@ -187,6 +243,17 @@ function getBMGRGraphQLQuery(q: string): string {
 
 function normalizePfpUrl(url: string): string {
     return url.replace(/\?r=\d+$/, '').replace('/pic/crt/s', '/pic/crt/l');
+}
+
+function auth(token: string, req: RequestInit = {}): RequestInit {
+    const headers = req.headers ?? {};
+    return {
+        ...req,
+        headers: {
+            ...headers,
+            Authorization: `Bearer ${token}`
+        }
+    };
 }
 
 /**
