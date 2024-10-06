@@ -71,7 +71,11 @@
 </script>
 
 <div class="flex relative">
-	<Cell bind:value={value[0]} {action} class="rich-infobox-key {keyClass}" />
+	<Cell
+		bind:value={value[0]}
+		{action}
+		class="rich-infobox-key {keyClass} {value[0].includes(':') ? 'bg-#9065ed/10' : ''}"
+	/>
 	<div class="rich-infobox-value" bind:this={currContainer}>
 		<div class="text-xs text-bgm-grey/65 line-height-5">
 			{#if value[1].length}

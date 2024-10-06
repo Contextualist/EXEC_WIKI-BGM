@@ -27,9 +27,14 @@ export default defineConfig({
             },
         },
     },
+    rules: [
+        [/^text-wrap-balance$/, () => ({
+            'text-wrap': 'balance',
+        })],
+    ],
     shortcuts: {
         'input-bgm': 'border-solid border-1 border-light-9 border-rd-md focus:outline-none focus:drop-shadow-sm focus:drop-shadow-color-bgm-pink',
-        'rich-infobox-key': 'flex-shrink-0 py-2 text-align-right px-2 focus:outline-none',
+        'rich-infobox-key': 'flex-shrink-0 py-2 text-align-right text-wrap-balance px-2 focus:outline-none',
         'rich-infobox-value': 'flex-grow-1 px-1 py-2 border-b-solid border-bgm-grey border-1 focus:outline-none',
     },
     preflights: [
