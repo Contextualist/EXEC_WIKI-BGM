@@ -94,7 +94,7 @@
 	}
 
 	function _arrWikiEncode(a: ArrayWiki): string {
-		return stringify(wikiRepack(a)).replaceAll(' =', '=');
+		return stringify(wikiRepack(a)).replaceAll(' =', '=').replaceAll('= {', '={');
 	}
 	export function toArrayWikiString(text: string): string {
 		return JSON.stringify(wikiUnpack(parse(text)));
