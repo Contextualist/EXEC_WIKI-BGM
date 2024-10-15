@@ -53,6 +53,7 @@ const roles = [
   'マスタリング',
   '艺术家',
   '歌唱',
+  '歌',
   '作詞作編曲',
   '作词作编曲',
   '作詞作曲',
@@ -110,10 +111,10 @@ module.exports = grammar({
         $.role,
         $._sep,
       )),
-      $._quotable_creator_name_maybeparts,
+      $._quotable_creator_field_maybeparts,
       repeat(seq(
         field('creatorSeparator', alias($._sep, $.creator_sep)),
-        $._quotable_creator_name_maybeparts,
+        $._quotable_creator_field_maybeparts,
       )),
       choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep))
     )),
@@ -123,12 +124,12 @@ module.exports = grammar({
         $.role,
         $._sep,
       )),
-      $._quotable_creator_name,
+      $._quotable_creator_field,
       repeat(seq(
         field('creatorSeparator', alias($._sep, $.creator_sep)),
-        $._quotable_creator_name,
+        $._quotable_creator_field,
       )),
-      choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep))
+      optional(choice($._sep, '\n', seq($._sep, '\n'), seq($._sep, '\n', $._sep)))
     )),
 
     _quotable_song_title_maybecomment: $ => prec.right(seq(
@@ -151,12 +152,23 @@ module.exports = grammar({
       token(prec(-1, /[^\n]/))
     )),
 
-    _quotable_creator_name_maybeparts: $ => choice(
-      seq($._quotable_creator_name, optional($.parts)),
+    _quotable_creator_field_maybeparts: $ => choice(
+      seq($._quotable_creator_field, optional($.parts)),
       $.parts,
     ),
+
+    _quotable_creator_field: $ => seq(
+      $._quotable_creator_name,
+      optional(choice(
+        // CAVEAT: this lexical precedence will lead to "implicit space > _seq" for cases like "name (circle..."
+        seq(alias(token(prec(1, /[(（]CV[：:.]/)), $.cv_conj), $._quotable_creator_name, alias(/[)）]/, $.cv_conj)),
+        seq(alias(/[|｜]/, $.cv_conj), $._quotable_creator_name),
+      )),
+    ),
+
     _quotable_creator_name: $ => choice(
-      seq('《', field('creator', alias(/[^》\n]+/, $.creator_name)), '》'),  // quoting
+      // lexically, 《creator_name》 > 《song_title》
+      seq(token(prec(1, '《')), field('creator', alias(/[^》\n]+/, $.creator_name)), '》'),  // quoting
       field('creator', $.creator_name),
     ),
     creator_name: _ => prec.right(repeat1(
@@ -171,8 +183,8 @@ module.exports = grammar({
     _role_instrument: _ => token.immediate(prec(1, new RegExp(`乐器-([^${separators}]| )+`))),
     _role: _ => choice(...roles.map(r => field('role', r))),
 
-    parts: _ => /\((Tr|tr|M|m)?\.? ?[0-9,-.]+\)/,
+    parts: _ => /\((Tr|tr|M|m)?\.? ?[0-9,-. ]+\)/,
 
-    _sep: _ => token.immediate(new RegExp(`[${separators}]+`)),
+    _sep: _ => token(new RegExp(`[${separators}]+`)),
   }
 });

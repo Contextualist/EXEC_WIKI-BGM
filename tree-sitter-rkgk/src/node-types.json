@@ -49,6 +49,10 @@
       "required": true,
       "types": [
         {
+          "type": "cv_conj",
+          "named": true
+        },
+        {
           "type": "parts",
           "named": true
         },
@@ -359,6 +363,10 @@
             "named": false
           },
           {
+            "type": "歌",
+            "named": false
+          },
+          {
             "type": "歌唱",
             "named": false
           },
@@ -593,6 +601,10 @@
     "named": true
   },
   {
+    "type": "cv_conj",
+    "named": true
+  },
+  {
     "type": "guest vocal",
     "named": false
   },
@@ -754,6 +766,10 @@
   },
   {
     "type": "插图",
+    "named": false
+  },
+  {
+    "type": "歌",
     "named": false
   },
   {

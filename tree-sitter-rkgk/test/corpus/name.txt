@@ -72,7 +72,6 @@ Arrangement / pine(Tree), another (muse track), Cherose(2.7)
       (parts)
       (creator_sep)
       (creator_name)
-      (creator_sep)
       (parts)
       (creator_sep)
       (creator_name)
@@ -86,9 +85,64 @@ Arrangement / pine(Tree), another (muse track), Cherose(2.7)
       (creator_name)
       (creator_sep)
       (creator_name)
-      (creator_sep)
-      (creator_name)
       (parts)))
   (song
     (song_title)))
+
+
+===
+character_cv, parts
+===
+
+歌唱：樋口円香 (CV. 土屋李央)、《浅倉 透》（CV.《和久井 優》）(3,4)、福丸小糸｜田嶌紗蘭、市川雛菜|岡咲美保(1)
+
+Clock Hands
+歌：白雪千夜(CV:関口理咲)
+歌：浅利七海｜井上ほの花
+作曲、作词、编曲：竹市佳伸
+
+---
+
+(source_file
+  (credit_block
+    (credit_field
+      (role)
+      (creator_name)
+      (cv_conj)
+      (creator_name)
+      (cv_conj)
+      (creator_sep)
+      (creator_name)
+      (cv_conj)
+      (creator_name)
+      (cv_conj)
+      (parts)
+      (creator_sep)
+      (creator_name)
+      (cv_conj)
+      (creator_name)
+      (creator_sep)
+      (creator_name)
+      (cv_conj)
+      (creator_name)
+      (parts)))
+  (song
+    (song_title)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name)
+        (cv_conj)
+        (creator_name)
+        (cv_conj))
+      (credit_field
+        (role)
+        (creator_name)
+        (cv_conj)
+        (creator_name))
+      (credit_field
+        (role)
+        (role)
+        (role)
+        (creator_name)))))
 

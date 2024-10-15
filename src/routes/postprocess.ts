@@ -56,6 +56,7 @@ export const ROLE_MAP: { [name: string]: Role[] } = {
     'マスタリング': [Role.MA],
     '艺术家': [Role.V],
     '歌唱': [Role.V],
+    '歌': [Role.V],
     '作詞作編曲': [Role.L, Role.C, Role.A],
     '作词作编曲': [Role.L, Role.C, Role.A],
     '作詞作曲': [Role.L, Role.C],
@@ -330,7 +331,7 @@ function parseSongCredit(
             case "creator":
                 let name = cf.value;
                 if (trimCircle) {
-                    name = name.replace(/[(（].+[）)]$/, "");
+                    name = name.replace(/[(（].+[）)]$/, "").trim();
                     if (!name) break; // don't include "trimmed circle"
                 }
                 lastPersonData = Array.from(roleIDs).map(rid => {
@@ -342,7 +343,7 @@ function parseSongCredit(
                 }
                 break;
             case "parts":
-                const partsString = cf.value.slice(1, -1).replace(/^(Tr|tr|M|m)\.?\s*/, "");
+                const partsString = cf.value.trim().slice(1, -1).replace(/^(Tr|tr|M|m)\.?\s*/, "");
                 const parts = parsePart(partsString); // for now it's [disc, track][]; will be converted number[disc-1][track]
                 if (!lastPersonData) {
                     lastRoleParts = parts;

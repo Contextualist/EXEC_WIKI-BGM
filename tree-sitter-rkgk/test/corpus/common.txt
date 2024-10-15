@@ -179,7 +179,7 @@ creator name quoting
 
 01
 のんねむ逃避行
-music : 《ちろ:D》　lyric : もちうつね
+music : 《ちろ:D》　lyric : もちうつね、《ちろ:D》
 
 ---
 
@@ -194,6 +194,8 @@ music : 《ちろ:D》　lyric : もちうつね
         (creator_name))
       (credit_field
         (role)
+        (creator_name)
+        (creator_sep)
         (creator_name)))))
 
 ===
@@ -209,7 +211,7 @@ comment, quoting, creator name quoting
     // 原曲：東方永夜抄 より 竹取飛翔
     Vocal：たま
 06　とある瀟洒な従者の物語 feat. ｙｔｒ // 原曲：東方紅魔郷 より 月時計－ルナ・ダイアル
-    Vocal：ｙｔｒ、たま
+    Vocal：ｙｔｒ、《たま//》
 《07　Bad >///< Apple？ feat. Romonosov?:p》
     // 原曲：幺樂団の歴史1 より Bad Apple!!
     Vocal：たま
