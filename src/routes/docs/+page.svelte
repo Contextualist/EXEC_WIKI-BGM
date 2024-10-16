@@ -225,6 +225,19 @@ Compose／Jeet Singh<span class="text-bgm-pink">(Tr.1-4,8)</span>, Salita<span c
 			</p>
 			<pre><span class="text-bgm-pink">乐器-guitar</span>：JungMato</pre>
 		</section>
+		<section>
+			<h3 id="grammar-cv">CV 标注</h3>
+			<p>常见的 CV 表记会被识别，角色名标注一次即可</p>
+			<pre>山形まり花<span class="text-bgm-pink">(CV:</span>日高里菜<span class="text-bgm-pink"
+					>)</span
+				>、芽兎めう<span class="text-bgm-pink">(CV.</span>五十嵐裕美<span class="text-bgm-pink"
+					>)</span
+				></pre>
+			<p>另支持用竖线快速标记</p>
+			<pre>山形まり花<span class="text-bgm-pink">|</span>日高里菜、芽兎めう<span
+					class="text-bgm-pink">｜</span
+				>五十嵐裕美</pre>
+		</section>
 	</section>
 
 	<section>

@@ -91,8 +91,8 @@ export interface PostProcessOptions {
     shouldAutofillArrangment: boolean;
 }
 
-interface PersonData {
-    parts: number[][];
+class PersonData {
+    parts: number[][] = [];
 }
 
 interface Credits {
@@ -111,27 +111,31 @@ export interface Track {
 export class Release {
     credits: Credits;
     tracks: Track[][];
+    name2character: Map<string, [string, string]>;
     relaMap: Map<string, Staff[]> = new Map();
-    constructor(credits?: Credits, tracks?: Track[][]) {
+    constructor(credits?: Credits, tracks?: Track[][], name2character?: Map<string, [string, string]>) {
         this.credits = credits || {};
-        this.tracks = tracks || []
+        this.tracks = tracks || [];
+        this.name2character = name2character || new Map();
     }
     static async fromRawRelease(raw: RawRelease, options: PostProcessOptions): Promise<Release> {
-        function _parseSongCredit(cfs: CreditField[]) {
+        function _parseSongCredit(cfs: CreditField[], name2character: Map<string, [string, string]>) {
             return parseSongCredit(cfs,
+                name2character,
                 options.shouldCleanCircleParentheses,
                 options.allowAllSpaceInCreatorName,
             );
         }
 
-        const credits = _parseSongCredit(raw.credits);
+        const name2character = new Map<string, [string, string]>();
+        const credits = _parseSongCredit(raw.credits, name2character);
         const all_tracks = raw.discs.map((disc, i) => {
             const tracks = disc.tracks.map((rt, j) => {
-                const trackCredits = _parseSongCredit(rt.credits);
+                const trackCredits = _parseSongCredit(rt.credits, name2character);
                 Object.entries(trackCredits).forEach(([roleID, creators]) => {
                     const rs = credits[roleID] = credits[roleID] || {};
                     Object.entries(creators).forEach(([name, pd]) => {
-                        const pd0 = rs[name] = rs[name] || { parts: [] };
+                        const pd0 = rs[name] = rs[name] || new PersonData();
                         pd0.parts.push([i + 1, j + 1]);
                     });
                 });
@@ -161,7 +165,7 @@ export class Release {
             arrangers.forEach((disc, i) => disc.forEach((names, j) => {
                 if (names.length > 0) return;
                 composers[i][j].forEach(name => {
-                    creditA[name] = creditA[name] ?? { parts: [] };
+                    creditA[name] = creditA[name] ?? new PersonData();
                     creditA[name].parts.push([i + 1, j + 1]);
                 });
             }));
@@ -175,7 +179,7 @@ export class Release {
             pd.parts = p.map(s => Array.from(s).sort((a, b) => a - b));
         }));
 
-        const release = new Release(credits, all_tracks);
+        const release = new Release(credits, all_tracks, name2character);
         await release.assignRelaMap();
         return release;
     }
@@ -211,11 +215,17 @@ export class Release {
         return rsc.concat(Array.from(emptyRoles).map(roleID => [roleID, []]));
     }
 
-    private formatCreator(name: string, primaryName: string | undefined): string {
+    formatCreator(name: string, primaryName: string | undefined): string {
+        let r = name;
         if (primaryName && name !== primaryName) {
-            return `${name} (${primaryName})`;
+            r = `${name} (${primaryName})`;
         }
-        return name;
+        const character = this.name2character.get(name);
+        if (character) {
+            const [cvMarker, char] = character;
+            r = `${char}(CV${cvMarker}${r})`;
+        }
+        return r;
     }
 
     private coalesceInstrumentalRoles(rs: [string, string[]][]): [string, string[]][] {
@@ -288,25 +298,47 @@ export class Release {
 
 function parseSongCredit(
     cfs: CreditField[],
+    name2character: Map<string, [string, string]>,
     trimCircle: boolean = true,
     preserveAllSpace: boolean = false,
 ): Credits {
-    const testEdge: (c0: string, c2: string) => boolean
-        = preserveAllSpace ? (_) => true : (c0, c2) => /[a-zA-Z]$/.test(c0) && /^[a-zA-Z]/.test(c2);
+    function testEdge(c0: CreditField, c2: CreditField): boolean {
+        if (c0.type !== "creator" || c2.type !== "creator") return false;
+        if (preserveAllSpace) return true;
+        return /[a-zA-Z]$/.test(c0.value) && /^[a-zA-Z]/.test(c2.value);
+    }
     let cfs_ = [...cfs];
     // merge creator fragments; remove creatorSeperator
     for (let i = 0; i < cfs_.length; i++) {
         if (cfs_[i].type !== "creatorSeparator") { continue; }
         if (i === 0) { cfs_.splice(0, 0, { type: "creator", value: "" }); i++; }
         else if (i === cfs_.length - 1) { cfs_.push({ type: "creator", value: "" }); }
-        if (/^\s+$/.test(cfs_[i].value) && testEdge(cfs_[i - 1].value, cfs_[i + 1].value)) {
+        if (/^\s+$/.test(cfs_[i].value) && testEdge(cfs_[i - 1], cfs_[i + 1])) {
             cfs_.splice(i - 1, 3, { type: "creator", value: `${cfs_[i - 1].value} ${cfs_[i + 1].value}`.trim() });
             i--;
         } else {
             cfs_.splice(i, 1);
         }
     }
-    // assign creators to roles (and mental gymnastics for parts)
+    // extract characters from "character (CV: name)"
+    for (let i = 0; i < cfs_.length; i++) {
+        if (cfs_[i].type !== "cv_conj") continue;
+        const cfv = cfs_[i].value;
+        if ([')', '）'].includes(cfv)) {
+            cfs_.splice(i, 1);
+            continue;
+        }
+        const cvMarker = ['|', '｜'].includes(cfv) ? ':' : cfv.trim().slice(-1);
+        const [c0, c2] = [cfs_[i - 1], cfs_[i + 1]];
+        if (c0?.type !== "creator" || c2?.type !== "creator") {
+            cfs_.splice(i, 1);
+            continue;
+        }
+        name2character.set(c2.value, [cvMarker, c0.value]);
+        cfs_.splice(i - 1, 2);
+        i--;
+    }
+    // assign creators to roles (and mental gymnastics for parts & CVs)
     let credits: Credits = {};
     let roleIDs = new Set<string>();
     let lastPersonData: PersonData[] | null = null; // role: creator(parts), ...
@@ -336,7 +368,7 @@ function parseSongCredit(
                 }
                 lastPersonData = Array.from(roleIDs).map(rid => {
                     const rs = credits[rid] = credits[rid] || {};
-                    return rs[name] = rs[name] || { parts: [] };
+                    return rs[name] = rs[name] || new PersonData();
                 });
                 if (lastRoleParts) {
                     lastPersonData.forEach(p => p.parts.push(...lastRoleParts!));

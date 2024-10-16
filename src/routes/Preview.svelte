@@ -1,7 +1,6 @@
 <script lang="ts">
 	import 'uno.css';
 	import { Release } from './postprocess';
-	import { type Staff } from '$lib/db';
 	import { Match, type ResolvedRelaMap } from './disambiguation';
 
 	interface PreviewProps {
@@ -31,19 +30,28 @@
 		);
 		return Object.entries(d).map(([sk, kv]) => kv);
 	}
-</script>
 
-{#snippet formattedStaff(name: string, staff: Staff | undefined, m: Match)}
-	{#if m === Match.None}
-		{name}
-	{:else if m === Match.Conflict}
-		<span class="text-bgm-pink">{name}</span>
-	{:else}
-		{#if name !== staff!.name}{name} ({/if}<a href="https://bgm.tv/person/{staff!.id}"
-			>{staff!.name}</a
-		>{#if name !== staff!.name}){/if}
-	{/if}
-{/snippet}
+	function formatName(name: string): string {
+		const [staff, m] = name2staff.get(name)!;
+		let r: string;
+		if (m === Match.None) {
+			r = name;
+		} else if (m === Match.Conflict) {
+			r = `<span class="text-bgm-pink">${name}</span>`;
+		} else {
+			r = `<a href="https://bgm.tv/person/${staff.id}">${staff.name}</a>`;
+			if (name !== staff.name) {
+				r = `${name} (${r})`;
+			}
+		}
+		const char = release.name2character.get(name);
+		if (char) {
+			const [cvMarker, char_] = char;
+			r = `${char_}(CV${cvMarker}${r})`;
+		}
+		return r;
+	}
+</script>
 
 {#snippet formattedCredits(c: [string, string[]][])}
 	{#each c as [roleID, staffs]}
@@ -51,8 +59,7 @@
 			<div class="font-size-xs">
 				<span class="color-bgm-darkgrey">&#x3000;&#x3000;&#x3000;&#x3000;{roleID}：</span>
 				{#each staffs as name, i}
-					{@const [staff, m] = name2staff.get(name)!}
-					{@render formattedStaff(name, staff, m)}{i === staffs.length - 1 ? '' : '、'}
+					{@html formatName(name)}{i === staffs.length - 1 ? '' : '、'}
 				{/each}
 			</div>
 		{/if}

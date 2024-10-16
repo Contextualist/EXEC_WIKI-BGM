@@ -38,6 +38,7 @@
 				.normalize('NFC')
 		);
 	}
+	// For tag mapping, see `FIELD2NODETYPE` in `lang-rkgk.ts`
 	const highlightStyle = HighlightStyle.define([
 		{ tag: tags.typeName, color: '#f09199' },
 		{ tag: tags.literal, color: '#69c' },
@@ -45,7 +46,8 @@
 		{ tag: tags.invalid, color: '#f00' },
 		{ tag: tags.heading, color: '#333', fontWeight: 'bold' },
 		{ tag: tags.comment, color: '#999' },
-		{ tag: tags.annotation, color: '#666' }
+		{ tag: tags.annotation, color: '#777' },
+		{ tag: tags.modifier, color: '#777' }
 	]);
 	const extensions = [getLinter(), partsTracksConverter(writeTrackInfoFromRelease)];
 </script>

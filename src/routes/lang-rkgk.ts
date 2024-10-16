@@ -59,6 +59,7 @@ const FIELD2NODETYPE: { [name: string]: lezer.NodeType } = {
     "": NODE_TYPES[""],
     "role": NODE_TYPES.typeName,
     "creator": NODE_TYPES.literal,
+    "cv_conj": NODE_TYPES.modifier,
     "parts": NODE_TYPES.annotation,
     "《": NODE_TYPES.keyword,
     "》": NODE_TYPES.keyword,
@@ -73,13 +74,14 @@ const SEMANTIC_TYPES = [
     "role",
     "creator",
     "creatorSeparator",
+    "cv_conj",
     "parts",
     "title",
     "comment",
 ];
 
 export interface CreditField {
-    type: "role" | "creator" | "creatorSeparator" | "parts";
+    type: "role" | "creator" | "creatorSeparator" | "cv_conj" | "parts";
     value: string;
 }
 
