@@ -8,7 +8,11 @@
 <script lang="ts">
 	import 'uno.css';
 	import CodeMirror, { HighlightStyle, tags } from './CodeMirror.svelte';
-	import { partsTracksConverter } from './codeMirrorExtension.ts';
+	import {
+		partsTracksConverter,
+		getHighlightSpecialChars,
+		getFullWidthMarker
+	} from './codeMirrorExtension.ts';
 	import { localStorage$state } from './utils.svelte.ts';
 	import { rkgk, type RawRelease } from './lang-rkgk.ts';
 	import { getLinter } from './lint-rkgk.ts';
@@ -49,7 +53,12 @@
 		{ tag: tags.annotation, color: '#777' },
 		{ tag: tags.modifier, color: '#777' }
 	]);
-	const extensions = [getLinter(), partsTracksConverter(writeTrackInfoFromRelease)];
+	const extensions = [
+		getLinter(),
+		partsTracksConverter(writeTrackInfoFromRelease),
+		getHighlightSpecialChars(),
+		getFullWidthMarker()
+	];
 </script>
 
 <div {...rest} class="{class_} max-w-130">

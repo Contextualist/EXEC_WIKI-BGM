@@ -29,7 +29,6 @@
 		keymap,
 		highlightActiveLine,
 		highlightActiveLineGutter,
-		highlightSpecialChars,
 		rectangularSelection
 	} from '@codemirror/view';
 	import {
@@ -179,7 +178,6 @@
 	): Extension[] {
 		const extensions: Extension[] = [
 			highlightActiveLineGutter(),
-			highlightSpecialChars(),
 			history(),
 			foldGutter(),
 			drawSelection(),
