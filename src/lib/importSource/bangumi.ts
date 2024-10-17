@@ -5,7 +5,7 @@ import { parsePart } from "$lib/bangumiUtils";
 
 export class Bangumi implements ImportSource {
     name = "Bangumi";
-    match = /^https:\/\/bgm.tv\/subject\/(\d+)$/;
+    match = /^https:\/\/(?:bangumi\.tv|bgm\.tv)\/subject\/(\d+)$/;
     warning = "";
     options = [
         { id: "trackListCredits", text: "曲目列表与制作人员", default: true },
@@ -113,7 +113,7 @@ const ROLE2KEYWORD: Record<string, string> = {
 
 const RE_SIMPLE_NAME = /^[^（(\[]+$/; // no brackets
 const RE_ALIAS_NAME = /^([^（(\[]+)(\([^（(\[]+\)|（[^（(\[、]+）)$/; // `alias(name)`
-const RE_CHAR_CV = /^([^（(\[]+)\(CV[.:：](.+)\)$/; // `charactor(CV:...)`
+const RE_CHAR_CV = /^([^（(\[]+)\(CV([.:：])(.+)\)$/; // `charactor(CV:...)`
 /// The grief of not having an alias system crystalized...
 function resolveAlias(
     infobox: string,
@@ -133,14 +133,24 @@ function resolveAlias(
         const uarr: string[] = [];
         parseCreatorGroup(raw).forEach((rep) => {
             rep = rep.trim();
-            // ignoring the character part for now
-            const cv_match = rep.match(RE_CHAR_CV);
-            if (cv_match) {
-                rep = cv_match[2].trim();
+            // extract character and cv marker
+            let character: string | undefined;
+            let cvMarker: string | undefined;
+            if (role === '艺术家') {
+                const cv_match = rep.match(RE_CHAR_CV);
+                if (cv_match) {
+                    [, character, cvMarker, rep] = cv_match;
+                    rep = rep.trim();
+                }
+            }
+            function cvRep(name: string): string {
+                if (!character) return name;
+                return `${character}(CV${cvMarker}${name})`;
             }
             // case 1: just name
             if (RE_SIMPLE_NAME.test(rep)) {
-                if (!relaNames[role].has(rep)) uarr.push(rep);
+                if (!relaNames[role].has(rep)) uarr.push(cvRep(rep));
+                else if (character) amap[rep] = cvRep(rep);
                 return;
             }
             // case 2: alias(name)
@@ -150,8 +160,8 @@ function resolveAlias(
                 name = name.slice(1, -1);
                 alias = alias.trim();
                 // putting alias, as unassociated name won't get substituted
-                if (!relaNames[role].has(name)) uarr.push(alias);
-                amap[name] = alias;
+                if (!relaNames[role].has(name)) uarr.push(cvRep(alias));
+                else amap[name] = cvRep(alias);
             }
         });
         aliasTable[role] = amap;

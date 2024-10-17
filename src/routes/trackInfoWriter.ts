@@ -1,4 +1,4 @@
-import { type Release } from "$lib/importSource";
+import { type Release, type Credits } from "$lib/importSource";
 import { RE_ROLE_KEYWORD, pagenoJoin, multiDiscPageNoJoin, Release as FormalRelease } from "./postprocess";
 
 const RE_SEP = /[ 　\t&＆:：\/・、；,]/;
@@ -63,7 +63,7 @@ function writeTrackInfoCreditParts(info: Release): string {
     });
     trackInfo += Object.entries(pt).map(([role, names]) => {
         return `${role}：${Object.entries(names).map(([name, ps]) => {
-            return `${name}(${isMulti ? multiDiscPageNoJoin(ps) : pagenoJoin(ps.flat())})`;
+            return `${nameEscape(name)}(${isMulti ? multiDiscPageNoJoin(ps) : pagenoJoin(ps.flat())})`;
         }).join('、')}\n`;
     }).join('') + '\n';
 
@@ -88,18 +88,20 @@ export function fromFormalRelease(rf: Readonly<FormalRelease>): Release {
             tracks: d.map((t) => ({ title: t.title, comment: t.comment, credits: {} }))
         }))
     }
+    function pushCredit(credit: Credits, role: string, name: string) {
+        credit[role] = credit[role] ?? [];
+        credit[role].push(rf.formatCreator(name, undefined));
+    }
     Object.entries(rf.credits).forEach(([role, nameData]) => {
         Object.entries(nameData).forEach(([name, pd]) => {
             if (pd.parts.length === 0) {
-                r.credits[role] = r.credits[role] ?? [];
-                r.credits[role].push(name);
+                pushCredit(r.credits, role, name);
                 return;
             }
             pd.parts.forEach((discParts, i) => {
                 discParts.forEach((j) => {
                     const trij = r.discs[i].tracks[j - 1].credits;
-                    trij[role] = trij[role] ?? [];
-                    trij[role].push(name);
+                    pushCredit(trij, role, name);
                 });
             });
         });
@@ -109,6 +111,10 @@ export function fromFormalRelease(rf: Readonly<FormalRelease>): Release {
 
 
 function nameEscape(n: string): string {
+    if (n.includes('(CV')) {
+        const [name, cv] = n.split('(CV', 2);
+        return `${nameEscape(name)}(CV${cv.slice(0, 1)}${nameEscape(cv.slice(1, -1))})`;
+    }
     return ((RE_SEP.test(n) && !RE_LATIN_SPACE.test(n)) || RE_ROLE_KEYWORD.test(n)) ? `《${n}》` : n;
 }
 

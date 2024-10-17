@@ -328,7 +328,8 @@ function parseSongCredit(
             cfs_.splice(i, 1);
             continue;
         }
-        const cvMarker = ['|', '｜'].includes(cfv) ? ':' : cfv.trim().slice(-1);
+        let cvMarker = ['|', '｜'].includes(cfv) ? ':' : cfv.trim().slice(-1);
+        if (cvMarker === '：') cvMarker = ':';
         const [c0, c2] = [cfs_[i - 1], cfs_[i + 1]];
         if (c0?.type !== "creator" || c2?.type !== "creator") {
             cfs_.splice(i, 1);
