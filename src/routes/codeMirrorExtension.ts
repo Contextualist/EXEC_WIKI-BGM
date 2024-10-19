@@ -5,7 +5,7 @@ import { highlightSpecialChars, MatchDecorator } from "@codemirror/view"
 
 import { ctrlOrCmd } from "$lib/utils"
 
-const partsTracksConversionHint = ` ${ctrlOrCmd}+shift+t 切换参与标记`
+const partsTracksConversionHint = ` ${ctrlOrCmd}+shift+y 切换参与标记`
 
 class TextHintWidget extends WidgetType {
     constructor(readonly text: string) { super() }
@@ -54,7 +54,7 @@ const textHintHighlighter = ViewPlugin.fromClass(class {
 function partsTracksCoversionKeymap(convert: (style: 'parts' | 'tracks') => string) {
     return keymap.of([
         {
-            key: "Mod-Shift-t",
+            key: "Mod-Shift-y",
             preventDefault: true,
             run: (view: EditorView): boolean => {
                 const style = hasAnnotationInRange(view.state) ? "tracks" : "parts"
