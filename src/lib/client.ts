@@ -1,4 +1,4 @@
-const CORS_ENDPOINT = 'https://exec-wiki-bgm-cors.hya.moe';
+export const CORS_ENDPOINT = 'https://exec-wiki-bgm-cors.hya.moe';
 const BGMAPI_ENDPOINT = 'https://api.bgm.tv';
 export const WRITE_GATEWAY_ENDPOINT = 'https://exec-wiki-bgm-write-gateway.hya.moe';
 

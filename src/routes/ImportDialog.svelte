@@ -4,6 +4,7 @@
 	import type { ImportSource, AutoEditor } from '$lib/importSource';
 	import { Bangumi } from '$lib/importSource/bangumi';
 	import { MusicBrainz } from '$lib/importSource/musicbrainz';
+	import { TowerJp } from '$lib/importSource/towerjp';
 	import Button from './Button.svelte';
 	import { tooltip } from '$lib/Tooltip.svelte';
 
@@ -17,7 +18,7 @@
 	let currentSourceOptions: Record<string, any> = $state({});
 	let currentResolvedTitle: Promise<string> | null = $state(null);
 
-	const sourceList: ImportSource[] = [new Bangumi(), new MusicBrainz()];
+	const sourceList: ImportSource[] = [new Bangumi(), new MusicBrainz(), new TowerJp()];
 	let currentSource: ImportSource | null | undefined = $derived.by(() => {
 		if (!importURL) return null;
 		for (const source of sourceList) {
