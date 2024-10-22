@@ -31,7 +31,7 @@ function writeTrackInfoCreditTracks(info: Release): string {
     trackInfo += info.discs.map((disc) => {
         let s = isMulti ? "\nDISC\n" : "";
         s += disc.tracks.map((tr, i) => {
-            let t = `${String(i + 1).padStart(2, '0')} ${tr.title}`;
+            let t = disc.tracks.length > 1 ? `${String(i + 1).padStart(2, '0')} ${tr.title}` : tr.title;
             t = RE_ROLE_KEYWORD.test(t) ? `《${t}》` : t;
             if (tr.comment) t += ` // ${tr.comment}`;
             t += '\n';
@@ -70,7 +70,7 @@ function writeTrackInfoCreditParts(info: Release): string {
     trackInfo += info.discs.map((disc) => {
         let s = isMulti ? "\nDISC\n" : "";
         s += disc.tracks.map((tr, i) => {
-            let t = `${String(i + 1).padStart(2, '0')} ${tr.title}`;
+            let t = disc.tracks.length > 1 ? `${String(i + 1).padStart(2, '0')} ${tr.title}` : tr.title;
             t = RE_ROLE_KEYWORD.test(t) ? `《${t}》` : t;
             if (tr.comment) t += ` // ${tr.comment}`;
             t += '\n';

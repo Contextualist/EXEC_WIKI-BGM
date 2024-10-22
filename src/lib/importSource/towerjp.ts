@@ -1,15 +1,15 @@
-import type { ImportSource, AutoEditor, Track } from "./common";
-import { DefaultDict } from "./common";
+import type { ImportSource, AutoEditor, Disc, Credits } from "./common";
 import { CORS_ENDPOINT } from "../client";
 
 const RE_DATE = /(\d{4})\D+(\d+)\D+(\d+)/u;
+const ROLE_WHITELIST = new Set(["歌", "作詞", "作曲", "編曲"]);
 
 export class TowerJp implements ImportSource {
     name = "Tower.jp";
     match = /^https:\/\/tower\.jp\/item\/(\d+)/;
     warning = "";
     options = [
-        //{ id: "trackListCredits", text: "曲目列表与制作人员", default: true },
+        { id: "trackListCredits", text: "曲目列表与制作人员", default: true },
         { id: "titleIntro", text: "标题与简介", default: true },
         { id: "releaseDate", text: "发售日期", default: true },
         { id: "labelSerial", text: "厂牌与编号/品番", default: true },
@@ -36,14 +36,24 @@ export class TowerJp implements ImportSource {
             editor.setInfoBoxField("发售日期", `${year}-${month}-${day}`);
         }
 
+        let labelVal = "";
         if (opts.labelSerial) {
             if (!editor.setInfoBoxField("品番", info.serialNumber, { editOnly: true })) {
                 editor.setInfoBoxField("编号", info.serialNumber);
             }
+            labelVal = info.label;
         }
 
         if (opts.length) {
             editor.setInfoBoxField("播放时长", info.duration);
+        }
+
+        if (opts.trackListCredits) {
+            const credit0: Credits = {};
+            if (labelVal.length > 0) {
+                credit0["レーベル"] = [labelVal];
+            }
+            editor.setTrackInfo({ credits: credit0, discs: info.discs }, "tracks");
         }
 
         editor.done();
@@ -57,6 +67,7 @@ interface ItemInfo {
     label: string;
     description: string;
     duration: string;
+    discs: Disc[];
 }
 
 async function fetchItem(tid: number): Promise<ItemInfo> {
@@ -94,13 +105,33 @@ function parseItem(raw: string): ItemInfo {
     const contentInfo = findBlock("収録内容");
     const contentIndices = Array.from(contentInfo?.querySelectorAll(".contens-index > p") ?? []);
     const duration = contentIndices.find((p) => p.textContent?.startsWith("合計収録時間"))?.textContent?.split("|")[1].trim() ?? "";
+    const discs = contentInfo ? parseDiscInfo(contentInfo) : [];
 
     return {
         title,
         ...commodityInfoValues,
         description,
         duration,
+        discs,
     };
+}
+
+function parseDiscInfo(contentInfo: Element): Disc[] {
+    const discEls = Array.from(contentInfo.querySelectorAll(".track-list"));
+    return discEls.map((disc) => {
+        const trackEls = Array.from(disc.querySelectorAll("li > div"));
+        return {
+            tracks: trackEls.map((track) => {
+                const title = track.querySelector("div:nth-child(1) > div:nth-child(2) > div:nth-child(2)")?.textContent?.trim() ?? "";
+                const creditEls = Array.from(track.querySelectorAll("div:nth-child(2) > div > div")).slice(1);
+                const credits = Object.fromEntries(creditEls.flatMap((credit) => {
+                    const [role, name] = Array.from(credit.querySelectorAll("div")).map((div) => div.textContent?.trim());
+                    return role && name && ROLE_WHITELIST.has(role) ? [[role, name.split("、").map(n => n.trim())]] : [];
+                }));
+                return { title, comment: "", credits };
+            }),
+        };
+    });
 }
 
 function containsText(el: Element, query: string, text: string): boolean {
