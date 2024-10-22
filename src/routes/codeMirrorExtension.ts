@@ -81,7 +81,7 @@ function hasAnnotationInRange(state: EditorState, from: number = 0, to: number =
 export function getHighlightSpecialChars(): Extension {
     return highlightSpecialChars({
         // Add all zero-width characters
-        addSpecialChars: /[\u200B-\u200D\u2060\uFEFF\u00AD]/,
+        addSpecialChars: /[\u200B-\u200F\u202A-\u202E\u2060\uFEFF\u00AD]/,
         render(code, description, placeholder) {
             const element = document.createElement('span');
             element.style.backgroundColor = '#e2e2e2';
