@@ -45,8 +45,8 @@ export async function searchPerson(name: string): Promise<Staff[]> {
     return result.map((r: any, i: number) => ({
         id: pids[i],
         pfp: namePfpList[i].pfp,
-        name: r.name,
-        aliases: r.alias,
+        name: entityUnescape(r.name),
+        aliases: r.alias.map(entityUnescape)
     }));
 }
 
@@ -59,7 +59,7 @@ async function getPersonPfpList(pids: number[]): Promise<{ name: string, pfp: st
         if (person === undefined) {
             return { name: 'Unknown', pfp: 'https://lain.bgm.tv/img/no_icon_subject.png' };
         }
-        return { name: person.name, pfp: normalizePfpUrl(`https://lain.bgm.tv${person.img}`) };
+        return { name: entityUnescape(person.name), pfp: normalizePfpUrl(`https://lain.bgm.tv${person.img}`) };
     });
 }
 
@@ -72,8 +72,8 @@ export async function getPerson(pid: number): Promise<[Staff, boolean]> {
         {
             id: pid,
             pfp: normalizePfpUrl(result.images.large),
-            name: result.name,
-            aliases: aliasBlock ? aliasBlock.map((a: any) => a.v) : [],
+            name: entityUnescape(result.name),
+            aliases: aliasBlock ? aliasBlock.map((a: any) => entityUnescape(a.v)) : [],
         },
         (new Set(result.career).intersection(RELEVANT_CAREERS).size > 0) // 顺带判断是否是音乐相关人物
     ];
@@ -98,8 +98,8 @@ export async function getSubjectEpInfo(sid: number): Promise<SubjectEpInfo[]> {
     const response = await FETCHERS.BGMAPI.dispatch(request);
     const result = await response.json();
     (result.data as SubjectEpInfo[]).forEach((ep) => {
-        ep.name = ep.name.replace("&amp;", "&");
-        ep.name_cn = ep.name_cn.replace("&amp;", "&");
+        ep.name = entityUnescape(ep.name);
+        ep.name_cn = entityUnescape(ep.name_cn);
     }); // workaround for the HTML entities bug
     return result.data as SubjectEpInfo[];
 }
@@ -243,6 +243,10 @@ function getBMGRGraphQLQuery(q: string): string {
 
 function normalizePfpUrl(url: string): string {
     return url.replace(/\?r=\d+$/, '').replace('/pic/crt/s', '/pic/crt/l');
+}
+
+function entityUnescape(str: string): string {
+    return str.replaceAll('&amp;', '&');
 }
 
 function auth(token: string, req: RequestInit = {}): RequestInit {
