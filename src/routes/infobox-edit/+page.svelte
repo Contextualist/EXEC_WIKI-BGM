@@ -75,6 +75,7 @@
 			askAuth();
 			return;
 		}
+		const { rfn, tp } = toast('提交中...', { progress: true });
 		try {
 			await getWriteSessionState(session.token);
 		} catch (e) {
@@ -99,9 +100,11 @@
 		if (typeof r === 'string') {
 			toast(`提交失败: ${r}`, { alert: true });
 		} else {
+			tp.nDone = 1;
 			toast('提交成功');
 		}
 		setTimeout(() => {
+			rfn();
 			window.open(`https://bgm.tv/subject/${rsid}`, '_blank');
 		}, 1000);
 	}
@@ -158,7 +161,7 @@
 				class="input-bgm p-[0.5rem] flex-grow-1"
 				placeholder={isNew ? '新条目' : '编辑摘要'}
 			/>
-			<Button onclick={submit} class="flex-basis-[4rem]">提交</Button>
+			<Button onclick={submit} class="flex-basis-[4rem]" spinner={true}>提交</Button>
 		</div>
 	</div>
 	<Toast />
