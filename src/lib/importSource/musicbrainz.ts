@@ -11,6 +11,7 @@ export class MusicBrainz implements ImportSource {
         { id: "length", text: "播放时长", default: true },
         { id: "labelSerial", text: "厂牌与编号/品番", default: true },
         { id: "releaseDate", text: "发售日期", default: true },
+        { id: "url", text: "官方网站", default: true },
         { id: "formatType", text: "版本特性", default: false },
     ];
 
@@ -107,6 +108,18 @@ export class MusicBrainz implements ImportSource {
             editor.setInfoBoxField("发售日期", date);
         }
 
+        if (opts.url) {
+            const HP_KEYWORDS = new Set(['official homepage', 'discography entry']);
+            const { relations, "release-group": { relations: rgRelations } } = await this.releaseInfo!;
+            const ur = [...relations, ...rgRelations].find((rela) => {
+                if (rela['target-type'] !== 'url') return false;
+                return HP_KEYWORDS.has(rela.type);
+            }) as UrlRelation | undefined;
+            if (ur) {
+                editor.setInfoBoxField("官方网站", ur.url.resource);
+            }
+        }
+
         if (opts.formatType) {
             const { media, "release-group": { 'primary-type': primaryType, 'secondary-types': secondaryTypes } } = await this.releaseInfo!;
             const formats = Array.from(new Set(media.map(({ format }) => format)));
@@ -166,7 +179,7 @@ interface TrackInfo {
     };
 }
 
-type Relation = ArtistRelation | WorkRelation | { 'target-type': 'recording' };
+type Relation = ArtistRelation | WorkRelation | UrlRelation | { 'target-type': 'recording' };
 interface ArtistRelation {
     'target-type': 'artist';
     'target-credit': string; // alias used
@@ -180,16 +193,25 @@ interface WorkRelation {
         relations: Relation[];
     };
 }
+interface UrlRelation {
+    'target-type': 'url';
+    type: string;
+    url: {
+        resource: string;
+    };
+}
 
 interface ReleaseGroupInfo {
     'primary-type': string;
     'secondary-types': string[];
+    relations: Relation[];
 }
 
 async function fetchReleaseInfo(mbid: string): Promise<MusicBrainzRelease> {
+    // ref: https://musicbrainz.org/doc/MusicBrainz_API#Lookups
     // ref: https://community.metabrainz.org/t/looking-for-api-call-providing-writer-composer-cover-recording-details/478652/6
     const res = await fetch(
-        `${ENDPOINT}/release/${mbid}?inc=artist-credits+labels+recordings+release-groups+artist-rels+recording-level-rels+work-level-rels+recording-rels+work-rels`,
+        `${ENDPOINT}/release/${mbid}?inc=artist-credits+labels+recordings+release-groups+artist-rels+recording-level-rels+work-level-rels+recording-rels+work-rels+release-group-rels+release-group-level-rels+url-rels`,
         { headers: { "Accept": "application/json" } }
     );
     return res.json();
