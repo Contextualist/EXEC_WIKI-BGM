@@ -86,6 +86,13 @@ export async function getSubjectInfo(sid: number): Promise<SubjectInfo> {
     return result as SubjectInfo;
 }
 
+export async function getPersonInfo(pid: number): Promise<SubjectInfo> {
+    const request = new Request(`${CORS_ENDPOINT}/p1/wiki/persons/${pid}`, { method: 'GET', mode: 'cors' });
+    const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
+    const result = await response.json();
+    return result as SubjectInfo;
+}
+
 export async function getSubjectType(sid: number): Promise<number> {
     const request = new Request(`${BGMAPI_ENDPOINT}/v0/subjects/${sid}`, { method: 'GET', mode: 'cors' });
     const response = await FETCHERS.BGMAPI.dispatch(request);
@@ -163,6 +170,12 @@ export interface SubjectInfoWrite {
     metaTags?: string;
 }
 
+export interface PersonInfoWrite {
+    name: string;
+    infobox: string;
+    summary: string;
+}
+
 export async function getWriteSessionState(token: string): Promise<WriteSessionState> {
     const request = new Request(`${WRITE_GATEWAY_ENDPOINT}/client_hello`, auth(token, { method: 'GET', mode: 'cors' }));
     const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
@@ -176,11 +189,9 @@ export async function postSubjectInfo(token: string, subjectInfo: SubjectInfoWri
         method: 'POST', mode: 'cors', body: body, headers: { 'Content-Type': 'application/json' }
     }));
     const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
+    const error = await handleEditError(response);
+    if (error) { return error; }
     const result = await response.json();
-    if (response.status === 401 || response.status === 500) {
-        const result = await response.json();
-        return `[${result.code}] ${result.message}`;
-    }
     return result.subjectID;
 }
 
@@ -193,10 +204,29 @@ export async function patchSubjectInfo(token: string, subjectID: number, commitM
         method: 'PATCH', mode: 'cors', body: body, headers: { 'Content-Type': 'application/json' }
     }));
     const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
+    const error = await handleEditError(response);
+    if (error) { return error; }
+}
+
+export async function patchPersonInfo(token: string, personID: number, commitMessage: string, personInfo: PersonInfoWrite): Promise<void | string> {
+    const body = JSON.stringify({
+        commitMessage,
+        person: personInfo
+    });
+    const request = new Request(`${WRITE_GATEWAY_ENDPOINT}/p1/wiki/persons/${personID}`, auth(token, {
+        method: 'PATCH', mode: 'cors', body: body, headers: { 'Content-Type': 'application/json' }
+    }));
+    const response = await FETCHERS.BGMPrivateAPI.dispatch(request);
+    const error = await handleEditError(response);
+    if (error) { return error; }
+}
+
+async function handleEditError(response: Response): Promise<string> {
     if (response.status === 401 || response.status === 500) {
         const result = await response.json();
         return `[${result.code}] ${result.message}`;
     }
+    return '';
 }
 
 

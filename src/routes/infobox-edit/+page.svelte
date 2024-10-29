@@ -6,7 +6,9 @@
 	import Toast, { toast } from '../Toast.svelte';
 	import {
 		getSubjectInfo,
+		getPersonInfo,
 		patchSubjectInfo,
+		patchPersonInfo,
 		postSubjectInfo,
 		getWriteSessionState
 	} from '$lib/client';
@@ -37,6 +39,7 @@
 	let desc = $state('');
 	let infoBox = $state(infobox.toArrayWikiString(defaultInfoBox));
 	let commitMessage = $state('');
+	let wtype = $state<'subject' | 'person'>('subject');
 	let sid = $state(0);
 	let isNew = $derived(sid === 0);
 	let quickCommitOptions = $derived(isNew ? ['新条目'] : wikiCommitOptions);
@@ -47,16 +50,18 @@
 		window.addEventListener('message', async (event) => {
 			if (event.origin !== 'https://bgm.tv') return;
 			interface Message {
+				wtype: 'subject' | 'person';
 				sid: number;
 				session: BGMSession;
 				infobox: string;
 			}
 			const d = event.data as Message;
 			session = d.session;
+			wtype = d.wtype;
 			if (d.sid) {
 				// edit
 				sid = d.sid;
-				const subjectInfo = await getSubjectInfo(d.sid);
+				const subjectInfo = await (d.wtype === 'subject' ? getSubjectInfo : getPersonInfo)(d.sid);
 				title = subjectInfo.name;
 				infobox.reset(subjectInfo.infobox);
 				desc = subjectInfo.summary;
@@ -90,7 +95,11 @@
 		let r: number | string | void;
 		let rsid = sid;
 		if (sid) {
-			r = await patchSubjectInfo(session.token, sid, commitMessage, subjectInfo);
+			if (wtype === 'subject') {
+				r = await patchSubjectInfo(session.token, sid, commitMessage, subjectInfo);
+			} else {
+				r = await patchPersonInfo(session.token, sid, commitMessage, subjectInfo);
+			}
 		} else {
 			r = await postSubjectInfo(session.token, subjectInfo);
 			if (typeof r === 'number') {
@@ -105,7 +114,7 @@
 		}
 		setTimeout(() => {
 			rfn();
-			window.open(`https://bgm.tv/subject/${rsid}`, '_blank');
+			window.open(`https://bgm.tv/${wtype}/${rsid}`, '_blank');
 		}, 1000);
 	}
 
