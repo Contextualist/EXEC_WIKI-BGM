@@ -46,6 +46,7 @@
 			infoBox.reset(settingsState.val.newInfoBox);
 		}, 10);
 		descState.val = '';
+		metaTagsState.val = '';
 		dupResolution.clear();
 		setTimeout(() => {
 			toast(`<b>嗯……？</b><br/>${getRandomTip()}`, { duration: 8000 });
@@ -64,6 +65,7 @@
 			title: titleState.val,
 			infoBox: infoBox.exportText(),
 			description: descState.val,
+			metaTags: metaTagsState.val,
 			trackList: trackList.length > 1 ? trackList : trackList[0],
 			trackTable,
 			relaTable
@@ -100,6 +102,7 @@
 
 	let settingsState = localStorage$state('settings', defaultSettings);
 	let titleState = localStorage$state('title', '');
+	let metaTagsState = localStorage$state('metaTags', '');
 	let infoBoxState = localStorage$state(
 		'infoBox',
 		infoBox.toArrayWikiString(settingsState.val.newInfoBox)
@@ -181,6 +184,7 @@
 			/>
 			<InfoBox
 				bind:value={infoBoxState.val}
+				bind:valueMetaTags={metaTagsState.val}
 				{reactiveFields}
 				class="flex-basis-[67%] flex-grow-3"
 			/>

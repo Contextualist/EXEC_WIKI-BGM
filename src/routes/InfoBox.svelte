@@ -115,6 +115,7 @@
 		value: string;
 		reactiveFields: Set<string>;
 		wideFormat?: boolean;
+		valueMetaTags: string;
 		class?: string;
 	}
 	// NOTE: valueExport is for passing out only; changes should be made with the exported functions
@@ -122,6 +123,7 @@
 		value: valueExport = $bindable(),
 		reactiveFields,
 		wideFormat = false,
+		valueMetaTags = $bindable(),
 		class: class_ = '',
 		...rest
 	}: InfoBoxProps = $props();
@@ -142,7 +144,7 @@
 
 <div {...rest} class="relative {modeRich ? 'overflow-auto' : ''} {class_}">
 	<button
-		class={'absolute z-1 top-[1px] right-[calc(6%-17px)] text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
+		class={'absolute z-1 top-[4px] right-[calc(6%-17px)] text-bgm-grey hover:text-bgm-darkgrey cursor-pointer ' +
 			'border-none border-rd-md bg-bgm-beige w-[30px] h-[30px] p-0'}
 		title="切换源码/表格模式"
 		onclick={throttle(() => {
@@ -185,14 +187,22 @@
 	</button>
 	{#if modeRich}
 		<RichInfoBox
-			class="input-bgm border-none focus:drop-shadow-[_] w-[96.5%] h-[calc(100%-1.2rem)] pr-[0.5rem] py-[0.5rem] text-sm break-all overflow-auto"
+			class="input-bgm border-none focus:drop-shadow-[_] w-[98.5%] h-[calc(100%-0.2rem)] pr-[0.5rem] text-sm break-all overflow-auto"
 			bind:value={valueWiki.data}
 			{reactiveFields}
 			{update}
+			bind:valueMetaTags
 		/>
 	{:else}
+		<input
+			type="text"
+			placeholder="公共标签"
+			spellcheck="false"
+			bind:value={valueMetaTags}
+			class="input-bgm text-sm mb-[0.75rem] w-[94%] flex-basis-[1rem] p-[0.5rem]"
+		/>
 		<textarea
-			class="input-bgm w-[94%] h-[calc(100%-1.2rem)] p-[0.5rem] text-sm break-all"
+			class="input-bgm w-[94%] h-[calc(100%-4.4rem)] p-[0.5rem] text-sm break-all"
 			spellcheck="false"
 			bind:value
 		>

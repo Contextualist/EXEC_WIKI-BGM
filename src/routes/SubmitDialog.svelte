@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dialog from './Dialog.svelte';
+	import Dialog from '$lib/Dialog.svelte';
 	import Button from './Button.svelte';
 	import { toast } from './Toast.svelte';
 	import { getWriteSessionState, patchSubjectInfo } from '$lib/client';
@@ -14,6 +14,7 @@
 		title: string;
 		infoBox: string;
 		description: string;
+		metaTags: string;
 	}
 	let { show = $bindable(), getSubjectData }: SubmitDialogProps = $props();
 	let wikiWriteSession = localStorage$state<BGMSession>('wiki-write-session', {
@@ -36,7 +37,8 @@
 			const r = await patchSubjectInfo(wikiWriteSession.val.token, parseInt(sid), commitMessage, {
 				...(subjectData.title ? { name: subjectData.title } : {}),
 				...(subjectData.infoBox ? { infobox: subjectData.infoBox } : {}),
-				...(subjectData.description ? { summary: subjectData.description } : {})
+				...(subjectData.description ? { summary: subjectData.description } : {}),
+				...(subjectData.metaTags ? { metaTags: subjectData.metaTags } : {})
 			});
 			if (!r) {
 				toast('提交成功');

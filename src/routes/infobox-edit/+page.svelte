@@ -37,6 +37,7 @@
 
 	let title = $state('');
 	let desc = $state('');
+	let metaTags = $state('');
 	let infoBox = $state(infobox.toArrayWikiString(defaultInfoBox));
 	let commitMessage = $state('');
 	let wtype = $state<'subject' | 'person'>('subject');
@@ -143,6 +144,7 @@
 		/>
 		<InfoBox
 			bind:value={infoBox}
+			bind:valueMetaTags={metaTags}
 			reactiveFields={new Set()}
 			wideFormat={true}
 			class="flex-basis-[67%] flex-grow-3"
