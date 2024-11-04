@@ -53,6 +53,7 @@
 		}, 400);
 	}
 	function marshal() {
+		infoBox.storeRecentCombo(metaTagsState.val);
 		const trackList = currentRelease.tracks.map((disc) => disc.map((tr) => tr.title).join('\n'));
 		const trackTable = currentRelease.tracks
 			.flatMap((disc, i) => disc.map((tr, j) => `${i + 1}|${j + 1}|${tr.title}|${tr.comment}|`))

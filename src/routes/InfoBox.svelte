@@ -6,8 +6,10 @@
 		wikiRepack,
 		edit as editRich,
 		unlinkField,
-		resetReactiveFields
+		resetReactiveFields,
+		storeRecentCombo as metaTagStoreRecentCombo
 	} from '$lib/richInfoBox/RichInfoBox.svelte';
+	import { localStorage$state } from './utils.svelte.ts';
 
 	export { unlinkField };
 
@@ -102,6 +104,14 @@
 	export function exportText(): string {
 		return modeRich ? _arrWikiEncode(valueWiki) : value;
 	}
+
+	const metaTagsRecentCombosState = localStorage$state('metaTagsRecentCombos', [] as string[][]);
+	export function storeRecentCombo(combo: string): void {
+		metaTagsRecentCombosState.val = metaTagStoreRecentCombo(
+			combo,
+			$state.snapshot(metaTagsRecentCombosState.val)
+		);
+	}
 </script>
 
 <script lang="ts">
@@ -192,6 +202,7 @@
 			{reactiveFields}
 			{update}
 			bind:valueMetaTags
+			recentCombos={metaTagsRecentCombosState.val}
 		/>
 	{:else}
 		<input

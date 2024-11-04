@@ -1,3 +1,30 @@
+<script lang="ts" module>
+	const MAX_RECENT_COMBO_HISTORY = 5;
+	export function storeRecentCombo(
+		combo: string,
+		recentCombos: string[][],
+		options: MetaTagKind
+	): string[][] {
+		let tags = combo.split(/\s+/).filter((tagName) => tagName !== '');
+		const tagsWithSortIndex = tags.map((tagName) => {
+			const kind = Object.keys(options).find((kind) => options[kind].tags.includes(tagName));
+			if (!kind) return { tagName, sortIndex: Infinity };
+			const index = options[kind].tags.indexOf(tagName);
+			return { tagName, sortIndex: options[kind].index * 10000 + index };
+		});
+		tags = tagsWithSortIndex
+			.sort((a, b) => a.sortIndex - b.sortIndex)
+			.map(({ tagName }) => tagName);
+		const prevPos = recentCombos.findIndex(
+			(combo) => combo.length === tags.length && combo.every((tagName, i) => tagName === tags[i])
+		);
+		if (prevPos !== -1) recentCombos.splice(prevPos, 1);
+		recentCombos.unshift(tags);
+		if (recentCombos.length > MAX_RECENT_COMBO_HISTORY) recentCombos.pop();
+		return recentCombos;
+	}
+</script>
+
 <script lang="ts">
 	import 'uno.css';
 	import { type MetaTagKind } from '$lib/bangumiConstant/metaTag.ts';
@@ -6,9 +33,10 @@
 	interface MetaTagProps {
 		value: string;
 		options: MetaTagKind;
+		recentCombos: string[][];
 		class?: string;
 	}
-	let { value = $bindable(), options, class: class_ = '' }: MetaTagProps = $props();
+	let { value = $bindable(), options, recentCombos, class: class_ = '' }: MetaTagProps = $props();
 	let tagSet = $derived(new Set(value.split(/\s+/).filter((tagName) => tagName !== '')));
 
 	let showDialog = $state(false);
@@ -22,12 +50,6 @@
 			value = [...tagSet, tagName].join(' ');
 		}
 	}
-
-	const combos = [
-		['专辑', '同人音乐', '原创', '日本', 'CD'],
-		['动画', '漫画', '游戏'],
-		['CD', '角色歌', 'OST']
-	];
 </script>
 
 <div class="{class_} py-1 mb-2 bg-bgm-lightgrey rounded-md">
@@ -50,7 +72,7 @@
 	<Dialog bind:show={showDialog} class="w-[40rem] flex flex-row gap-col-sm">
 		<div class="flex-basis-[15rem] border-r-solid border-r-2 border-bgm-grey/50">
 			<span class="inline-block text-bgm-grey text-xs mt-3">最近使用标签组合</span>
-			{#each combos as combo}
+			{#each recentCombos as combo}
 				<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 				<div
 					aria-label="点击增删标签组合"
