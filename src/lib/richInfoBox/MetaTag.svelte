@@ -41,13 +41,14 @@
 
 	let showDialog = $state(false);
 
-	function toggleTag(tagName: string, selected: boolean) {
+	function toggleTags(selected: boolean, ...tagNames: string[]) {
+		const ts = new Set(tagNames);
 		if (selected) {
 			value = Array.from(tagSet)
-				.filter((tag) => tag !== tagName)
+				.filter((tag) => !ts.has(tag))
 				.join(' ');
-		} else if (!tagSet.has(tagName)) {
-			value = [...tagSet, tagName].join(' ');
+		} else {
+			value = Array.from(tagSet.union(ts)).join(' ');
 		}
 	}
 </script>
@@ -73,17 +74,20 @@
 		<div class="flex-basis-[15rem] border-r-solid border-r-2 border-bgm-grey/50">
 			<span class="inline-block text-bgm-grey text-xs mt-3">最近使用标签组合</span>
 			{#each recentCombos as combo}
+				{@const selected =
+					combo.length === tagSet.size && combo.every((tagName) => tagSet.has(tagName))}
 				<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 				<div
 					aria-label="点击增删标签组合"
 					role="button"
 					tabindex="-1"
-					class="inline-block bg-bgm-lightgrey rounded-md mt-2 mr-4 pl-2 pr-1 py-1 w-[max-content] cursor-pointer"
+					class={'inline-block bg-bgm-lightgrey rounded-md mt-2 mr-4 pl-2 pr-1 py-1 w-[max-content] cursor-pointer border-solid border-1 ' +
+						(selected ? 'border-color-bgm-teal' : 'border-transparent')}
 					onclick={() => {
-						const selected = combo.every((tagName) => tagSet.has(tagName));
-						combo.forEach((tagName) => {
-							toggleTag(tagName, selected);
-						});
+						const selected =
+							combo.length === tagSet.size && combo.every((tagName) => tagSet.has(tagName));
+						if (!selected) value = '';
+						toggleTags(selected, ...combo);
 					}}
 				>
 					{#each combo as tagName}
@@ -109,7 +113,7 @@
 
 {#snippet TagReadonly(tagName: string)}
 	<div
-		class={'inline-block px-1.5 py-0.5 bg-white rounded-lg mr-1 my-1 ' +
+		class={'inline-block px-1.5 py-0.5 text-sm bg-white rounded-lg mr-1 my-1 ' +
 			(tagName.startsWith('+') ? 'text-bgm-grey' : '')}
 	>
 		{tagName}
@@ -118,13 +122,12 @@
 
 {#snippet Tag(tagName: string, selected: boolean)}
 	<button
-		title={selected ? '取消标签' : '添加标签'}
 		aria-label={selected ? `取消标签「${tagName}」` : `添加标签「${tagName}」`}
 		tabindex="-1"
-		class={'inline-block px-1.5 py-0.5 h-[1.6rem] bg-bgm-lightgrey rounded-lg ml-1 my-1 cursor-pointer border-solid border-1 ' +
+		class={'inline-block px-1.5 py-0.5 h-[1.6rem] text-sm bg-bgm-lightgrey rounded-lg ml-1 my-1 cursor-pointer border-solid border-1 ' +
 			(selected ? 'border-color-bgm-teal' : 'border-transparent')}
 		onclick={() => {
-			toggleTag(tagName, selected);
+			toggleTags(selected, tagName);
 		}}
 	>
 		{tagName}
