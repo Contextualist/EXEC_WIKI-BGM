@@ -275,8 +275,10 @@ function normalizePfpUrl(url: string): string {
     return url.replace(/\?r=\d+$/, '').replace('/pic/crt/s', '/pic/crt/l');
 }
 
+const ENTITY_MAP: Record<string, string> = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"' };
+const RE_ENTITY = new RegExp(Object.keys(ENTITY_MAP).join('|'), 'g');
 function entityUnescape(str: string): string {
-    return str.replaceAll('&amp;', '&');
+    return str.replaceAll(RE_ENTITY, (match) => ENTITY_MAP[match]);
 }
 
 function auth(token: string, req: RequestInit = {}): RequestInit {
