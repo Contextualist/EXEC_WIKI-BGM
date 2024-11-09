@@ -21,6 +21,7 @@ export interface AutoEditor {
     setInfoBox: (content: string, override: boolean) => void;
     setInfoBoxField: (field: string, value: string | string[], options?: { editOnly?: boolean }) => boolean;
     unlinkInfoBoxField: (field: string) => void;
+    setMetaTags: (tags: string[]) => void;
     importRela: (pids: number[]) => void;
     pushWarning: (warning: string) => void;
     done: () => void;

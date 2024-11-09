@@ -9,6 +9,7 @@ export interface SubjectInfo {
     typeID: number;
     infobox: string;
     summary: string;
+    metaTags: string[];
 }
 export interface SubjectEpInfo {
     name: string;
@@ -167,7 +168,7 @@ export interface SubjectInfoWrite {
     infobox?: string;
     summary?: string;
     nsfw?: boolean;
-    metaTags?: string;
+    metaTags?: string[];
 }
 
 export interface PersonInfoWrite {

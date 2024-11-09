@@ -11,7 +11,7 @@ export class Bangumi implements ImportSource {
         { id: "trackListCredits", text: "曲目列表与制作人员", default: true },
         { id: "importRela", text: "导入关联的人物", default: true },
         { id: "titleIntro", text: "标题与简介", default: true },
-        { id: "infobox", text: "Infobox", default: true },
+        { id: "infobox", text: "Infobox 与公共标签", default: true },
         { id: "infoboxKeepRelaField", text: "保留「艺术家」字段的内容", default: false },
         { id: "infoboxOverride", text: "完全覆写现有的 Infobox", default: false },
     ];
@@ -84,12 +84,14 @@ export class Bangumi implements ImportSource {
         }
 
         if (opts.titleIntro) {
-            const { name, summary } = (await this.subjectInfo!);
+            const { name, summary } = await this.subjectInfo!;
             editor.editTitleIntro(name, summary);
         }
 
         if (opts.infobox) {
-            editor.setInfoBox((await this.subjectInfo!).infobox, opts.infoboxOverride);
+            const { infobox, metaTags } = await this.subjectInfo!;
+            editor.setInfoBox(infobox, opts.infoboxOverride);
+            editor.setMetaTags(metaTags);
         }
 
         if (opts.infoboxKeepRelaField) {

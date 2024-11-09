@@ -268,6 +268,9 @@
 			unlinkInfoBoxField: (key: string) => {
 				infoBox.unlinkField(key);
 			},
+			setMetaTags: (tags: string[]) => {
+				metaTagsState.val = tags.join(' ');
+			},
 			importRela: (pids: number[]) => {
 				importPersonBatch(pids).then(() => {
 					settingsState.val = { ...settingsState.val }; // trigger Gallery update
