@@ -87,11 +87,13 @@
 		valueMetaTags: string;
 		recentCombos: string[][];
 		class?: string;
+		style?: string;
 	}
 	let {
 		value = $bindable(),
 		reactiveFields,
 		class: class_ = '',
+		style = '',
 		update,
 		valueMetaTags = $bindable(),
 		recentCombos
@@ -175,7 +177,7 @@
 	}
 </script>
 
-<div id="rich-infobox" class="flex flex-col {class_}" style="scrollbar-width: none;">
+<div id="rich-infobox" class="flex flex-col {class_}" style="scrollbar-width: none; {style}">
 	<MetaTag bind:value={valueMetaTags} options={META_TAG_OPTIONS} {recentCombos} />
 	<div class="flex-basis-[1.0rem] flex-shrink-0 text-bgm-grey/65 text-xs font-sans">
 		&#x3000;↵ 新项&#x3000;&#x3000;←↑↓→穿梭&#x3000;&#x3000;{altOrOpt}↑↓排序
