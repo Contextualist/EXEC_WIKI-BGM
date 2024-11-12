@@ -8,6 +8,17 @@
 		await db.staff.bulkAdd(data);
 		updateCount();
 	}
+	export async function persist() {
+		let result = await tryPersistWithoutPromtingUser();
+		if (result === 'prompt') {
+			// Well, Chrome returns 'prompt' even though it never prompts the user.
+			if (isFirefox) {
+				toast('为了持续使用本地关联库，请授予持久化存储权限', { duration: 8000 });
+			}
+			result = await tryPersist();
+		}
+		console.log(`Persist result: ${result}`);
+	}
 	export async function exportBulk(): Promise<string> {
 		const data = await db.staff.toArray();
 		return data
@@ -32,6 +43,8 @@
 	import Button from './Button.svelte';
 	import { toast } from './Toast.svelte';
 	import { localStorage$state } from './utils.svelte';
+	import { isFirefox } from '$lib/utils.ts';
+	import { tryPersistWithoutPromtingUser, tryPersist } from '$lib/db.ts';
 
 	interface RelaDBProps {
 		bgmUID: string;

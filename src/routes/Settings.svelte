@@ -108,6 +108,7 @@
 			await relaDb.importBulk(lines);
 			__settings = { ...defaultSettings, ...JSON.parse(settings_line) }; // This will also trigger a reparsing
 			toast('已导入设置与关联数据库');
+			await relaDb.persist();
 		};
 		el.click();
 	}
