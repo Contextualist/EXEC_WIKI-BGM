@@ -1,7 +1,8 @@
 <script lang="ts" module>
 	import { type Wiki, WikiItem, WikiArrayItem } from '@bgm38/wiki';
 	import MetaTag, * as MetaTagModule from './MetaTag.svelte';
-	import { MUSIC as META_TAG_OPTIONS } from '$lib/bangumiConstant/metaTag.ts';
+	import { META_TAG } from '$lib/bangumiConstant/metaTag.ts';
+	const META_TAG_OPTIONS = META_TAG['音乐'];
 
 	type KV<T> = [string, T];
 	export type ArrayWikiData = KV<string | KV<string>[]>[];

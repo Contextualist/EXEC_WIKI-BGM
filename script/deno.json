@@ -1,0 +1,5 @@
+{
+    "tasks": {
+        "gen": "deno run --allow-net --allow-write genMetaTag.ts"
+    }
+}
