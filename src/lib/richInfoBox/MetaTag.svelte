@@ -1,10 +1,13 @@
 <script lang="ts" module>
+	import { META_TAG } from '$lib/bangumiConstant/metaTag.ts';
+
 	const MAX_RECENT_COMBO_HISTORY = 5;
 	export function storeRecentCombo(
 		combo: string,
 		recentCombos: string[][],
-		options: MetaTagKind
+		subjectType: string
 	): string[][] {
+		const options = META_TAG[subjectType];
 		let tags = combo.split(/\s+/).filter((tagName) => tagName !== '');
 		const tagsWithSortIndex = tags.map((tagName) => {
 			const kind = Object.keys(options).find((kind) => options[kind].tags.includes(tagName));
@@ -27,16 +30,20 @@
 
 <script lang="ts">
 	import 'uno.css';
-	import { type MetaTagKind } from '$lib/bangumiConstant/metaTag.ts';
 	import Dialog from '../Dialog.svelte';
 
 	interface MetaTagProps {
 		value: string;
-		options: MetaTagKind;
+		subjectType: string;
 		recentCombos: string[][];
 		class?: string;
 	}
-	let { value = $bindable(), options, recentCombos, class: class_ = '' }: MetaTagProps = $props();
+	let {
+		value = $bindable(),
+		subjectType,
+		recentCombos,
+		class: class_ = ''
+	}: MetaTagProps = $props();
 	let tagSet = $derived(new Set(value.split(/\s+/).filter((tagName) => tagName !== '')));
 
 	let showDialog = $state(false);
@@ -97,7 +104,7 @@
 			{/each}
 		</div>
 		<div class="">
-			{#each Object.entries(options) as [kind, tags]}
+			{#each Object.entries(META_TAG[subjectType]) as [kind, tags]}
 				<div class="flex">
 					<div class="flex-[0_0_2rem] text-bgm-grey text-xs mr-1 mt-[0.55rem]">{kind}</div>
 					<div class="flex flex-wrap">

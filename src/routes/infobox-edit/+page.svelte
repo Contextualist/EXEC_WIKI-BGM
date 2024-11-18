@@ -66,6 +66,9 @@
 				title = subjectInfo.name;
 				infobox.reset(subjectInfo.infobox);
 				desc = subjectInfo.summary;
+				if (d.wtype === 'subject') {
+					metaTags = subjectInfo.metaTags.join(' ');
+				}
 			} else {
 				// new
 				infobox.reset(d.infobox);
@@ -91,7 +94,8 @@
 		const subjectInfo = {
 			name: title,
 			infobox: infobox.exportText(),
-			summary: desc
+			summary: desc,
+			...(wtype === 'subject' ? { metaTags: metaTags ? metaTags.split(' ') : [] } : {})
 		};
 		let r: number | string | void;
 		let rsid = sid;

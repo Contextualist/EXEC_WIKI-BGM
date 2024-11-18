@@ -105,11 +105,28 @@
 		return modeRich ? _arrWikiEncode(valueWiki) : value;
 	}
 
+	const WIKI2SUBJECT: Record<string, string> = {
+		'animanga/Manga': '书籍',
+		'animanga/Novel': '书籍',
+		'animanga/Book': '书籍',
+		'Book/Photobook': '书籍',
+		'animanga/TVAnime': '动画',
+		'animanga/OVA': '动画',
+		'animanga/Movie': '动画',
+		'animanga/Anime': '动画',
+		Album: '音乐',
+		Game: '游戏',
+		'real/Television': '三次元',
+		'real/Movie': '三次元',
+		Crt: '人物角色'
+	};
+	let subjectType = $derived(WIKI2SUBJECT[valueWiki.type]);
 	const metaTagsRecentCombosState = localStorage$state('metaTagsRecentCombos', [] as string[][]);
 	export function storeRecentCombo(combo: string): void {
 		metaTagsRecentCombosState.val = metaTagStoreRecentCombo(
 			combo,
-			$state.snapshot(metaTagsRecentCombosState.val)
+			$state.snapshot(metaTagsRecentCombosState.val),
+			subjectType
 		);
 	}
 </script>
@@ -203,18 +220,22 @@
 			{reactiveFields}
 			{update}
 			bind:valueMetaTags
+			{subjectType}
 			recentCombos={metaTagsRecentCombosState.val}
 		/>
 	{:else}
-		<input
-			type="text"
-			placeholder="公共标签"
-			spellcheck="false"
-			bind:value={valueMetaTags}
-			class="input-bgm text-sm mb-[0.75rem] w-[94%] flex-basis-[1rem] p-[0.5rem]"
-		/>
+		{#if subjectType !== '人物角色'}
+			<input
+				type="text"
+				placeholder="公共标签"
+				spellcheck="false"
+				bind:value={valueMetaTags}
+				class="input-bgm text-sm mb-[0.75rem] w-[94%] flex-basis-[1rem] p-[0.5rem]"
+			/>
+		{/if}
 		<textarea
-			class="input-bgm w-[94%] h-[calc(100%-4.4rem)] p-[0.5rem] text-sm break-all"
+			class={'input-bgm w-[94%] p-[0.5rem] text-sm break-all ' +
+				(subjectType === '人物角色' ? 'h-[calc(100%-1.2rem)]' : 'h-[calc(100%-4.4rem)] ')}
 			spellcheck="false"
 			bind:value
 		>
