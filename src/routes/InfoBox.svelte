@@ -21,10 +21,7 @@
 		value = val;
 		modeRich = !val.startsWith('{{');
 		if (modeRich) {
-			const valueWikiMaybeOld = JSON.parse(val);
-			valueWiki = valueWikiMaybeOld.type
-				? valueWikiMaybeOld
-				: { type: 'Album', data: valueWikiMaybeOld };
+			valueWiki = JSON.parse(val);
 		}
 	}
 	export function reset(text: string): void {
@@ -121,19 +118,25 @@
 		Crt: '人物角色'
 	};
 	let subjectType = $derived(WIKI2SUBJECT[valueWiki.type]);
-	const metaTagsRecentCombosState = localStorage$state('metaTagsRecentCombos', [] as string[][]);
+	const metaTagsRecentCombosState = localStorage$state(
+		'metaTagsRecentCombos',
+		{} as Record<string, string[][]>
+	);
 	export function storeRecentCombo(combo: string): void {
-		metaTagsRecentCombosState.val = metaTagStoreRecentCombo(
-			combo,
-			$state.snapshot(metaTagsRecentCombosState.val),
-			subjectType
-		);
+		metaTagsRecentCombosState.val = {
+			...metaTagsRecentCombosState.val,
+			[subjectType]: metaTagStoreRecentCombo(
+				combo,
+				$state.snapshot(metaTagsRecentCombosState.val[subjectType]),
+				subjectType
+			)
+		};
 	}
 </script>
 
 <script lang="ts">
 	import 'uno.css';
-	import { setContext } from 'svelte';
+	import { setContext, onMount } from 'svelte';
 
 	import { toast } from './Toast.svelte';
 	import { debounce, throttle } from './utils.svelte.ts';
@@ -166,6 +169,13 @@
 	}, 100);
 	$effect(() => {
 		value && sync();
+	});
+
+	onMount(() => {
+		// For legacy compatibility
+		if (Array.isArray(metaTagsRecentCombosState.val)) {
+			metaTagsRecentCombosState.val = { 音乐: $state.snapshot(metaTagsRecentCombosState.val) };
+		}
 	});
 </script>
 
@@ -221,7 +231,7 @@
 			{update}
 			bind:valueMetaTags
 			{subjectType}
-			recentCombos={metaTagsRecentCombosState.val}
+			recentCombos={metaTagsRecentCombosState.val[subjectType]}
 		/>
 	{:else}
 		{#if subjectType !== '人物角色'}
