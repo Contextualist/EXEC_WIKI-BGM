@@ -225,7 +225,7 @@
 	{#if modeRich}
 		<RichInfoBox
 			class="input-bgm border-none focus:drop-shadow-[_] h-[calc(100%-0.2rem)] pr-[0.5rem] text-sm break-all overflow-auto"
-			style="width: {wideFormat ? '96.5%' : '98.5%'};"
+			style="width: {wideFormat ? '96.5%' : '97.5%'};"
 			bind:value={valueWiki.data}
 			{reactiveFields}
 			{update}
