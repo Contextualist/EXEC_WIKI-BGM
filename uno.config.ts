@@ -25,6 +25,13 @@ export default defineConfig({
                 orangish: "rgba(247,234,222,0.93)",
                 skyish: "rgba(222,243,247,0.93)",
             },
+            bgmc: {
+                green: '#70B941',
+                blue: '#6BAAE8',
+                orange: '#E68E46',
+                purple: '#9065ED',
+                sky: '#369CF8',
+            }
         },
     },
     rules: [

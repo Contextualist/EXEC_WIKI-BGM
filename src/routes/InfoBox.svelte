@@ -123,6 +123,7 @@
 		{} as Record<string, string[][]>
 	);
 	export function storeRecentCombo(combo: string): void {
+		if (combo.trim() === '') return;
 		metaTagsRecentCombosState.val = {
 			...metaTagsRecentCombosState.val,
 			[subjectType]: metaTagStoreRecentCombo(
