@@ -127,7 +127,7 @@
 			...metaTagsRecentCombosState.val,
 			[subjectType]: metaTagStoreRecentCombo(
 				combo,
-				$state.snapshot(metaTagsRecentCombosState.val[subjectType]),
+				$state.snapshot(metaTagsRecentCombosState.val[subjectType] ?? []),
 				subjectType
 			)
 		};
