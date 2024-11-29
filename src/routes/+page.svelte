@@ -19,6 +19,7 @@
 	import Scenario from '$lib/vn/Scenario.svelte';
 	import ImportDialog from './ImportDialog.svelte';
 	import SubmitDialog from './SubmitDialog.svelte';
+	import { type BGMSession } from '$lib/bangumiSession';
 	import { importPersonCreated, importRelaHistory, importPersonBatch } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
 	import { getRandomTip } from './dailyTips.ts';
@@ -40,6 +41,7 @@
 
 	function clear() {
 		setTrackInfo('');
+		sidState.val = 0;
 		titleState.val = '';
 		setTimeout(() => {
 			// workaround: clear infobox after the infobox edit triggered by trackinfo clear
@@ -63,6 +65,7 @@
 			.map(([bid, rt]) => `https://bgm.tv/person/${bid}  ${rt.join('  ')}`)
 			.join('\n');
 		return {
+			sid: sidState.val,
 			title: titleState.val,
 			infoBox: infoBox.exportText(),
 			description: descState.val,
@@ -102,6 +105,7 @@
 	});
 
 	let settingsState = localStorage$state('settings', defaultSettings);
+	let sidState = localStorage$state('sid', 0);
 	let titleState = localStorage$state('title', '');
 	let metaTagsState = localStorage$state('metaTags', '');
 	let infoBoxState = localStorage$state(
@@ -109,6 +113,11 @@
 		infoBox.toArrayWikiString(settingsState.val.newInfoBox)
 	);
 	let descState = localStorage$state('desc', '');
+	let session = localStorage$state<BGMSession>(
+		'wiki-write-session',
+		{ token: '', expiresAt: 0 },
+		true
+	);
 	onMount(() => {
 		infoBox.init(infoBoxState.val);
 	});
@@ -276,6 +285,9 @@
 					settingsState.val = { ...settingsState.val }; // trigger Gallery update
 				});
 			},
+			setSID: (sid: number) => {
+				sidState.val = sid;
+			},
 			pushWarning: (warning: string) => {
 				toast(warning, { alert: true });
 			},
@@ -284,5 +296,5 @@
 			}
 		}}
 	/>
-	<SubmitDialog bind:show={showSubmitDialog} getSubjectData={marshal} />
+	<SubmitDialog bind:show={showSubmitDialog} getSubjectData={marshal} session={session.val} />
 </main>

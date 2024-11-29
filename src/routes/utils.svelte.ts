@@ -1,7 +1,7 @@
 import { untrack } from "svelte";
 
 export function debounce(fn: Function, delay: number) {
-    let timer: NodeJS.Timeout;
+    let timer: number;
     return function (...args: any[]) {
         clearTimeout(timer);
         timer = setTimeout(() => {
@@ -20,7 +20,7 @@ export function throttle(fn: Function, delay: number) {
     };
 }
 
-export function localStorage$state<T>(key: string, initialValue: T): { val: T, evolve: (fn: (v: T) => T) => void } {
+export function localStorage$state<T>(key: string, initialValue: T, watch: boolean = false): { val: T, evolve: (fn: (v: T) => T) => void } {
     const store = debounce((newValue: T) => {
         window.localStorage.setItem(key, JSON.stringify(newValue));
     }, 600);
@@ -37,6 +37,14 @@ export function localStorage$state<T>(key: string, initialValue: T): { val: T, e
         store(initialValue);
     }
     let value = $state(_value)
+
+    if (watch) {
+        window.addEventListener('storage', (event) => {
+            if (event.key === key && event.newValue) {
+                value = JSON.parse(event.newValue);
+            }
+        });
+    }
 
     return {
         get val() {

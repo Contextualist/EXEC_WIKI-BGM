@@ -23,6 +23,7 @@ export interface AutoEditor {
     unlinkInfoBoxField: (field: string) => void;
     setMetaTags: (tags: string[]) => void;
     importRela: (pids: number[]) => void;
+    setSID: (sid: number) => void;
     pushWarning: (warning: string) => void;
     done: () => void;
 }

@@ -32,6 +32,10 @@ export class Bangumi implements ImportSource {
             return;
         }
 
+        if (opts.trackListCredits || opts.titleIntro || opts.infobox) {
+            editor.setSID(this.sid);
+        }
+
         let rela: SubjectRelaPerson[] | null = null;
         if (opts.trackListCredits) {
             const subjectEpInfo = getSubjectEpInfo(this.sid);

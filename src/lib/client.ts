@@ -172,9 +172,9 @@ export interface SubjectInfoWrite {
 }
 
 export interface PersonInfoWrite {
-    name: string;
-    infobox: string;
-    summary: string;
+    name?: string;
+    infobox?: string;
+    summary?: string;
 }
 
 export async function getWriteSessionState(token: string): Promise<WriteSessionState> {
