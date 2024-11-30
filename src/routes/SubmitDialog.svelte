@@ -20,7 +20,10 @@
 		getWriteSessionState,
 		patchSubjectInfo,
 		patchPersonInfo,
-		postSubjectInfo
+		postSubjectInfo,
+		getSubjectInfo,
+		getPersonInfo,
+		type SubjectInfo
 	} from '$lib/client';
 	import { URL_OAUTH, sessionValid, type BGMSession } from '$lib/bangumiSession';
 	import { WIKI_COMMIT_OPTIONS } from '$lib/bangumiConstant/wiki';
@@ -50,19 +53,25 @@
 		subjectData.wikiType = wikiType;
 	});
 	let subjectData = $state<SubjectData | null>(null);
+	let currentInfo = $state<SubjectInfo | null>(null);
 	$effect(() => {
 		if (!show) return;
-		setTimeout(() => {
-			subjectData = getSubjectData();
-			subjectData.wikiType = subjectData.wikiType ?? 'subject';
-			if (subjectData.sid) {
-				targetURL = `https://bgm.tv/${subjectData.wikiType}/${subjectData.sid}`;
-			}
-		}, 10);
+		setTimeout(load, 10);
 	});
 	let isNew = $derived(subjectData?.sid === 0);
 	let quickCommitOptions = $derived(isNew ? ['新条目'] : WIKI_COMMIT_OPTIONS);
 	let commitMessage = $state('');
+
+	async function load() {
+		subjectData = getSubjectData();
+		subjectData.wikiType = subjectData.wikiType ?? 'subject';
+		if (subjectData.sid) {
+			targetURL = `https://bgm.tv/${subjectData.wikiType}/${subjectData.sid}`;
+			currentInfo = await (subjectData.wikiType === 'subject' ? getSubjectInfo : getPersonInfo)(
+				subjectData.sid
+			);
+		}
+	}
 
 	async function submit() {
 		if (!isSessionValid) {
@@ -115,10 +124,12 @@
 			window.open(url, '_blank');
 		}, 1000);
 	}
+
+	const diffClass = 'rounded-md bg-bgm-lightgrey text-sm w-[30rem] max-w-[90%] p-2 overflow-y-auto';
 </script>
 
-<Dialog bind:show class="w-[80%] h-[80%] flex flex-col justify-center items-center gap-4">
-	<div class="flex gap-2">
+<Dialog bind:show class="w-[80%] h-[85%] flex flex-col justify-center items-center gap-3">
+	<div class="flex gap-2 w-[31rem] max-w-[94%]">
 		<label for="sid" class="text-sm line-height-[2rem]">条目链接</label>
 		<input
 			id="sid"
@@ -127,15 +138,31 @@
 			class="input-bgm w-[15rem] p-2"
 			placeholder="新建条目"
 		/>
-		<div class="text-sm w-[10rem]"></div>
+		<div class="text-sm flex-grow-1"></div>
 	</div>
 	<Diff
-		src={''}
-		dst={subjectData?.infoBox ?? ''}
-		punctuation={/([|={}\[\]\n 、])/}
-		class="input-bgm h-[24.5rem] w-[30rem] max-w-[90%] p-2 overflow-y-auto font-mono"
+		src={isNew ? '' : (currentInfo?.name ?? subjectData?.title ?? '')}
+		dst={subjectData?.title || currentInfo?.name || ''}
+		class="{diffClass} flex-shrink-0 h-[1.5em]"
 	/>
-	<div class="flex-basis-[1rem] w-[97%] max-w-[30rem] flex gap-xs">
+	<Diff
+		src={isNew ? '' : (currentInfo?.metaTags?.join(' ') ?? subjectData?.metaTags ?? '')}
+		dst={subjectData?.metaTags || currentInfo?.metaTags?.join(' ') || ''}
+		punctuation={/( )/}
+		class="{diffClass} flex-shrink-0 h-[1.5em]"
+	/>
+	<Diff
+		src={isNew ? '' : (currentInfo?.infobox ?? subjectData?.infoBox ?? '')}
+		dst={subjectData?.infoBox ?? ''}
+		punctuation={/([|={}\[\]\n\r 、])/}
+		class="{diffClass} h-[26.5em] font-mono"
+	/>
+	<Diff
+		src={isNew ? '' : (currentInfo?.summary ?? subjectData?.description ?? '')}
+		dst={subjectData?.description || currentInfo?.summary || ''}
+		class="{diffClass} h-[5.5em]"
+	/>
+	<div class="flex-basis-[1rem] w-[31rem] max-w-[94%] flex gap-xs">
 		<select
 			bind:value={commitMessage}
 			class="input-bgm p-[0.4rem] rounded-md {isNew ? 'cursor-not-allowed' : ''}"
@@ -152,7 +179,12 @@
 			class="input-bgm p-[0.5rem] flex-grow-1"
 			placeholder={isNew ? '新条目' : '编辑摘要'}
 		/>
-		<Button onclick={submit} class="flex-basis-[4rem]" spinner={true}>
+		<Button
+			onclick={submit}
+			class="flex-basis-[4rem]"
+			spinner={true}
+			disabled={isNew && !subjectData?.title}
+		>
 			{isSessionValid ? '提交' : '授权'}
 		</Button>
 	</div>
