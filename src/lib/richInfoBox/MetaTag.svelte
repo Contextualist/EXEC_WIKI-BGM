@@ -79,7 +79,7 @@
 	</div>
 	<Dialog bind:show={showDialog} class="w-[40rem] flex flex-row gap-col-sm">
 		<div class="flex-basis-[15rem] border-r-solid border-r-2 border-bgm-grey/50">
-			<span class="inline-block text-bgm-grey text-xs mt-3">最近使用标签组合</span>
+			<div class="text-bgm-grey text-xs mt-3">最近使用标签组合</div>
 			{#each recentCombos as combo}
 				{@const selected =
 					combo.length === tagSet.size && combo.every((tagName) => tagSet.has(tagName))}
