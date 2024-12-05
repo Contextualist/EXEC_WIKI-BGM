@@ -21,6 +21,7 @@ export const COMBO_CONFIG: {
             "Compilation",
             "DL Card",
             "Maxi",
+            "CD-R",
         ],
         toRaw(value: string): [string, string][] {
             if (Array.isArray(value)) {
