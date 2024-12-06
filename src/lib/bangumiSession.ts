@@ -15,3 +15,17 @@ export interface BGMSession {
 export function sessionValid(session: BGMSession): boolean {
     return session.token !== '' && session.expiresAt > Date.now() / 1000;
 }
+
+/**
+ * Refresh session when it expires in 5 days
+ */
+export async function refreshSession(session: BGMSession): Promise<BGMSession> {
+    if (!session.expiresAt || session.expiresAt > Date.now() + 1000 * 60 * 60 * 24 * 5) { return session; }
+    const rsp = await fetch(`${WRITE_GATEWAY_ENDPOINT}/oauth_refresh`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${session.token}` },
+    });
+    if (rsp.status !== 200) { return session; }
+    session.expiresAt = (await rsp.json()).expiresAt;
+    return session;
+}

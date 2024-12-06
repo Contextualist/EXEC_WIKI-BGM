@@ -19,7 +19,7 @@
 	import Scenario from '$lib/vn/Scenario.svelte';
 	import ImportDialog from './ImportDialog.svelte';
 	import SubmitDialog from './SubmitDialog.svelte';
-	import { type BGMSession } from '$lib/bangumiSession';
+	import { type BGMSession, refreshSession } from '$lib/bangumiSession';
 	import { importPersonCreated, importRelaHistory, importPersonBatch } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
 	import { getRandomTip } from './dailyTips.ts';
@@ -147,6 +147,9 @@
 		if (e.shiftKey) shiftMode = true;
 		if (e.key === 'p' && (e.metaKey || e.ctrlKey) && e.shiftKey) {
 			showSubmitDialog = true;
+			(async () => {
+				session.val = await refreshSession(session.val);
+			})();
 		}
 	}}
 	onkeyup={(e: KeyboardEvent) => {
