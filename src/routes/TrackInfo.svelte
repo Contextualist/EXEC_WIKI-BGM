@@ -1,10 +1,3 @@
-<script lang="ts" module>
-	export function setTrackInfo(content: string) {
-		textState.val = content;
-	}
-	let textState = localStorage$state('trackInfo', '');
-</script>
-
 <script lang="ts">
 	import 'uno.css';
 	import CodeMirror, { HighlightStyle, tags } from './CodeMirror.svelte';
@@ -13,16 +6,17 @@
 		getHighlightSpecialChars,
 		getFullWidthMarker
 	} from './codeMirrorExtension.ts';
-	import { localStorage$state } from './utils.svelte.ts';
 	import { rkgk, type RawRelease } from './lang-rkgk.ts';
 	import { getLinter } from './lint-rkgk.ts';
 
 	interface TrackInfoProps {
+		value: string;
 		onUpdate: (disc: RawRelease) => void;
 		writeTrackInfoFromRelease: (style: 'tracks' | 'parts') => string;
 		class?: string;
 	}
 	let {
+		value = $bindable(),
 		onUpdate,
 		writeTrackInfoFromRelease,
 		class: class_ = '',
@@ -71,7 +65,7 @@
 			{highlightStyle}
 			{placeholder}
 			{lang}
-			bind:value={textState.val}
+			bind:value
 			{filterPaste}
 			{extensions}
 		/>

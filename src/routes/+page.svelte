@@ -3,7 +3,7 @@
 	import { SvelteMap } from 'svelte/reactivity';
 	import { onMount, untrack } from 'svelte';
 
-	import TrackInfo, { setTrackInfo } from './TrackInfo.svelte';
+	import TrackInfo from './TrackInfo.svelte';
 	import InfoBox, * as infoBox from './InfoBox.svelte';
 	import Preview from './Preview.svelte';
 	import Gallery from './Gallery.svelte';
@@ -40,7 +40,7 @@
 	let name2staff = $derived(resolveRelaMap(currentRelease.relaMap, dupResolutionEntries));
 
 	function clear() {
-		setTrackInfo('');
+		trackInfoState.val = '';
 		sidState.val = 0;
 		titleState.val = '';
 		setTimeout(() => {
@@ -113,6 +113,7 @@
 		infoBox.toArrayWikiString(settingsState.val.newInfoBox)
 	);
 	let descState = localStorage$state('desc', '');
+	let trackInfoState = localStorage$state('trackInfo', '');
 	let session = localStorage$state<BGMSession>(
 		'wiki-write-session',
 		{ token: '', expiresAt: 0 },
@@ -180,6 +181,7 @@
 	</div>
 	<div class="flex flex-wrap flex-justify-between h-66vh">
 		<TrackInfo
+			bind:value={trackInfoState.val}
 			{onUpdate}
 			writeTrackInfoFromRelease={(style: 'parts' | 'tracks') =>
 				writeTrackInfo(fromFormalRelease(currentRelease), style)}
@@ -260,7 +262,7 @@
 				if (intro) descState.val = intro;
 			},
 			setTrackInfo: (info: InfoRelease, style: 'parts' | 'tracks' | 'default' = 'default') => {
-				setTrackInfo(writeTrackInfo(info, style));
+				trackInfoState.val = writeTrackInfo(info, style);
 			},
 			setInfoBox: (content: string, override: boolean) => {
 				if (override) {
