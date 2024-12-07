@@ -85,7 +85,7 @@ export interface CreditField {
     value: string;
 }
 
-class RawTrack {
+export class RawTrack {
     title: string = "";
     comment: string = "";
     credits: CreditField[] = [];

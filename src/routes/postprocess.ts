@@ -1,7 +1,7 @@
 /**
  * The ugly: the part of parsing that needs to be resolved at semantic level.
  */
-import type { RawRelease, CreditField } from "./lang-rkgk";
+import { type RawRelease, RawTrack, type CreditField } from "./lang-rkgk";
 import { queryNameOrAliasBulk, type Staff } from "$lib/db";
 import { type ResolvedRelaMap } from "./disambiguation";
 import { parsePart } from "$lib/bangumiUtils";
@@ -130,7 +130,26 @@ export class Release {
         const name2character = new Map<string, [string, string]>();
         const credits = _parseSongCredit(raw.credits, name2character);
         const all_tracks = raw.discs.map((disc, i) => {
-            const tracks = disc.tracks.map((rt, j) => {
+            // normalize track titles, then coalesce empty titles
+            let trackTitles = disc.tracks.map(t => t.title);
+            if (trackTitles.length > 1) {
+                trackTitles = normalizeTitles(trackTitles);
+            }
+            let ct = new RawTrack();
+            const compactTracks = [ct];
+            disc.tracks.forEach((track, j) => {
+                ct.title = trackTitles[j];
+                ct.comment = track.comment;
+                ct.credits.push(...track.credits);
+                if (ct.title) {
+                    compactTracks.push(ct = new RawTrack());
+                }
+            });
+            if (compactTracks[compactTracks.length - 1].title === "") {
+                compactTracks.pop();
+            }
+            // extract credits
+            return compactTracks.map((rt, j) => {
                 const trackCredits = _parseSongCredit(rt.credits, name2character);
                 Object.entries(trackCredits).forEach(([roleID, creators]) => {
                     const rs = credits[roleID] = credits[roleID] || {};
@@ -143,12 +162,7 @@ export class Release {
                     title: rt.title,
                     comment: rt.comment,
                 }
-            })
-            if (tracks.length > 1) {
-                normalizeTitles(tracks.map(t => t.title))
-                    .forEach((title, i) => tracks[i].title = title);
-            }
-            return tracks.filter(t => t.title); // remove empty lines from normalization
+            });
         });
 
         if (options.shouldAutofillArrangment && Role.C in credits) {
