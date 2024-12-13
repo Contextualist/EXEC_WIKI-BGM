@@ -1,4 +1,3 @@
-import { untrack } from "svelte";
 
 export function debounce(fn: Function, delay: number) {
     let timer: number;
@@ -20,44 +19,40 @@ export function throttle(fn: Function, delay: number) {
     };
 }
 
-export function localStorage$state<T>(key: string, initialValue: T, watch: boolean = false): { val: T, evolve: (fn: (v: T) => T) => void } {
-    const store = debounce((newValue: T) => {
-        window.localStorage.setItem(key, JSON.stringify(newValue));
-    }, 600);
+export function localStorage$state<T>(key: string, initialValue: T, watch: boolean = false): { val: T } {
+    return new LocalStorageState<T>(key, initialValue, watch);
+}
 
-    key = `execwb-${key}`
-    let _value = initialValue;
-    const item = window.localStorage.getItem(key);
-    if (item) {
-        _value = JSON.parse(item);
-        if (typeof _value === 'object' && !Array.isArray(_value) && _value !== null) {
-            _value = { ...initialValue, ..._value };
-        }
-    } else {
-        store(initialValue);
-    }
-    let value = $state(_value)
+class LocalStorageState<T> {
+    val = $state<T>() as T;
 
-    if (watch) {
-        window.addEventListener('storage', (event) => {
-            if (event.key === key && event.newValue) {
-                value = JSON.parse(event.newValue);
-            }
+    constructor(key: string, initialValue: T, watch: boolean = false) {
+        const store = debounce((newValue: T) => {
+            window.localStorage.setItem(key, JSON.stringify(newValue));
+        }, 600);
+        $effect.root(() => {
+            $effect(() => {
+                store(this.val);
+            });
         });
-    }
 
-    return {
-        get val() {
-            return value;
-        },
-        set val(newValue: T) {
-            value = newValue;
-            store(value);
-        },
-        // evolve the value while avoiding reactivity
-        evolve: (fn: (v: T) => T) => {
-            value = fn(untrack(() => value));
-            store(untrack(() => value));
+        key = `execwb-${key}`
+        let _value = initialValue;
+        const item = window.localStorage.getItem(key);
+        if (item) {
+            _value = JSON.parse(item);
+            if (typeof _value === 'object' && !Array.isArray(_value) && _value !== null) {
+                _value = { ...initialValue, ..._value };
+            }
         }
-    };
+        this.val = _value;
+
+        if (watch) {
+            window.addEventListener('storage', (event) => {
+                if (event.key === key && event.newValue) {
+                    this.val = JSON.parse(event.newValue);
+                }
+            });
+        }
+    }
 }
