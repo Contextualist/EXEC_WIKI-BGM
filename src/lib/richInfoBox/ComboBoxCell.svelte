@@ -1,5 +1,6 @@
 <script lang="ts" generics="V">
 	import 'uno.css';
+	import createFuzzySearch from '@nozbe/microfuzz';
 
 	import Cell, { type CellActions } from './Cell.svelte';
 	import { moveCursorTo } from '$lib/utils';
@@ -21,6 +22,11 @@
 		value = config.fromRaw(rawValue);
 		action.update();
 	});
+	let fuzzySearch = $derived(
+		createFuzzySearch(config.options, {
+			getText: (v) => [optionText(v).toLowerCase()]
+		})
+	);
 
 	let inputValue = $state('');
 	let showDropdown = $state(false);
@@ -31,12 +37,13 @@
 	}
 
 	let optionsFiltered = $derived.by(() => {
-		const selected = new Set(rawValue.map((v) => v[1]));
-		let opts = config.options.filter((v) => !selected.has(optionText(v)));
+		let opts = config.options;
 		if (inputValue !== '') {
 			const sp = inputValue.toLowerCase();
-			opts = opts.filter((v) => optionText(v).toLowerCase().includes(sp));
+			opts = fuzzySearch(sp).map((v) => v.item);
 		}
+		const selected = new Set(rawValue.map((v) => v[1]));
+		opts = opts.filter((v) => !selected.has(optionText(v)));
 		return opts;
 	});
 
@@ -104,10 +111,10 @@
 					<button
 						class="bg-bgm-lightgrey hover:bg-bgm-grey/10 focus:bg-bgm-grey/10 focus:outline-none border-none px-3 py-2 w-full text-sm text-align-start cursor-pointer"
 						tabindex="0"
-						onmousedown={() => {
+						onmousedown={(e) => {
+							e.preventDefault();
 							rawValue.push(['', text]);
 							inputValue = '';
-							setTimeout(inputFocus, 0);
 						}}
 						onkeydown={(e) => {
 							if (e.key === 'Enter') {

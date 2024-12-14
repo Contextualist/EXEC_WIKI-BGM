@@ -1,4 +1,6 @@
 <script lang="ts" module>
+	import createFuzzySearch from '@nozbe/microfuzz';
+
 	import { localStorage$state } from './utils.svelte.ts';
 
 	const MAX_HISTORY_LENGTH = 100;
@@ -24,8 +26,10 @@
 	}
 
 	let historyState = localStorage$state('history', [] as ContentEntry[], { raw: true });
-	let displayHistory = $derived(
-		historyState.val.slice(Math.max(0, historyState.val.length - 30)).reverse()
+	let fuzzySearch = $derived(
+		createFuzzySearch(historyState.val, {
+			getText: (v) => [v.title.toLowerCase()]
+		})
 	);
 </script>
 
@@ -35,11 +39,19 @@
 
 	interface HistoryProps {
 		setState: (state: ContentState) => void;
+		query: string;
 		class?: string;
 		inputFocus: () => void;
 	}
 
-	let { setState, class: class_, inputFocus }: HistoryProps = $props();
+	let { setState, query, class: class_, inputFocus }: HistoryProps = $props();
+	let displayHistory = $derived.by(() => {
+		let history = historyState.val.toReversed();
+		if (query !== '') {
+			history = fuzzySearch(query.toLowerCase()).map((v) => v.item);
+		}
+		return history.slice(0, 30);
+	});
 </script>
 
 <div class={class_}>

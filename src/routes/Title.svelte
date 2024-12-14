@@ -20,6 +20,7 @@
 	{#if showHistory}
 		<History
 			{setState}
+			query={value}
 			class="absolute bottom-[2.4rem] left-0 w-full rounded-md overflow-hidden"
 			inputFocus={() => inputEl?.focus()}
 		/>
