@@ -13,31 +13,32 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.3.1",
-		"@sveltejs/adapter-vercel": "^5.4.8",
-		"@sveltejs/kit": "^2.8.5",
-		"@sveltejs/vite-plugin-svelte": "^4.0.2",
-		"@unocss/extractor-svelte": "^0.64.1",
-		"prettier": "^3.4.1",
+		"@sveltejs/adapter-vercel": "^5.5.2",
+		"@sveltejs/kit": "^2.11.1",
+		"@sveltejs/vite-plugin-svelte": "^5.0.2",
+		"@unocss/extractor-svelte": "^0.65.1",
+		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.2",
-		"svelte": "^5.2.10",
-		"svelte-check": "^4.1.0",
+		"svelte": "^5.13.0",
+		"svelte-check": "^4.1.1",
 		"tslib": "^2.8.1",
 		"typescript": "^5.7.2",
-		"unocss": "^0.64.1",
-		"vite": "^5.4.11"
+		"unocss": "^0.65.1",
+		"vite": "^6.0.3"
 	},
 	"type": "module",
 	"dependencies": {
 		"@bgm38/wiki": "^0.3.3",
 		"@codemirror/autocomplete": "^6.18.3",
 		"@codemirror/commands": "^6.7.1",
-		"@codemirror/language": "^6.10.5",
-		"@codemirror/lint": "^6.8.3",
+		"@codemirror/language": "^6.10.6",
+		"@codemirror/lint": "^6.8.4",
 		"@codemirror/search": "^6.5.8",
-		"@codemirror/state": "^6.4.1",
-		"@codemirror/view": "^6.35.0",
+		"@codemirror/state": "^6.5.0",
+		"@codemirror/view": "^6.35.3",
+		"@nozbe/microfuzz": "^1.0.0",
 		"dexie": "^4.0.10",
 		"fast-array-diff": "^1.1.0",
-		"web-tree-sitter": "^0.24.4"
+		"web-tree-sitter": "^0.24.5"
 	}
 }
