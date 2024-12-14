@@ -117,7 +117,7 @@
 	let session = localStorage$state<BGMSession>(
 		'wiki-write-session',
 		{ token: '', expiresAt: 0 },
-		true
+		{ watch: true }
 	);
 	onMount(() => {
 		infoBox.init(infoBoxState.val);
