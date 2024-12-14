@@ -19,6 +19,9 @@
 	import Scenario from '$lib/vn/Scenario.svelte';
 	import ImportDialog from './ImportDialog.svelte';
 	import SubmitDialog from './SubmitDialog.svelte';
+	import ConfirmationDialog from '$lib/ConfirmationDialog.svelte';
+	import Title from './Title.svelte';
+	import { pushState } from './History.svelte';
 	import { type BGMSession, refreshSession } from '$lib/bangumiSession';
 	import { importPersonCreated, importRelaHistory, importPersonBatch } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
@@ -40,6 +43,16 @@
 	let name2staff = $derived(resolveRelaMap(currentRelease.relaMap, dupResolutionEntries));
 
 	function clear() {
+		pushState(
+			$state.snapshot({
+				sid: sidState.val,
+				title: titleState.val,
+				metaTags: metaTagsState.val,
+				infoBox: infoBox.exportText(),
+				trackInfo: trackInfoState.val,
+				desc: descState.val
+			})
+		);
 		trackInfoState.val = '';
 		sidState.val = 0;
 		titleState.val = '';
@@ -190,12 +203,19 @@
 		<div
 			class="flex-basis-[24%] flex-grow-3 h-full min-h-[30.5rem] mt-[0.8rem] flex flex-col flex-justify-between gap-row-xs"
 		>
-			<input
+			<Title
 				bind:value={titleState.val}
-				type="text"
-				placeholder="唱片名"
-				spellcheck="false"
-				class="input-bgm text-sm w-[94%] flex-basis-[1rem] p-[0.5rem]"
+				setState={(s) => {
+					sidState.val = s.sid;
+					titleState.val = s.title;
+					metaTagsState.val = s.metaTags;
+					trackInfoState.val = s.trackInfo;
+					setTimeout(() => {
+						infoBox.reset(s.infoBox);
+					}, 10);
+					descState.val = s.desc;
+				}}
+				class="flex-basis-[1rem]"
 			/>
 			<InfoBox
 				bind:value={infoBoxState.val}
@@ -302,4 +322,5 @@
 		}}
 	/>
 	<SubmitDialog bind:show={showSubmitDialog} getSubjectData={marshal} session={session.val} />
+	<ConfirmationDialog />
 </main>
