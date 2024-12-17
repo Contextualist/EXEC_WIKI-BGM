@@ -54,7 +54,7 @@
 	});
 </script>
 
-<div class={class_}>
+<div class="{class_} {displayHistory.length === 0 ? 'hidden' : ''}">
 	<div
 		class="relative rounded-md h-[25rem] bg-white"
 		transition:fade|global={{ duration: 200, delay: 0 }}
