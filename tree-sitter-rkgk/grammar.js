@@ -21,12 +21,16 @@ const roles = [
   'arranger',
   'Arrange',
   'arrange',
+  'Vocalist',
+  'vocalist',
   'Vocal',
   'vocal',
   'Performer',
   'performer',
   'Illustration',
   'illustration',
+  'Illustrator',
+  'illustrator',
   'Illust',
   'illust',
   'Label',
@@ -101,7 +105,6 @@ module.exports = grammar({
 
     song: $ => seq(
       $._quotable_song_title_maybecomment,
-      optional('\n'),
       optional($.credit_block),
     ),
 

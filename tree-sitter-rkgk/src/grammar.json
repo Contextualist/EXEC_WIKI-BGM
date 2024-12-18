@@ -1,4 +1,5 @@
 {
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "rkgk",
   "rules": {
     "source_file": {
@@ -69,18 +70,6 @@
         {
           "type": "SYMBOL",
           "name": "_quotable_song_title_maybecomment"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "\n"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
         },
         {
           "type": "CHOICE",
@@ -814,6 +803,22 @@
           "name": "role",
           "content": {
             "type": "STRING",
+            "value": "Vocalist"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "vocalist"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
             "value": "Vocal"
           }
         },
@@ -855,6 +860,22 @@
           "content": {
             "type": "STRING",
             "value": "illustration"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "Illustrator"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "role",
+          "content": {
+            "type": "STRING",
+            "value": "illustrator"
           }
         },
         {

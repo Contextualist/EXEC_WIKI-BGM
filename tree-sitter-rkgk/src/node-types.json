@@ -135,6 +135,10 @@
             "named": false
           },
           {
+            "type": "Illustrator",
+            "named": false
+          },
+          {
             "type": "Label",
             "named": false
           },
@@ -176,6 +180,10 @@
           },
           {
             "type": "Vocal",
+            "named": false
+          },
+          {
+            "type": "Vocalist",
             "named": false
           },
           {
@@ -223,6 +231,10 @@
             "named": false
           },
           {
+            "type": "illustrator",
+            "named": false
+          },
+          {
             "type": "label",
             "named": false
           },
@@ -264,6 +276,10 @@
           },
           {
             "type": "vocal",
+            "named": false
+          },
+          {
+            "type": "vocalist",
             "named": false
           },
           {
@@ -436,6 +452,7 @@
   {
     "type": "source_file",
     "named": true,
+    "root": true,
     "fields": {},
     "children": {
       "multiple": true,
@@ -517,6 +534,10 @@
     "named": false
   },
   {
+    "type": "Illustrator",
+    "named": false
+  },
+  {
     "type": "Label",
     "named": false
   },
@@ -558,6 +579,10 @@
   },
   {
     "type": "Vocal",
+    "named": false
+  },
+  {
+    "type": "Vocalist",
     "named": false
   },
   {
@@ -617,6 +642,10 @@
     "named": false
   },
   {
+    "type": "illustrator",
+    "named": false
+  },
+  {
     "type": "label",
     "named": false
   },
@@ -662,6 +691,10 @@
   },
   {
     "type": "vocal",
+    "named": false
+  },
+  {
+    "type": "vocalist",
     "named": false
   },
   {
