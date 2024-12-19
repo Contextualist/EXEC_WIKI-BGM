@@ -168,16 +168,26 @@ export class Release {
         });
 
         if (options.shouldAutofillArrangment && Role.C in credits) {
-            const gather = (role: Role): string[][][] => {  // plist[disc-1][track-1][]
+            const gather = (role: Role): [string[], string[][][]] => {  // plist0[], plist[disc-1][track-1][]
+                const plist0: string[] = [];
                 const plist: string[][][] = all_tracks.map(disc => Array.from({ length: disc.length }, () => []));
                 Object.entries(credits[role] ?? {}).forEach(([name, pd]) => {
-                    pd.parts.forEach(([d, t]) => plist[d - 1]?.[t - 1]?.push(name));
+                    if (pd.parts.length === 0) {
+                        plist0.push(name);
+                    } else {
+                        pd.parts.forEach(([d, t]) => plist[d - 1]?.[t - 1]?.push(name));
+                    }
                 });
-                return plist;
+                return [plist0, plist];
             }
-            const composers = gather(Role.C);
-            const arrangers = gather(Role.A);
+            const [composers0, composers] = gather(Role.C);
+            const [arrangers0, arrangers] = gather(Role.A);
             const creditA = credits[Role.A] = credits[Role.A] ?? {};
+            if (arrangers0.length === 0) {
+                composers0.forEach(name => {
+                    creditA[name] = creditA[name] ?? new PersonData();
+                });
+            }
             arrangers.forEach((disc, i) => disc.forEach((names, j) => {
                 if (names.length > 0) return;
                 composers[i][j].forEach(name => {
