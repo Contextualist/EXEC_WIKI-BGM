@@ -1,5 +1,5 @@
 import type { ImportSource, AutoEditor } from "./common";
-import { DefaultDict, warningTemplate3rdPartyWiki } from "./common";
+import { DefaultDict, warningTemplate3rdPartyWiki, formatDuration } from "./common";
 
 export class MusicBrainz implements ImportSource {
     name = "MusicBrainz";
@@ -30,7 +30,7 @@ export class MusicBrainz implements ImportSource {
             const labels = ls.map((li) => li?.label?.name).filter((x) => x);
             labelVal = Array.from(new Set(labels));
             const serials = ls.map((li) => li["catalog-number"]).filter((x) => x);
-            const serialVal = serials.length > 1 ? serials : serials[0] || "";
+            const serialVal: string | [string, string][] = serials.length > 1 ? serials.map((s) => ["", s]) : serials[0] || "";
             if (!editor.setInfoBoxField("品番", serialVal, { editOnly: true })) {
                 editor.setInfoBoxField("编号", serialVal);
             }
@@ -99,8 +99,7 @@ export class MusicBrainz implements ImportSource {
         if (opts.length) {
             const { media } = await this.releaseInfo!;
             const timeMs = media.flatMap(({ tracks }) => tracks.map(({ length }) => length)).reduce((a, b) => a + b, 0);
-            const time = new Date(Math.round(timeMs / 1000) * 1000).toISOString().slice(11, 19);
-            editor.setInfoBoxField("播放时长", time);
+            editor.setInfoBoxField("播放时长", formatDuration(Math.round(timeMs / 1000)));
         }
 
         if (opts.releaseDate) {

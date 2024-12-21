@@ -61,7 +61,7 @@
 	}
 	export function editField(
 		key: string,
-		value: string | string[],
+		value: string | [string, string][],
 		{ editOnly = false } = {}
 	): boolean {
 		try {
@@ -72,8 +72,7 @@
 		if (editOnly && !valueWiki.data.some(([k, _]) => k === key)) {
 			return false;
 		}
-		const val = Array.isArray(value) ? value.map((v) => ['', v] as [string, string]) : value;
-		editRich([[key, val]], valueWiki.data);
+		editRich([[key, value]], valueWiki.data);
 		return true;
 	}
 

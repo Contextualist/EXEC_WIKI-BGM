@@ -294,7 +294,7 @@
 			},
 			setInfoBoxField: (
 				key: string,
-				value: string | string[],
+				value: string | [string, string][],
 				{ editOnly = false } = {}
 			): boolean => {
 				return infoBox.editField(key, value, { editOnly });

@@ -19,7 +19,7 @@ export interface AutoEditor {
     editTitleIntro: (title: string, intro: string) => void;
     setTrackInfo: (info: Release, style?: 'parts' | 'tracks') => void;
     setInfoBox: (content: string, override: boolean) => void;
-    setInfoBoxField: (field: string, value: string | string[], options?: { editOnly?: boolean }) => boolean;
+    setInfoBoxField: (field: string, value: string | [string, string][], options?: { editOnly?: boolean }) => boolean;
     unlinkInfoBoxField: (field: string) => void;
     setMetaTags: (tags: string[]) => void;
     importRela: (pids: number[]) => void;
@@ -62,4 +62,8 @@ export function DefaultDict<K extends PropertyKey, V>(defaultInit: () => V): Def
     return new Proxy({} as DefaultDictType<K, V>, {
         get: (target, name: PropertyKey) => name in target ? target[name] : ((target as any)[name] = defaultInit())
     })
+}
+
+export function formatDuration(seconds: number): string {
+    return new Date(seconds * 1000).toISOString().slice(11, 19);
 }
