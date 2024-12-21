@@ -154,7 +154,6 @@
 	<Diff
 		src={isNew ? '' : (currentInfo?.infobox ?? subjectData?.infoBox ?? '')}
 		dst={subjectData?.infoBox ?? ''}
-		punctuation={/([|={}\[\]\n\r 、])/}
 		class="{diffClass} h-[26.5em] font-mono"
 	/>
 	<Diff

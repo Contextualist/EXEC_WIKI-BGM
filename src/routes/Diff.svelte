@@ -1,3 +1,7 @@
+<script lang="ts" module>
+	const segmenter = new Intl.Segmenter('ja-JP', { granularity: 'word' });
+</script>
+
 <script lang="ts">
 	import 'uno.css';
 	import { getPatch } from 'fast-array-diff';
@@ -17,12 +21,15 @@
 	}
 
 	function tokenize(text: string, punctuation?: RegExp) {
-		return punctuation ? text.split(punctuation) : Array.from(text);
+		if (punctuation) {
+			return text.split(punctuation);
+		}
+		return Array.from(segmenter.segment(text)).map(({ segment }) => segment);
 	}
 
 	function getDiff(src: string, dst: string, punctuation?: RegExp) {
-		const srcTokens = tokenize(src, punctuation);
-		const dstTokens = tokenize(dst, punctuation);
+		const srcTokens = tokenize(src.replaceAll('\r\n', '\n'), punctuation);
+		const dstTokens = tokenize(dst.replaceAll('\r\n', '\n'), punctuation);
 		const patch = getPatch(srcTokens, dstTokens);
 		let cursor = 0;
 		let r: Diff[] = [];
