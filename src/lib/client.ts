@@ -34,7 +34,7 @@ export async function searchPerson(name: string): Promise<Staff[]> {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         mode: 'cors',
-        body: getBMGRGraphQLQuery(name),
+        body: getBGMRGraphQLQuery(name),
     });
     const response = await FETCHERS.ChiiAi.dispatch(request);
     const result = (await response.json()).data.queryCelebritySearch.result;
@@ -231,7 +231,7 @@ async function handleEditError(response: Response): Promise<string> {
 }
 
 
-function getBMGRGraphQLQuery(q: string): string {
+function getBGMRGraphQLQuery(q: string): string {
     return JSON.stringify({
         "operationName": "CelebritySearch",
         "variables": {
@@ -241,33 +241,14 @@ function getBMGRGraphQLQuery(q: string): string {
         "query": `
     query CelebritySearch($q: String, $type: String) {
         queryCelebritySearch(q: $q, type: $type) {
-            ...CelebritySearchResult
-            __typename
-        }
-    }
-
-    fragment CelebritySearchResult on SearchResult {
-        scroll_id
-        took
-        timed_out
-        total
-        result {
-            ... on Celebrity {
-                ...Celebrity
-                __typename
+            result {
+                ... on Celebrity {
+                    id
+                    name
+                    alias
+                }
             }
-            __typename
         }
-        __typename
-    }
-
-    fragment Celebrity on Celebrity {
-        id
-        name
-        alias
-        score
-        type
-        __typename
     }`
     });
 }
