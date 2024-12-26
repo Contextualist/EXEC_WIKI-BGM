@@ -145,12 +145,14 @@
 		dst={subjectData?.title || currentInfo?.name || ''}
 		class="{diffClass} flex-shrink-0 h-[1.5em]"
 	/>
-	<Diff
-		src={isNew ? '' : (currentInfo?.metaTags?.join(' ') ?? subjectData?.metaTags ?? '')}
-		dst={subjectData?.metaTags || currentInfo?.metaTags?.join(' ') || ''}
-		punctuation={/( )/}
-		class="{diffClass} flex-shrink-0 h-[1.5em]"
-	/>
+	{#if subjectData?.wikiType !== 'person'}
+		<Diff
+			src={isNew ? '' : (currentInfo?.metaTags?.join(' ') ?? subjectData?.metaTags ?? '')}
+			dst={subjectData?.metaTags || currentInfo?.metaTags?.join(' ') || ''}
+			punctuation={/( )/}
+			class="{diffClass} flex-shrink-0 h-[1.5em]"
+		/>
+	{/if}
 	<Diff
 		src={isNew ? '' : (currentInfo?.infobox ?? subjectData?.infoBox ?? '')}
 		dst={subjectData?.infoBox ?? ''}
