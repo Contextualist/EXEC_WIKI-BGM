@@ -280,7 +280,11 @@ export class Release {
                 const staff = name2staff.get(creator)![0];
                 if (!staff) return;
                 const rtm = r.get(staff.id) ?? new Map<string, number[][]>();
-                rtm.set(roleID, pd.parts);
+                let parts = pd.parts;
+                if (rtm.has(roleID)) { // in case of multiple alias, merge parts
+                    parts = rtm.get(roleID)!.map((a, i) => Array.from(new Set([...a, ...parts[i]])));
+                }
+                rtm.set(roleID, parts);
                 r.set(staff.id, rtm);
             });
         });
