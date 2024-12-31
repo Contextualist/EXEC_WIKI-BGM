@@ -21,7 +21,7 @@
 	import SubmitDialog from './SubmitDialog.svelte';
 	import ConfirmationDialog from '$lib/ConfirmationDialog.svelte';
 	import Title from './Title.svelte';
-	import { pushState } from './History.svelte';
+	import { pushState, type ContentState } from './History.svelte';
 	import { type BGMSession, refreshSession } from '$lib/bangumiSession';
 	import { importPersonCreated, importRelaHistory, importPersonBatch } from './relaDB.ts';
 	import { getUserNickname } from '$lib/client.ts';
@@ -53,15 +53,7 @@
 				desc: descState.val
 			})
 		);
-		trackInfoState.val = '';
-		sidState.val = 0;
-		titleState.val = '';
-		setTimeout(() => {
-			// workaround: clear infobox after the infobox edit triggered by trackinfo clear
-			infoBox.reset(settingsState.val.newInfoBox);
-		}, 10);
-		descState.val = '';
-		metaTagsState.val = '';
+		setState();
 		dupResolution.clear();
 		setTimeout(() => {
 			toast(`<b>嗯……？</b><br/>${getRandomTip()}`, { duration: 8000 });
@@ -96,6 +88,26 @@
 		if (shouldPackThenOpen) {
 			setTimeout(() => window.open('https://bgm.tv/new_subject/3'), 700);
 		}
+	}
+	function setState(
+		s: ContentState = {
+			sid: 0,
+			title: '',
+			metaTags: '',
+			infoBox: settingsState.val.newInfoBox,
+			trackInfo: '',
+			desc: ''
+		}
+	) {
+		sidState.val = s.sid;
+		titleState.val = s.title;
+		metaTagsState.val = s.metaTags;
+		trackInfoState.val = s.trackInfo;
+		setTimeout(() => {
+			// workaround: clear infobox after the infobox edit triggered by trackinfo clear
+			infoBox.reset(s.infoBox);
+		}, 10);
+		descState.val = s.desc;
 	}
 
 	async function onUpdate(release: RawRelease) {
@@ -149,6 +161,52 @@
 	let shouldPackThenOpen = $derived(
 		(hoverPackBtn && shiftMode) !== settingsState.val.defaultOpenBGMNewAfterPack
 	);
+
+	const editor = {
+		associableFields,
+		editTitleIntro: (title: string, intro: string) => {
+			if (title) titleState.val = title;
+			if (intro) descState.val = intro;
+		},
+		setTrackInfo: (info: InfoRelease, style: 'parts' | 'tracks' | 'default' = 'default') => {
+			trackInfoState.val = writeTrackInfo(info, style);
+		},
+		setInfoBox: (content: string, override: boolean) => {
+			if (override) {
+				infoBox.reset(content);
+				infoBox.merge('');
+			} else {
+				infoBox.merge(content);
+			}
+		},
+		setInfoBoxField: (
+			key: string,
+			value: string | [string, string][],
+			{ editOnly = false } = {}
+		): boolean => {
+			return infoBox.editField(key, value, { editOnly });
+		},
+		unlinkInfoBoxField: (key: string) => {
+			infoBox.unlinkField(key);
+		},
+		setMetaTags: (tags: string[]) => {
+			metaTagsState.val = tags.join(' ');
+		},
+		importRela: (pids: number[]) => {
+			importPersonBatch(pids).then(() => {
+				settingsState.val = { ...settingsState.val }; // trigger Gallery update
+			});
+		},
+		setSID: (sid: number) => {
+			sidState.val = sid;
+		},
+		pushWarning: (warning: string) => {
+			toast(warning, { alert: true });
+		},
+		done: () => {
+			showImportDialog = false;
+		}
+	};
 </script>
 
 <head>
@@ -203,20 +261,7 @@
 		<div
 			class="flex-basis-[24%] flex-grow-3 h-full min-h-[30.5rem] mt-[0.8rem] flex flex-col flex-justify-between gap-row-xs"
 		>
-			<Title
-				bind:value={titleState.val}
-				setState={(s) => {
-					sidState.val = s.sid;
-					titleState.val = s.title;
-					metaTagsState.val = s.metaTags;
-					trackInfoState.val = s.trackInfo;
-					setTimeout(() => {
-						infoBox.reset(s.infoBox);
-					}, 10);
-					descState.val = s.desc;
-				}}
-				class="flex-basis-[1rem]"
-			/>
+			<Title bind:value={titleState.val} {setState} class="flex-basis-[1rem]" />
 			<InfoBox
 				bind:value={infoBoxState.val}
 				bind:valueMetaTags={metaTagsState.val}
@@ -273,54 +318,7 @@
 			}
 		}}
 	/>
-	<ImportDialog
-		bind:show={showImportDialog}
-		editor={{
-			associableFields,
-			editTitleIntro: (title: string, intro: string) => {
-				if (title) titleState.val = title;
-				if (intro) descState.val = intro;
-			},
-			setTrackInfo: (info: InfoRelease, style: 'parts' | 'tracks' | 'default' = 'default') => {
-				trackInfoState.val = writeTrackInfo(info, style);
-			},
-			setInfoBox: (content: string, override: boolean) => {
-				if (override) {
-					infoBox.reset(content);
-					infoBox.merge('');
-				} else {
-					infoBox.merge(content);
-				}
-			},
-			setInfoBoxField: (
-				key: string,
-				value: string | [string, string][],
-				{ editOnly = false } = {}
-			): boolean => {
-				return infoBox.editField(key, value, { editOnly });
-			},
-			unlinkInfoBoxField: (key: string) => {
-				infoBox.unlinkField(key);
-			},
-			setMetaTags: (tags: string[]) => {
-				metaTagsState.val = tags.join(' ');
-			},
-			importRela: (pids: number[]) => {
-				importPersonBatch(pids).then(() => {
-					settingsState.val = { ...settingsState.val }; // trigger Gallery update
-				});
-			},
-			setSID: (sid: number) => {
-				sidState.val = sid;
-			},
-			pushWarning: (warning: string) => {
-				toast(warning, { alert: true });
-			},
-			done: () => {
-				showImportDialog = false;
-			}
-		}}
-	/>
+	<ImportDialog bind:show={showImportDialog} {editor} />
 	<SubmitDialog bind:show={showSubmitDialog} getSubjectData={marshal} session={session.val} />
 	<ConfirmationDialog />
 </main>
