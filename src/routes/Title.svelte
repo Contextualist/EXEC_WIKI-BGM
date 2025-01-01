@@ -1,15 +1,19 @@
 <script lang="ts">
 	import History, { type ContentState } from './History.svelte';
+	import Arranger, { search } from './Arranger.svelte';
+	import { type AutoEditor } from '$lib/importSource/common.ts';
 
 	interface TitleProps {
 		value: string;
-		setState: (state: ContentState) => void;
+		setState: (state?: ContentState) => void;
+		editor: AutoEditor;
 		class?: string;
 	}
-	let { value = $bindable(), setState, class: class_ }: TitleProps = $props();
+	let { value = $bindable(), setState, editor, class: class_ }: TitleProps = $props();
 
 	let inputEl: HTMLInputElement | undefined = $state(undefined);
 	let showHistory = $state(false);
+	let showArranger = $state(false);
 </script>
 
 <div
@@ -39,7 +43,19 @@
 				const historyEl = (e.target as HTMLElement).previousElementSibling;
 				const history1stEntryEl = historyEl?.querySelector('button');
 				history1stEntryEl?.focus();
+			} else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+				e.preventDefault();
+				showArranger = true;
+				search(value);
 			}
 		}}
 	/>
+	{#if showArranger}
+		<Arranger
+			{setState}
+			{editor}
+			bind:show={showArranger}
+			class="absolute z-2 top-[2.4rem] left-0 w-full rounded-md overflow-hidden"
+		/>
+	{/if}
 </div>

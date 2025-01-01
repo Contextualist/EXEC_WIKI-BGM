@@ -6,6 +6,7 @@ export interface ImportSource {
     options: ImportSourceOption[];
     load: (url: string) => Promise<string>;
     apply: (opts: { [key: string]: any }, editor: AutoEditor) => Promise<void>;
+    search?: (query: string) => Promise<SearchResultEntry[]>;
 }
 
 export interface ImportSourceOption {
@@ -44,6 +45,15 @@ export interface Track {
 }
 
 export type Credits = Record<string, string[]>;
+
+export interface SearchResultEntry {
+    title: string;
+    subtitle: string;
+    url: string;
+    date: string;
+    imgThumbnail: string;
+    imgOriginal: string;
+}
 
 export function warningTemplate3rdPartyWiki(name: string): string {
     return `

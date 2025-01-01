@@ -1,4 +1,4 @@
-import type { ImportSource, AutoEditor } from "./common";
+import type { ImportSource, AutoEditor, SearchResultEntry } from "./common";
 import { DefaultDict, warningTemplate3rdPartyWiki, formatDuration } from "./common";
 
 export class MusicBrainz implements ImportSource {
@@ -128,6 +128,22 @@ export class MusicBrainz implements ImportSource {
 
         editor.done();
     }
+
+    async search(query: string): Promise<SearchResultEntry[]> {
+        const data = await searchRelease(query);
+        const ca = await Promise.all(data.releases.map((r) => fetchCoverArtArchive(r.id)));
+        return data.releases.map((r, i) => ({
+            title: r.title + (r.disambiguation ? ` (${r.disambiguation})` : ''),
+            subtitle: (
+                r["artist-credit"].map(({ name, joinphrase }) => `${name}${joinphrase ? ` ${joinphrase}` : ''}`).join("") +
+                (r.media.length > 0 ? ` / ${r.media[0].format}` : '')
+            ),
+            date: r.date,
+            url: `https://musicbrainz.org/release/${r.id}`,
+            imgThumbnail: ca[i]?.images.find((i) => i.front)?.thumbnails.small || "",
+            imgOriginal: ca[i]?.images.find((i) => i.front)?.image || "",
+        }));
+    }
 }
 
 const ROLE2KEYWORD: Record<string, string> = {
@@ -213,5 +229,41 @@ async function fetchReleaseInfo(mbid: string): Promise<MusicBrainzRelease> {
         `${ENDPOINT}/release/${mbid}?inc=artist-credits+labels+recordings+release-groups+artist-rels+recording-level-rels+work-level-rels+recording-rels+work-rels+release-group-rels+release-group-level-rels+url-rels`,
         { headers: { "Accept": "application/json" } }
     );
+    return res.json();
+}
+
+interface MusicBrainzSearchReleaseResult {
+    releases: {
+        title: string;
+        id: string;
+        date: string;
+        media: { format: string; }[];
+        "artist-credit": { name: string; joinphrase?: string; }[];
+        disambiguation?: string;
+    }[];
+}
+
+async function searchRelease(query: string): Promise<MusicBrainzSearchReleaseResult> {
+    const res = await fetch(
+        `${ENDPOINT}/release?query=release:${query}&limit=5`,
+        { headers: { "Accept": "application/json" } }
+    );
+    return res.json();
+}
+
+interface CoverArtArchiveResult {
+    images: {
+        image: string;
+        thumbnails: {
+            small: string;
+        };
+        front: boolean;
+        types: string[];
+    }[];
+}
+
+async function fetchCoverArtArchive(mbid: string): Promise<CoverArtArchiveResult | null> {
+    const res = await fetch(`https://coverartarchive.org/release/${mbid}`);
+    if (res.status === 404) return null;
     return res.json();
 }

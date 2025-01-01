@@ -261,7 +261,7 @@
 		<div
 			class="flex-basis-[24%] flex-grow-3 h-full min-h-[30.5rem] mt-[0.8rem] flex flex-col flex-justify-between gap-row-xs"
 		>
-			<Title bind:value={titleState.val} {setState} class="flex-basis-[1rem]" />
+			<Title bind:value={titleState.val} {setState} {editor} class="flex-basis-[1rem]" />
 			<InfoBox
 				bind:value={infoBoxState.val}
 				bind:valueMetaTags={metaTagsState.val}
