@@ -40,6 +40,9 @@ export class VocaDB implements ImportSource {
             }
             const relaMap0 = DefaultDict(() => [] as string[]); // relation -> names
             artists.forEach((artist) => addArtist(relaMap0, artist));
+            if (relaMap0.Label.length > 0) {
+                relaMap0.Circle = []; // Prefer Label over Circle, if Label is present
+            }
 
             tracks.sort((a, b) => a.discNumber - b.discNumber || a.trackNumber - b.trackNumber);
             const discs: Disc[] = [];
@@ -74,7 +77,8 @@ export class VocaDB implements ImportSource {
         if (opts.releaseDateEvent) {
             const { releaseDate, releaseEvent } = (await this.albumInfo)!;
             const { year, month, day } = releaseDate;
-            let dateStr = (new Date(year, month - 1, day)).toISOString().slice(0, 10);
+            // +12h to avoid timezone-related date shift
+            let dateStr = (new Date(year, month - 1, day, 12)).toISOString().slice(0, 10);
             const eventStr = eventMap(releaseEvent);
             if (eventStr) {
                 dateStr += ` (${eventStr})`;
@@ -108,7 +112,6 @@ export class VocaDB implements ImportSource {
 }
 
 const ROLE2KEYWORD: Record<string, string> = {
-    'Circle': 'EXCLUDE',
     'Band': 'EXCLUDE',
     'Animator': 'EXCLUDE',
     'Subject': 'EXCLUDE',
