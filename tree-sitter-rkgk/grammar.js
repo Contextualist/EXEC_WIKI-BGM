@@ -86,6 +86,7 @@ const roles = [
 
 module.exports = grammar({
   name: 'rkgk',
+  extras: _ => [/[\s　]/],
 
   rules: {
     source_file: $ => seq(

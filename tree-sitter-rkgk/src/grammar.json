@@ -1303,7 +1303,7 @@
   "extras": [
     {
       "type": "PATTERN",
-      "value": "\\s"
+      "value": "[\\s　]"
     }
   ],
   "conflicts": [],

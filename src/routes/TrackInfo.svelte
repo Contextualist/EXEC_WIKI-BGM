@@ -27,9 +27,6 @@
 	function filterPaste(text: string) {
 		return (
 			text
-				// Replace all leading full-width spaces with ascii spaces for each line
-				// This is a workaround for the missing support from the rkgk parser
-				.replace(/(^|\n)(　+)/g, (_, nl, sp) => nl + ' '.repeat(sp.length))
 				// Remove trailing whitespace
 				.replace(/\s+$/g, '')
 				// Unicode normalization

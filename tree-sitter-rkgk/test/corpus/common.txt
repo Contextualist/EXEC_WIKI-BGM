@@ -213,7 +213,7 @@ comment, quoting, creator name quoting
 06　とある瀟洒な従者の物語 feat. ｙｔｒ // 原曲：東方紅魔郷 より 月時計－ルナ・ダイアル
     Vocal：ｙｔｒ、《たま//》
 《07　Bad >///< Apple？ feat. Romonosov?:p》
-    // 原曲：幺樂団の歴史1 より Bad Apple!!
+　// 原曲：幺樂団の歴史1 より Bad Apple!!
     Vocal：たま
 
 ---
