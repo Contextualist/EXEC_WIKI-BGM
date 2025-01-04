@@ -78,19 +78,14 @@ async function fetchItem(tid: number): Promise<ItemInfo> {
 function parseItem(raw: string): ItemInfo {
     const content = new DOMParser().parseFromString(raw, "text/html");
 
-    const title = content.querySelector(".product-title")?.textContent?.trim() ?? "";
+    const title = content.querySelector(".PC-item-info-title")?.textContent?.trim() ?? "";
 
-    const infoBlocks = Array.from(content.querySelectorAll(".item-description"));
-    function findBlock(label: string) {
-        return infoBlocks.find((block) => containsText(block, ".item-description-label", label));
-    }
-
-    const commodityInfo = findBlock("商品の情報");
+    const commodityInfo = content.querySelector("#BasicInfoContent");
     const commodityInfoRows = Array.from(commodityInfo?.querySelectorAll("tr") ?? []);
     let commodityInfoValues = { releaseDate: "", serialNumber: "", label: "" };
     if (commodityInfoRows.length > 0) {
         function extractTableValue(key: string) {
-            return commodityInfoRows.find((row) => containsText(row, ".item-item-info-label", key))?.querySelector("td p")?.textContent?.trim() ?? "";
+            return commodityInfoRows.find((row) => containsText(row, "td.TOL-item-info-PC-tab-basic-info-table-column", key))?.querySelector("td.TOL-item-info-PC-tab-basic-info-table-field")?.textContent?.trim() ?? "";
         }
         commodityInfoValues = {
             releaseDate: extractTableValue("発売日"),
@@ -99,12 +94,14 @@ function parseItem(raw: string): ItemInfo {
         };
     }
 
-    const descriptionInfo = findBlock("商品の紹介");
-    const description = descriptionInfo?.querySelectorAll(".item-introduction > div > div")[0]?.textContent?.trim() ?? "";
+    const longInfo = content.querySelector("#ProductIntroductionContent");
+    const longInfoSections = Array.from(longInfo?.querySelectorAll("section") ?? []);
+    const descriptionInfo = longInfoSections.find((section) => containsText(section, "h3 > span", "商品の紹介"));
+    const description = Array.from(descriptionInfo?.querySelectorAll(".TOL-item-info-PC-tab-product-introduction-text") ?? []).map(p => p.textContent?.trim()).join("\n\n") ?? "";
 
-    const contentInfo = findBlock("収録内容");
-    const contentIndices = Array.from(contentInfo?.querySelectorAll(".contens-index > p") ?? []);
-    const duration = contentIndices.find((p) => p.textContent?.startsWith("合計収録時間"))?.textContent?.split("|")[1].trim() ?? "";
+    const contentInfo = content.querySelector("#RecordedContent");
+    const contentIndices = contentInfo?.querySelectorAll(".TOL-item-info-PC-tab-recorded-contents-text > p")[0]?.textContent?.trim() ?? "";
+    const duration = contentIndices.match(/合計収録時間 : (\d+:\d+:\d+)/)?.[1] ?? "";
     const discs = contentInfo ? parseDiscInfo(contentInfo) : [];
 
     return {
@@ -117,16 +114,18 @@ function parseItem(raw: string): ItemInfo {
 }
 
 function parseDiscInfo(contentInfo: Element): Disc[] {
-    const discEls = Array.from(contentInfo.querySelectorAll(".track-list"));
+    const discEls = Array.from(contentInfo.querySelectorAll("li.TOL-item-info-PC-tab-recorded-contents-list-item > ol"));
     return discEls.map((disc) => {
-        const trackEls = Array.from(disc.querySelectorAll("li > div"));
+        const trackEls = Array.from(disc.querySelectorAll("li"));
         return {
             tracks: trackEls.map((track) => {
-                const title = track.querySelector("div:nth-child(1) > div:nth-child(2) > div:nth-child(2)")?.textContent?.trim() ?? "";
-                const creditEls = Array.from(track.querySelectorAll("div:nth-child(2) > div > div")).slice(1);
+                const title = track.querySelector(".TOL-item-info-PC-tab-recorded-contents-list-track-title")?.textContent?.trim() ?? "";
+                const creditEls = Array.from(track.querySelectorAll("div.TOL-item-info-PC-tab-recorded-contents-list-track-hidden-contents-area > div"));
                 const credits = Object.fromEntries(creditEls.flatMap((credit) => {
-                    const [role, name] = Array.from(credit.querySelectorAll("div")).map((div) => div.textContent?.trim());
-                    return role && name && ROLE_WHITELIST.has(role) ? [[role, name.split("、").map(n => n.trim())]] : [];
+                    const spans = Array.from(credit.querySelectorAll("span"));
+                    const role = spans[0]?.textContent?.trim()?.replace("：", "");
+                    const names = spans.slice(1).map(span => span.textContent?.trim()).filter((n): n is string => !!n);
+                    return role && names.length > 0 && ROLE_WHITELIST.has(role) ? [[role, names]] : [];
                 }));
                 return { title, comment: "", credits };
             }),

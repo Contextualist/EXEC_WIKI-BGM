@@ -83,6 +83,8 @@
 				<p class="text-sm">从 {currentSource.name} 导入...</p>
 			{:then title}
 				<p class="text-sm">从 {currentSource.name} 导入 {title}</p>
+			{:catch _}
+				<p class="text-sm">唔，出错了 ;-;</p>
 			{/await}
 		{:else}
 			<p class="text-sm"></p>
