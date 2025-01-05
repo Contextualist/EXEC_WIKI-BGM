@@ -40,11 +40,18 @@ export class Bangumi implements ImportSource {
         if (opts.trackListCredits) {
             const subjectEpInfo = getSubjectEpInfo(this.sid);
             rela = await getSubjectRelaPerson(this.sid);
-            const [aliasTable, unassociated] = resolveAlias((await this.subjectInfo!).infobox, rela, editor.associableFields);
+            const [aliasTable, unassociated, instTable] = resolveAlias((await this.subjectInfo!).infobox, rela, editor.associableFields);
             const relaMap0 = DefaultDict(() => [] as string[]); // relation -> names
             const relaMap = DefaultDict(() => DefaultDict(() => DefaultDict(() => [] as string[]))); // disc -> track -> relation -> names
+            function formatRole(role: string, name: string): string {
+                let kw = ROLE2KEYWORD[role] || role;
+                if (kw === '乐器' && instTable[name]) {
+                    kw = `乐器-${instTable[name]}`;
+                }
+                return kw;
+            }
             rela.forEach(({ name, relation, eps }) => {
-                const kw = ROLE2KEYWORD[relation] || relation;
+                let kw = formatRole(relation, name);
                 name = aliasTable[relation]?.[name] ?? name; // try using alias
                 if (eps === "") {
                     relaMap0[kw].push(name);
@@ -57,7 +64,9 @@ export class Bangumi implements ImportSource {
             });
             Object.entries(unassociated).forEach(([role, names]) => {
                 if (names.length === 0) return;
-                relaMap0[ROLE2KEYWORD[role] || role].push(...names);
+                names.forEach(name => {
+                    relaMap0[formatRole(role, name)].push(name);
+                });
             });
 
             const discs = DefaultDict(() => ({} as Record<number, Track>));
@@ -125,7 +134,7 @@ function resolveAlias(
     infobox: string,
     rela: SubjectRelaPerson[],
     associableFields: Set<string>
-): [Record<string, Record<string, string>>, Record<string, string[]>] {
+): [Record<string, Record<string, string>>, Record<string, string[]>, Record<string, string>] {
     const plain = infobox.split('\n').filter(x => x.startsWith('|')).map(x => x.slice(1).split('='));
     const associable = plain.filter(([k, _]) => associableFields.has(k)) as [string, string][];
     const relaNames = DefaultDict(() => new Set<string>());
@@ -133,6 +142,7 @@ function resolveAlias(
 
     const aliasTable: Record<string, Record<string, string>> = {}; // role -> name -> alias
     const unassociated: Record<string, string[]> = {}; // role -> name[]
+    const instTable = instrumentalPreprocess(associable);
     associable.forEach(([role, raw]) => {
         if (!(raw.trim())) return;
         const amap: Record<string, string> = {};
@@ -173,7 +183,25 @@ function resolveAlias(
         aliasTable[role] = amap;
         unassociated[role] = uarr;
     });
-    return [aliasTable, unassociated];
+    return [aliasTable, unassociated, instTable];
+}
+
+const RE_NAME_INST = /^(.*) \(([^(\[]+)\)$/; // `name (inst)`, expected to be machine-formatted
+/// Extract name-instrument mapping and strip instrument from the original string
+function instrumentalPreprocess(associable: [string, string][]): Record<string, string> {
+    const instEntry = associable.find(([k, _]) => k === '乐器');
+    if (!instEntry || !instEntry[1]) return {};
+    const frags = instEntry[1].split('、').map(x => x.trim().match(RE_NAME_INST));
+    if (!frags.every(x => x)) return {};
+    const name2inst: Record<string, string> = {};
+    const despined: string[] = [];
+    frags.forEach(match => {
+        const [_, name, inst] = match!;
+        name2inst[(name.match(RE_ALIAS_NAME)?.[1] ?? name).trim()] = inst;
+        despined.push(name);
+    });
+    instEntry[1] = despined.join('、');
+    return name2inst;
 }
 
 const bracketMap: Record<string, string> = {
