@@ -74,7 +74,7 @@
 				{@render TagReadonly(tagName)}
 			{/each}
 		{:else}
-			{@render TagReadonly('+标签')}
+			{@render TagReadonly('添加标签')}
 		{/if}
 	</div>
 	<Dialog bind:show={showDialog} class="w-[40rem] flex flex-row gap-col-sm">
@@ -121,7 +121,7 @@
 {#snippet TagReadonly(tagName: string)}
 	<div
 		class={'inline-block px-1.5 py-0.5 text-sm bg-white rounded-lg mr-1 my-1 ' +
-			(tagName.startsWith('+') ? 'text-bgm-grey' : '')}
+			(tagName.startsWith('添加') ? 'text-bgm-grey' : '')}
 	>
 		{tagName}
 	</div>

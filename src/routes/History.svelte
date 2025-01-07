@@ -60,9 +60,9 @@
 		transition:fade|global={{ duration: 200, delay: 0 }}
 	>
 		<div
-			class="sticky top-[14rem] left-0 w-full h-[14rem] bg-[linear-gradient(to_top,_transparent_30%,_#FBFBFB_80%)] pointer-events-none"
+			class="sticky top-[10.5rem] left-0 w-full h-[10.5rem] bg-[linear-gradient(to_top,_transparent_30%,_#FBFBFB_80%)] pointer-events-none"
 		></div>
-		<div class="flex flex-col-reverse h-[11rem] overflow-y-scroll" style="scrollbar-width: none">
+		<div class="flex flex-col-reverse h-[14.5rem] overflow-y-scroll" style="scrollbar-width: none">
 			{#each displayHistory as ce, i (ce.timestamp)}
 				<button
 					onmousedown={() =>
