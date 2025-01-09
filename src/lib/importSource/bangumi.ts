@@ -1,7 +1,7 @@
-import type { ImportSource, AutoEditor, Track } from "./common";
+import type { ImportSource, AutoEditor } from "./common";
 import { DefaultDict } from "./common";
 import { getSubjectInfo, getSubjectEpInfo, getSubjectRelaPerson, type SubjectInfo, type SubjectRelaPerson } from "$lib/client";
-import { parsePart } from "$lib/bangumiUtils";
+import { assembleRelease } from "$lib/bangumiUtils";
 
 export class Bangumi implements ImportSource {
     name = "Bangumi";
@@ -41,8 +41,6 @@ export class Bangumi implements ImportSource {
             const subjectEpInfo = getSubjectEpInfo(this.sid);
             rela = await getSubjectRelaPerson(this.sid);
             const [aliasTable, unassociated, instTable] = resolveAlias((await this.subjectInfo!).infobox, rela, editor.associableFields);
-            const relaMap0 = DefaultDict(() => [] as string[]); // relation -> names
-            const relaMap = DefaultDict(() => DefaultDict(() => DefaultDict(() => [] as string[]))); // disc -> track -> relation -> names
             function formatRole(role: string, name: string): string {
                 let kw = ROLE2KEYWORD[role] || role;
                 if (kw === '乐器' && instTable[name]) {
@@ -50,18 +48,15 @@ export class Bangumi implements ImportSource {
                 }
                 return kw;
             }
-            rela.forEach(({ name, relation, eps }) => {
+            rela = rela.map(({ name, relation, ...rest }) => {
                 let kw = formatRole(relation, name);
                 name = aliasTable[relation]?.[name] ?? name; // try using alias
-                if (eps === "") {
-                    relaMap0[kw].push(name);
-                    return;
-                }
-                const dts = parsePart(eps);
-                dts.forEach(([disc, track]) => {
-                    relaMap[disc][track][kw].push(name);
-                });
+                return { name, relation: kw, ...rest };
             });
+
+            const release = assembleRelease(await subjectEpInfo, rela);
+
+            const relaMap0 = release.credits;
             Object.entries(unassociated).forEach(([role, names]) => {
                 if (names.length === 0) return;
                 names.forEach(name => {
@@ -69,30 +64,6 @@ export class Bangumi implements ImportSource {
                 });
             });
 
-            const discs = DefaultDict(() => ({} as Record<number, Track>));
-            (await subjectEpInfo).forEach((tr) => {
-                const d = tr.disc === 0 ? 1 : tr.disc;
-                discs[d][tr.ep] = {
-                    title: tr.name,
-                    comment: tr.name_cn,
-                    credits: relaMap[d][tr.ep],
-                };
-            });
-            const release = {
-                credits: relaMap0,
-                discs: Array.from(
-                    { length: Object.keys(discs).length },
-                    (_, i) => {
-                        const trm = discs[i + 1];
-                        return {
-                            tracks: Array.from(
-                                { length: Math.max(...Object.keys(trm).map(x => parseInt(x))) },
-                                (_, j) => trm[j + 1]
-                            ).filter(x => x)
-                        };
-                    },
-                ),
-            };
             editor.setTrackInfo(release);
         }
 

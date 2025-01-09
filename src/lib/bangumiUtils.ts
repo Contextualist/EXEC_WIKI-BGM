@@ -1,4 +1,46 @@
+import { type Release, type Track, DefaultDict } from "./importSource/common";
+import { type SubjectEpInfo, type SubjectRelaPerson } from "./client";
 
+/// Assemble Bangumi API data into a Release
+export function assembleRelease(subjectEpInfo: SubjectEpInfo[], subjectRelaPerson: SubjectRelaPerson[]): Release {
+    const relaMap0 = DefaultDict(() => [] as string[]); // relation -> names
+    const relaMap = DefaultDict(() => DefaultDict(() => DefaultDict(() => [] as string[]))); // disc -> track -> relation -> names
+    subjectRelaPerson.forEach(({ name, relation, eps }) => {
+        if (eps === "") {
+            relaMap0[relation].push(name);
+            return;
+        }
+        const dts = parsePart(eps);
+        dts.forEach(([disc, track]) => {
+            relaMap[disc][track][relation].push(name);
+        });
+    });
+
+    const discs = DefaultDict(() => ({} as Record<number, Track>));
+    subjectEpInfo.forEach((tr) => {
+        const d = tr.disc === 0 ? 1 : tr.disc;
+        discs[d][tr.ep] = {
+            title: tr.name,
+            comment: tr.name_cn,
+            credits: relaMap[d][tr.ep],
+        };
+    });
+    return {
+        credits: relaMap0,
+        discs: Array.from(
+            { length: Object.keys(discs).length },
+            (_, i) => {
+                const trm = discs[i + 1];
+                return {
+                    tracks: Array.from(
+                        { length: Math.max(...Object.keys(trm).map(x => parseInt(x))) },
+                        (_, j) => trm[j + 1]
+                    ).filter(x => x)
+                };
+            },
+        ),
+    };
+}
 
 /// Parse track number list in single disc (e.g. `1,3-5,7`) or multiple discs (e.g. `1.1, 1.3-5, 2.7`) format
 export function parsePart(part: string): [number, number][] {
