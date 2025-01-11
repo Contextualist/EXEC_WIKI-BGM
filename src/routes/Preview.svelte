@@ -2,6 +2,7 @@
 	import 'uno.css';
 	import { Release } from './postprocess';
 	import { Match, type ResolvedRelaMap } from './disambiguation';
+	import { orderedEntries } from '$lib/bangumiUtils';
 
 	interface PreviewProps {
 		release: Readonly<Release>;
@@ -13,8 +14,8 @@
 	let [creditTopMerged, creditMerged] = $derived.by(() => {
 		const [creditTop, credit] = release.intoTrackSummary();
 		return [
-			mergeKeys(Object.entries(creditTop), (ps) => ps.join('、')),
-			credit.map((dc) => dc.map((tc) => mergeKeys(Object.entries(tc), (ps) => ps.join('、'))))
+			mergeKeys(orderedEntries(creditTop), (ps) => ps.join('、')),
+			credit.map((dc) => dc.map((tc) => mergeKeys(orderedEntries(tc), (ps) => ps.join('、'))))
 		];
 	});
 

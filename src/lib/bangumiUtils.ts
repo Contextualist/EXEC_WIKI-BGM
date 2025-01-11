@@ -60,3 +60,12 @@ function _parseMaybeRange(s: string) {
     const [start, end] = s.split('-').map(x => parseInt(x));
     return Array.from({ length: (end || start) - start + 1 }, (_, i) => start + i);
 }
+
+const defaultRoleOrder = [
+    '制作人', '艺术家', '作词', '作曲', '编曲', '脚本', '声乐', '乐器', '混音', '母带制作',
+    '插图', '原作', '出版方', '厂牌',
+];
+
+export function orderedEntries<T>(d: Record<string, T>): [string, T][] {
+    return defaultRoleOrder.filter(x => d[x]).map(x => [x, d[x]]);
+}

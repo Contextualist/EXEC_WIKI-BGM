@@ -1,5 +1,6 @@
 import { type Release, type Credits } from "$lib/importSource";
 import { RE_ROLE_KEYWORD, pagenoJoin, multiDiscPageNoJoin, Release as FormalRelease } from "./postprocess";
+import { orderedEntries } from "$lib/bangumiUtils";
 
 const RE_SEP = /[ 　\t&＆:：\/・、；,]/;
 const RE_LATIN_SPACE = /[A-Za-z] [A-Za-z]/;
@@ -61,7 +62,7 @@ function writeTrackInfoCreditParts(info: Release): string {
             });
         });
     });
-    trackInfo += Object.entries(pt).map(([role, names]) => {
+    trackInfo += orderedEntries(pt).map(([role, names]) => {
         return `${role}：${Object.entries(names).map(([name, ps]) => {
             return `${nameEscape(name)}(${isMulti ? multiDiscPageNoJoin(ps) : pagenoJoin(ps.flat())})`;
         }).join('、')}\n`;
