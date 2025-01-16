@@ -319,6 +319,11 @@
 		}}
 	/>
 	<ImportDialog bind:show={showImportDialog} {editor} />
-	<SubmitDialog bind:show={showSubmitDialog} getSubjectData={marshal} session={session.val} />
+	<SubmitDialog
+		bind:show={showSubmitDialog}
+		getSubjectData={marshal}
+		getTrackData={() => fromFormalRelease(currentRelease, name2staff)}
+		session={session.val}
+	/>
 	<ConfirmationDialog />
 </main>

@@ -1,5 +1,6 @@
 import { type Release, type Credits } from "$lib/importSource";
 import { RE_ROLE_KEYWORD, pagenoJoin, multiDiscPageNoJoin, Release as FormalRelease } from "./postprocess";
+import type { ResolvedRelaMap } from "./disambiguation";
 import { orderedEntries } from "$lib/bangumiUtils";
 
 const RE_SEP = /[ 　\t&＆:：\/・、；,]/;
@@ -82,7 +83,7 @@ function writeTrackInfoCreditParts(info: Release): string {
     return trackInfo;
 }
 
-export function fromFormalRelease(rf: Readonly<FormalRelease>): Release {
+export function fromFormalRelease(rf: Readonly<FormalRelease>, name2staff?: ResolvedRelaMap): Release {
     const r: Release = {
         credits: {},
         discs: rf.tracks.map((d) => ({
@@ -91,7 +92,7 @@ export function fromFormalRelease(rf: Readonly<FormalRelease>): Release {
     }
     function pushCredit(credit: Credits, role: string, name: string) {
         credit[role] = credit[role] ?? [];
-        credit[role].push(rf.formatCreator(name, undefined));
+        credit[role].push(name2staff?.get(name)?.[0]?.name ?? rf.formatCreator(name, undefined));
     }
     Object.entries(rf.credits).forEach(([role, nameData]) => {
         Object.entries(nameData).forEach(([name, pd]) => {
