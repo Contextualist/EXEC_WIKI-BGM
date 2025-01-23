@@ -406,7 +406,7 @@ function parseSongCredit(
                 }
                 break;
             case "parts":
-                const partsString = cf.value.trim().slice(1, -1).replace(/^(Tr|tr|M|m)\.?\s*/, "");
+                const partsString = cf.value.trim().slice(1, -1).replace(/^(Tr|tr|M|m)[\.-]?\s*/, "");
                 const parts = parsePart(partsString); // for now it's [disc, track][]; will be converted number[disc-1][track]
                 if (!lastPersonData) {
                     lastRoleParts = parts;
