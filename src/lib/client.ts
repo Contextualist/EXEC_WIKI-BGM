@@ -32,7 +32,7 @@ export async function searchPerson(name: string): Promise<Staff[]> {
     }
     const request = new Request(`${CORS_ENDPOINT}/graphql`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        // headers: { 'Content-Type': 'application/json' }, // seems like that we can make a CORS simple request here
         mode: 'cors',
         body: getBGMRGraphQLQuery(name),
     });
