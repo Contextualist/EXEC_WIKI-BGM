@@ -1,6 +1,6 @@
 import { TreeSitterParser, type NodeInfo } from "./treeSitterParser";
 
-import Parser from "web-tree-sitter";
+import { Parser, Language as TreeSitterLanguage } from "web-tree-sitter";
 import { LanguageSupport, Language, defineLanguageFacet, languageDataProp } from "@codemirror/language";
 import { completeFromList, insertCompletionText, type Completion } from "@codemirror/autocomplete";
 import { EditorView } from "@codemirror/view";
@@ -158,7 +158,7 @@ function intoCredits(nodes: NodeInfo[]): CreditField[] {
 async function initTreeSitterParser() {
     await Parser.init();
     const parser = new Parser();
-    const rkgk = await Parser.Language.load("tree-sitter-rkgk.wasm");
+    const rkgk = await TreeSitterLanguage.load("tree-sitter-rkgk.wasm");
     parser.setLanguage(rkgk);
     return parser;
 }

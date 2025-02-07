@@ -1,4 +1,4 @@
-import Parser from "web-tree-sitter";
+import { Parser } from "web-tree-sitter";
 import * as lezer from "@lezer/common";
 
 interface LeafInfo {
