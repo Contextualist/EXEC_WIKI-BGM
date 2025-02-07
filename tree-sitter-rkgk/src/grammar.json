@@ -625,7 +625,7 @@
       ]
     },
     "_role_instrument": {
-      "type": "IMMEDIATE_TOKEN",
+      "type": "TOKEN",
       "content": {
         "type": "PREC",
         "value": 1,
@@ -1310,5 +1310,6 @@
   "precedences": [],
   "externals": [],
   "inline": [],
-  "supertypes": []
+  "supertypes": [],
+  "reserved": {}
 }

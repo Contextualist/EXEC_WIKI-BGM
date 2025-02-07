@@ -184,7 +184,7 @@ module.exports = grammar({
       $._role_instrument,
       $._role,
     ),
-    _role_instrument: _ => token.immediate(prec(1, new RegExp(`乐器-([^${separators}]| )+`))),
+    _role_instrument: _ => token(prec(1, new RegExp(`乐器-([^${separators}]| )+`))),
     _role: _ => choice(...roles.map(r => field('role', r))),
 
     parts: _ => /\((Tr|tr|M|m)?\.? ?[0-9,-. ]+\)/,

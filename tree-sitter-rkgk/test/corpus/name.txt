@@ -50,6 +50,42 @@ instrument role annotation
 
 
 ===
+instrument role annotation, comment
+===
+
+曲 // 注释
+乐器-violin：npc5 / 乐器-drum set：npc6
+曲2 // 注释
+乐器-drum set：npc7 / 乐器-violin：npc8 / 乐器：npc9
+
+---
+
+(source_file
+  (song
+    (song_title)
+    (comment)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name))
+      (credit_field
+        (role)
+        (creator_name))))
+  (song
+    (song_title)
+    (comment)
+    (credit_block
+      (credit_field
+        (role)
+        (creator_name))
+      (credit_field
+        (role)
+        (creator_name))
+      (credit_field
+        (role)
+        (creator_name)))))
+
+===
 parts
 ===
 
