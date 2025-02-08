@@ -67,5 +67,7 @@ const defaultRoleOrder = [
 ];
 
 export function orderedEntries<T>(d: Record<string, T>): [string, T][] {
-    return defaultRoleOrder.filter(x => d[x]).map(x => [x, d[x]]);
+    const orderedEntries = defaultRoleOrder.filter(x => d[x]).map(x => [x, d[x]]);
+    const remainingEntries = Object.entries(d).filter(([key]) => !defaultRoleOrder.includes(key));
+    return [...orderedEntries, ...remainingEntries] as [string, T][];
 }
