@@ -76,7 +76,7 @@ export class VocaDB implements ImportSource {
 
         if (opts.releaseDateEvent) {
             const { releaseDate, releaseEvent } = (await this.albumInfo)!;
-            const { year, month, day } = releaseDate;
+            const { year, month, day = 1 } = releaseDate;
             // +12h to avoid timezone-related date shift
             let dateStr = (new Date(year, month - 1, day, 12)).toISOString().slice(0, 10);
             const eventStr = eventMap(releaseEvent);
@@ -123,6 +123,7 @@ const ROLE2KEYWORD: Record<string, string> = {
     'Mixer': 'Mixing',
     'Publisher': '出版方',
     'Distributor': 'EXCLUDE',
+    'Instrumentalist': '乐器',
 }
 
 interface VocaDBAlbum {
