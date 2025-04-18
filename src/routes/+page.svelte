@@ -67,7 +67,10 @@
 			.join('\n');
 		const relaTable = currentRelease
 			.intoCreatorSummary(name2staff)
-			.map(([bid, rt]) => `https://bgm.tv/person/${bid}  ${rt.join('  ')}`)
+			.map(
+				([bid, rt]) =>
+					`https://bgm.tv/person/${bid}  ${rt.map(([r, pn]) => (pn ? `${r}#${pn}` : r)).join('  ')}`
+			)
 			.join('\n');
 		return {
 			sid: sidState.val,

@@ -270,9 +270,9 @@ export class Release {
 
     /**
      * List creators (bgm_id) along with their role-track info.
-     * e.g. [[10042, ["作曲#1,3", "作词#2"]], ...
+     * e.g. [[10042, [["作曲", "1,3"], ["作词", "2"]]], ...
      */
-    intoCreatorSummary(name2staff: ResolvedRelaMap): [number, string[]][] {
+    intoCreatorSummary(name2staff: ResolvedRelaMap): [number, [string, string][]][] {
         let r = new Map<number, Map<string, number[][]>>();  // staff_id -> { role -> tracks }
         Object.entries(this.credits).forEach(([roleID, creators]) => {
             if (roleID.startsWith("乐器-")) roleID = "乐器";
@@ -293,9 +293,9 @@ export class Release {
             .map(([staffID, rtm]) => {
                 const rts = Array.from(rtm.entries())
                     .map(([roleID, tr]) => {
-                        if (tr.length === 0) return roleID;
-                        return isMultiDisc ? `${roleID}#${multiDiscPageNoJoin(tr)}` : `${roleID}#${pagenoJoin(tr[0])}`;
-                    });
+                        if (tr.length === 0) return [roleID, ""];
+                        return [roleID, isMultiDisc ? multiDiscPageNoJoin(tr) : pagenoJoin(tr[0])];
+                    }) as [string, string][];
                 return [staffID, rts];
             });
     }
