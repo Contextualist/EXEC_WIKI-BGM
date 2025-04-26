@@ -325,7 +325,12 @@
 	<SubmitDialog
 		bind:show={showSubmitDialog}
 		getSubjectData={marshal}
-		getTrackData={() => fromFormalRelease(currentRelease, name2staff)}
+		getTrackData={() => [
+			fromFormalRelease(currentRelease, name2staff),
+			currentRelease
+				.intoCreatorSummary(name2staff)
+				.flatMap(([bid, rt]) => rt.map(([r, pn]) => ({ id: bid, relation: r, eps: pn })))
+		]}
 		session={session.val}
 	/>
 	<ConfirmationDialog />

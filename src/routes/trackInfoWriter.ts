@@ -90,11 +90,24 @@ export function fromFormalRelease(rf: Readonly<FormalRelease>, name2staff?: Reso
             tracks: d.map((t) => ({ title: t.title, comment: t.comment, credits: {} }))
         }))
     }
-    function pushCredit(credit: Credits, role: string, name: string) {
-        credit[role] = credit[role] ?? [];
-        credit[role].push(name2staff?.get(name)?.[0]?.name ?? rf.formatCreator(name, undefined));
+    let pushCredit: (credit: Credits, role: string, name: string) => void;
+    if (name2staff) { // only include matched credits
+        pushCredit = (credit: Credits, role: string, name: string) => {
+            credit[role] = credit[role] ?? [];
+            const staff = name2staff.get(name)![0];
+            if (!staff) return;
+            credit[role].push(staff.name);
+        }
+    } else {
+        pushCredit = (credit: Credits, role: string, name: string) => {
+            credit[role] = credit[role] ?? [];
+            credit[role].push(rf.formatCreator(name, undefined));
+        }
     }
     Object.entries(rf.credits).forEach(([role, nameData]) => {
+        if (name2staff) { // remove role annotation
+            role = role.split('-')[0];
+        }
         Object.entries(nameData).forEach(([name, pd]) => {
             if (pd.parts.length === 0) {
                 pushCredit(r.credits, role, name);
@@ -122,7 +135,7 @@ function nameEscape(n: string): string {
 
 function formatCredits(rmap: Record<string, string[]>): string {
     return Object.entries(reverseRecord(rmap))
-        .map(([n, rs]) => `${rs.sort().join('、')}：${nameEscape(n)}`)
+        .map(([n, rs]) => `${rs.sort().join('、')}：${nameEscape(n)}`).sort()
         .join('\n') + '\n';
 }
 

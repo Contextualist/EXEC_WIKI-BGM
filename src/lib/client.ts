@@ -171,6 +171,13 @@ export interface SubjectInfoWrite {
     metaTags?: string[];
 }
 
+export interface SubjectEpInfoWrite {
+    disc?: number;
+    ep?: number;
+    name?: string;
+    nameCN?: string;
+}
+
 export interface PersonInfoWrite {
     name?: string;
     infobox?: string;

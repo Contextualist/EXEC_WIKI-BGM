@@ -1,8 +1,15 @@
 <script lang="ts">
 	import 'uno.css';
 
-	import { submit as submitRequest, type SubjectData, type SubjectRelaPerson } from './submit';
+	import {
+		submit as submitRequest,
+		trackDiff,
+		relaDiff,
+		type SubjectData,
+		type SubjectRelaPerson
+	} from './submit';
 
+	import SubmitRegion from './SubmitRegion.svelte';
 	import Dialog from '$lib/Dialog.svelte';
 	import Diff from './Diff.svelte';
 	import Button from './Button.svelte';
@@ -23,7 +30,7 @@
 	interface SubmitDialogProps {
 		show: boolean;
 		getSubjectData: () => SubjectData;
-		getTrackData?: () => Release;
+		getTrackData?: () => [Release, SubjectRelaPerson[]];
 		askAuth?: () => void;
 		session: BGMSession;
 	}
@@ -49,7 +56,9 @@
 	let subjectData = $state<SubjectData | null>(null);
 	let currentInfo = $state<SubjectInfo | null>(null);
 	let trackData = $state<Release | null>(null);
-	let currentTrackInfo = $state<Release | null>(null);
+	let currentTrackInfo = $state<Release>({ credits: {}, discs: [] });
+	let creditsData = $state<SubjectRelaPerson[] | null>(null);
+	let currentCredits = $state<SubjectRelaPerson[]>([]);
 	$effect(() => {
 		if (!show) return;
 		setTimeout(load, 10);
@@ -57,13 +66,25 @@
 	let isNew = $derived(subjectData?.sid === 0);
 	let quickCommitOptions = $derived(isNew ? ['新条目'] : WIKI_COMMIT_OPTIONS);
 	let commitMessage = $state('');
-	let trackStyle = $state<'parts' | 'tracks'>('tracks');
+	let trackStyle = $state<'parts' | 'tracks'>('parts');
 
-	function load() {
+	let epActions = $derived(trackData ? trackDiff(currentTrackInfo, trackData) : null);
+	let relaActions = $derived(creditsData ? relaDiff(currentCredits, creditsData) : null);
+	let epEnabled = $derived((epActions?.append?.length ?? 0) + (epActions?.edit?.length ?? 0) > 0);
+	let relaEnabled = $derived(
+		(relaActions?.add?.length ?? 0) +
+			(relaActions?.edit?.length ?? 0) +
+			(relaActions?.delete?.length ?? 0) >
+			0
+	);
+	let epRelaSelected = $state([false, false]);
+	let subjectSelected = $state([true]);
+
+	async function load() {
 		subjectData = getSubjectData();
 		subjectData.wikiType = subjectData.wikiType ?? 'subject';
 		if (getTrackData) {
-			trackData = getTrackData();
+			[trackData, creditsData] = getTrackData();
 		}
 		if (subjectData.sid) {
 			targetURL = `https://bgm.tv/${subjectData.wikiType}/${subjectData.sid}`;
@@ -71,19 +92,23 @@
 				(info) => (currentInfo = info)
 			);
 			if (getTrackData) {
-				loadTrackInfo(subjectData.sid).then((trackInfo) => (currentTrackInfo = trackInfo));
+				await loadTrackInfo(subjectData.sid);
 			}
 		}
+		if (getTrackData) {
+			epRelaSelected = [epEnabled, relaEnabled];
+		}
 	}
-	async function loadTrackInfo(sid: number): Promise<Release> {
+	async function loadTrackInfo(sid: number): Promise<void> {
 		const [subjectEpInfo, subjectRelaPerson] = await Promise.all([
 			getSubjectEpInfo(sid),
 			getSubjectRelaPerson(sid)
 		]);
-		return assembleRelease(subjectEpInfo, subjectRelaPerson);
+		currentCredits = subjectRelaPerson;
+		currentTrackInfo = assembleRelease(subjectEpInfo, subjectRelaPerson);
 	}
 
-	async function submit(subjectData: SubjectData | null, askAuth: () => void): Promise<boolean> {
+	async function submit(): Promise<boolean> {
 		if (!subjectData) return true;
 		if (!isSessionValid) {
 			askAuth();
@@ -96,7 +121,13 @@
 			return false;
 		}
 
-		const rsid = await submitRequest(subjectData, session.token, commitMessage);
+		const rsid = await submitRequest(
+			subjectData,
+			epActions,
+			relaActions,
+			session.token,
+			commitMessage
+		);
 		if (!rsid) return false;
 
 		const url = `https://bgm.tv/${subjectData.wikiType}/${rsid}`;
@@ -106,7 +137,8 @@
 		return true;
 	}
 
-	const diffClass = 'rounded-md bg-bgm-lightgrey text-sm w-[30rem] max-w-[90%] p-2 overflow-y-auto';
+	const diffClass =
+		'rounded-md bg-bgm-lightgrey text-sm w-[30rem] max-w-[93%] p-2 mx-auto overflow-y-auto';
 </script>
 
 <Dialog bind:show class="w-[80%] h-[85%] overflow-y-auto flex flex-row items-center justify-center">
@@ -122,29 +154,36 @@
 			/>
 			<div class="text-sm flex-grow-1"></div>
 		</div>
-		<Diff
-			src={isNew ? '' : (currentInfo?.name ?? subjectData?.title ?? '')}
-			dst={subjectData?.title || currentInfo?.name || ''}
-			class="{diffClass} flex-shrink-0 h-[1.5em]"
-		/>
-		{#if subjectData?.wikiType !== 'person'}
+		<SubmitRegion
+			name={['条目信息']}
+			bind:selected={subjectSelected}
+			enabled={[true]}
+			class="flex flex-col justify-center items-center gap-3"
+		>
 			<Diff
-				src={isNew ? '' : (currentInfo?.metaTags?.join(' ') ?? subjectData?.metaTags ?? '')}
-				dst={subjectData?.metaTags || currentInfo?.metaTags?.join(' ') || ''}
-				punctuation={/( )/}
+				src={isNew ? '' : (currentInfo?.name ?? subjectData?.title ?? '')}
+				dst={subjectData?.title || currentInfo?.name || ''}
 				class="{diffClass} flex-shrink-0 h-[1.5em]"
 			/>
-		{/if}
-		<Diff
-			src={isNew ? '' : (currentInfo?.infobox ?? subjectData?.infoBox ?? '')}
-			dst={subjectData?.infoBox ?? ''}
-			class="{diffClass} h-[26.5em] font-mono"
-		/>
-		<Diff
-			src={isNew ? '' : (currentInfo?.summary ?? subjectData?.description ?? '')}
-			dst={subjectData?.description || currentInfo?.summary || ''}
-			class="{diffClass} h-[5.5em]"
-		/>
+			{#if subjectData?.wikiType !== 'person'}
+				<Diff
+					src={isNew ? '' : (currentInfo?.metaTags?.join(' ') ?? subjectData?.metaTags ?? '')}
+					dst={subjectData?.metaTags || currentInfo?.metaTags?.join(' ') || ''}
+					punctuation={/( )/}
+					class="{diffClass} flex-shrink-0 h-[1.5em]"
+				/>
+			{/if}
+			<Diff
+				src={isNew ? '' : (currentInfo?.infobox ?? subjectData?.infoBox ?? '')}
+				dst={subjectData?.infoBox ?? ''}
+				class="{diffClass} h-[26.5em] font-mono"
+			/>
+			<Diff
+				src={isNew ? '' : (currentInfo?.summary ?? subjectData?.description ?? '')}
+				dst={subjectData?.description || currentInfo?.summary || ''}
+				class="{diffClass} h-[5.5em]"
+			/>
+		</SubmitRegion>
 		<div class="flex-basis-[1rem] w-[31rem] max-w-[94%] flex gap-xs">
 			<select
 				bind:value={commitMessage}
@@ -164,7 +203,7 @@
 			/>
 			<Button
 				onclick={async () => {
-					const success = await submit(subjectData, askAuth);
+					const success = await submit();
 					if (success) {
 						show = false;
 					}
@@ -178,8 +217,13 @@
 		</div>
 	</div>
 	{#if getTrackData}
-		<div class="flex flex-col">
-			<div class="w-[30rem] max-w-[93%] px-0 py-2 flex justify-end">
+		<SubmitRegion
+			name={['曲目列表', '关联人物']}
+			bind:selected={epRelaSelected}
+			enabled={[epEnabled, relaEnabled]}
+			class="flex flex-col"
+		>
+			<div class="w-[30.5rem] flex justify-end">
 				<MultiSwitch
 					choices={{ 收起: 'parts', 展开: 'tracks' }}
 					bind:chosen={trackStyle}
@@ -189,8 +233,8 @@
 			<Diff
 				src={!isNew && currentTrackInfo ? writeTrackInfo(currentTrackInfo, trackStyle) : ''}
 				dst={trackData ? writeTrackInfo(trackData, trackStyle) : ''}
-				class="{diffClass} h-[30em]"
+				class="{diffClass} h-[38.3em]"
 			/>
-		</div>
+		</SubmitRegion>
 	{/if}
 </Dialog>
