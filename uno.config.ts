@@ -1,10 +1,9 @@
-import { defineConfig } from 'unocss'
-import presetUno from '@unocss/preset-uno'
+import { defineConfig, presetWind3 } from 'unocss'
 import extractorSvelte from '@unocss/extractor-svelte'
 
 export default defineConfig({
     presets: [
-        presetUno(),
+        presetWind3(),
     ],
     extractors: [extractorSvelte()],
     theme: {
