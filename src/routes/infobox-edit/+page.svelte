@@ -3,9 +3,10 @@
 	import { onMount } from 'svelte';
 
 	import InfoBox, * as infobox from '../InfoBox.svelte';
-	import SubmitDialog, { type SubjectData } from '../SubmitDialog.svelte';
+	import SubmitDialog from '../SubmitDialog.svelte';
 	import Button from '../Button.svelte';
 	import Toast, { toast } from '../Toast.svelte';
+	import { type SubjectData } from '../submit';
 	import { getSubjectInfo, getPersonInfo } from '$lib/client';
 	import { URL_OAUTH, sessionValid, type BGMSession } from '$lib/bangumiSession';
 

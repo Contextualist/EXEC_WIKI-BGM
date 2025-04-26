@@ -1,27 +1,14 @@
-<script lang="ts" module>
-	export interface SubjectData {
-		sid: number;
-		wikiType?: 'subject' | 'person';
-		title: string;
-		infoBox: string;
-		description: string;
-		metaTags?: string;
-	}
-</script>
-
 <script lang="ts">
 	import 'uno.css';
+
+	import { submit as submitRequest, type SubjectData, type SubjectRelaPerson } from './submit';
 
 	import Dialog from '$lib/Dialog.svelte';
 	import Diff from './Diff.svelte';
 	import Button from './Button.svelte';
-	import { toast } from './Toast.svelte';
 	import MultiSwitch from '$lib/MultiSwitch.svelte';
 	import {
 		getWriteSessionState,
-		patchSubjectInfo,
-		patchPersonInfo,
-		postSubjectInfo,
 		getSubjectInfo,
 		getPersonInfo,
 		getSubjectEpInfo,
@@ -96,56 +83,27 @@
 		return assembleRelease(subjectEpInfo, subjectRelaPerson);
 	}
 
-	async function submit() {
+	async function submit(subjectData: SubjectData | null, askAuth: () => void): Promise<boolean> {
+		if (!subjectData) return true;
 		if (!isSessionValid) {
 			askAuth();
-			show = false;
-			return;
+			return false;
 		}
 		try {
 			await getWriteSessionState(session.token);
 		} catch (e) {
 			askAuth();
-			show = false;
-			return;
-		}
-		const { rfn, tp } = toast('提交中...', { progress: true });
-
-		if (!subjectData) return;
-		const subjectInfo = {
-			...(subjectData.title ? { name: subjectData.title } : {}),
-			...(subjectData.infoBox ? { infobox: subjectData.infoBox } : {}),
-			...(subjectData.description ? { summary: subjectData.description } : {}),
-			...(subjectData.metaTags ? { metaTags: subjectData.metaTags.split(' ') } : {})
-		};
-		let r: number | string | void;
-		let rsid = subjectData.sid;
-		if (!isNew) {
-			const patchFn = subjectData.wikiType === 'subject' ? patchSubjectInfo : patchPersonInfo;
-			r = await patchFn(session.token, subjectData.sid, commitMessage, subjectInfo);
-		} else {
-			if (subjectData.wikiType === 'person') {
-				toast('尚不支持创建人物条目', { alert: true });
-				return;
-			}
-			r = await postSubjectInfo(session.token, subjectInfo);
-			if (typeof r === 'number') {
-				rsid = r;
-			}
+			return false;
 		}
 
-		if (!r) {
-			tp.nDone = 1;
-			toast('提交成功');
-			show = false;
-		} else {
-			toast(`提交时发生错误: ${r}`, { alert: true });
-		}
+		const rsid = await submitRequest(subjectData, session.token, commitMessage);
+		if (!rsid) return false;
+
 		const url = `https://bgm.tv/${subjectData.wikiType}/${rsid}`;
 		setTimeout(() => {
-			rfn();
 			window.open(url, '_blank');
 		}, 1000);
+		return true;
 	}
 
 	const diffClass = 'rounded-md bg-bgm-lightgrey text-sm w-[30rem] max-w-[90%] p-2 overflow-y-auto';
@@ -205,7 +163,12 @@
 				placeholder={isNew ? '新条目' : '编辑摘要'}
 			/>
 			<Button
-				onclick={submit}
+				onclick={async () => {
+					const success = await submit(subjectData, askAuth);
+					if (success) {
+						show = false;
+					}
+				}}
 				class="flex-basis-[4rem]"
 				spinner={true}
 				disabled={isNew && !subjectData?.title}
