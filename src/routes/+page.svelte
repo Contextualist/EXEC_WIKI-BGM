@@ -233,7 +233,7 @@
 	}}
 />
 <Header edgefade>
-	<Gallery relaMap={currentRelease.relaMap} bind:dupResolution bind:showRelaDB class="h-32" />
+	<Gallery relaMap={currentRelease.relaMap} bind:dupResolution bind:showRelaDB class="h-35" />
 </Header>
 <main class="w-310 max-w-[95vw] lt-lg:w-200 lt-md:w-150 mx-auto my-4">
 	<div class="flex flex-justify-between gap-5">

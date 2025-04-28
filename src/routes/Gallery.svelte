@@ -69,8 +69,8 @@
 </script>
 
 <div
-	class="{class_} w-full flex flex-col flex-wrap-reverse flex-justify-end flex-content-start overflow-auto pl-5"
-	style="scrollbar-width: none;"
+	class="{class_} w-full flex flex-col flex-wrap-reverse flex-justify-start flex-content-start overflow-auto pl-5"
+	style="scrollbar-width: thin;"
 >
 	{#each relaEntries as { name, m, pfp } ([name, m])}
 		{@const title =
