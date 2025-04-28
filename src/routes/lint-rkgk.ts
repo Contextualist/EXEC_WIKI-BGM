@@ -18,6 +18,7 @@ export function getLinter(): Extension {
             featStart: number;
             lineEnd: number;
             hasVocal: boolean;
+            startsWith歌: boolean;
         }
         let trs: LintTrack[] = [];
         syntaxTree(view.state).cursor().iterate((node) => {
@@ -25,7 +26,8 @@ export function getLinter(): Extension {
                 case "heading": // title
                     trs.push({
                         node: node.node, featStart: getText(node).indexOf("feat."),
-                        lineEnd: node.to, hasVocal: false
+                        lineEnd: node.to, hasVocal: false,
+                        startsWith歌: /^歌[：:・ ]/.test(getText(node)),
                     });
                     return;
                 case "comment":
@@ -57,17 +59,36 @@ export function getLinter(): Extension {
                 }
             }
         ];
-        trs.forEach(({ node, featStart, lineEnd, hasVocal }) => {
-            if (featStart === -1 || hasVocal) return;
-            const feat = view.state.sliceDoc(node.from + featStart + 5, node.to).trim().replace(/[\)）]$/, "");
-            featEdits.push({ from: lineEnd, insert: feat });
-            diagnostics.push({
-                from: node.from + featStart,
-                to: node.to,
-                message: "提取所有 feat. 为…",
-                severity: "warning",
-                actions: featActions,
-            });
+        let 歌Edits: { from: number, to: number }[] = [];
+        const 歌Actions: Action[] = [
+            {
+                name: "替换“歌”为“歌唱”", apply(view) {
+                    const c = 歌Edits.map(({ from, to }) => ({ from, to, insert: "歌唱" }));
+                    view.dispatch({ changes: c });
+                }
+            }
+        ];
+        trs.forEach(({ node, featStart, lineEnd, hasVocal, startsWith歌 }) => {
+            if (featStart !== -1 && !hasVocal) {
+                const feat = view.state.sliceDoc(node.from + featStart + 5, node.to).trim().replace(/[\)）]$/, "");
+                featEdits.push({ from: lineEnd, insert: feat });
+                diagnostics.push({
+                    from: node.from + featStart,
+                    to: node.to,
+                    message: "提取所有 feat. 为…",
+                    severity: "warning",
+                    actions: featActions,
+                });
+            } else if (startsWith歌) {
+                歌Edits.push({ from: node.from, to: node.from + 1 });
+                diagnostics.push({
+                    from: node.from,
+                    to: node.to,
+                    message: "这位是不是「艺术家」？",
+                    severity: "warning",
+                    actions: 歌Actions,
+                });
+            }
         });
         return diagnostics;
     });

@@ -379,10 +379,6 @@
             "named": false
           },
           {
-            "type": "歌",
-            "named": false
-          },
-          {
             "type": "歌唱",
             "named": false
           },
@@ -799,10 +795,6 @@
   },
   {
     "type": "插图",
-    "named": false
-  },
-  {
-    "type": "歌",
     "named": false
   },
   {

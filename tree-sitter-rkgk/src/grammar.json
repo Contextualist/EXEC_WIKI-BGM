@@ -1091,14 +1091,6 @@
           "name": "role",
           "content": {
             "type": "STRING",
-            "value": "歌"
-          }
-        },
-        {
-          "type": "FIELD",
-          "name": "role",
-          "content": {
-            "type": "STRING",
             "value": "作詞作編曲"
           }
         },
