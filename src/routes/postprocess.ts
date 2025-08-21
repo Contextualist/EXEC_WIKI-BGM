@@ -201,7 +201,7 @@ export class Release {
         Object.values(credits).forEach(creatorData => Object.values(creatorData).forEach(pd => {
             if (pd.parts.length === 0) return; // empty parts means participation in all tracks
             const p = Array.from({ length: all_tracks.length }, () => new Set<number>());
-            pd.parts.forEach(([d, t]) => p[d - 1]?.add(t));
+            pd.parts.forEach(([d, t]) => p[d - 1]?.add(t) ?? console.warn(`Disc ${d} does not exist`));
             pd.parts = p.map(s => Array.from(s).sort((a, b) => a - b));
         }));
 
@@ -225,16 +225,18 @@ export class Release {
         function firstAppear(p: number[][]): number {
             if (p.length === 0) return -1;
             const disc = p.findIndex(x => x.length > 0);
+            if (disc === -1) return -1;
             return 1000 * disc + p[disc][0];
         }
-        const rs = Object.entries(this.credits).map(([roleID, creators]) =>
-            [
+        const rs = Object.entries(this.credits).map(([roleID, creators]) => {
+            const fa = Object.fromEntries(Object.entries(creators).map(([c, { parts }]) => [c, firstAppear(parts)]));
+            return [
                 roleID,
                 Object.entries(creators)
-                    .sort(([_, da], [__, db]) => firstAppear(da.parts) - firstAppear(db.parts))
+                    .sort(([a, _], [b, __]) => fa[a] - fa[b])
                     .map(([c, _]) => this.formatCreator(c, name2staff.get(c)![0]?.name))
-            ] as [string, string[]]
-        );
+            ] as [string, string[]];
+        });
         const rsc = this.coalesceInstrumentalRoles(rs);
         const emptyRoles = new Set<string>(Object.values(Role).slice(1))
         rsc.forEach(([roleID, _]) => emptyRoles.delete(roleID));
@@ -315,7 +317,10 @@ export class Release {
                 }
                 pd.parts.forEach((p, i) => p.forEach(j => {
                     const rij = r[i]?.[j - 1];
-                    if (!rij) return;
+                    if (!rij) {
+                        console.warn(`Disc ${i + 1} track ${j} does not exist`);
+                        return;
+                    }
                     rij[roleID] = rij[roleID] || [];
                     rij[roleID].push(creator);
                 }));
