@@ -113,7 +113,7 @@ function resolveAlias(
 
     const aliasTable: Record<string, Record<string, string>> = {}; // role -> name -> alias
     const unassociated: Record<string, string[]> = {}; // role -> name[]
-    const instTable = instrumentalPreprocess(associable);
+    const instTable = instrumentalPreprocess(associable, relaNames);
     associable.forEach(([role, raw]) => {
         if (!(raw.trim())) return;
         const amap: Record<string, string> = {};
@@ -159,15 +159,19 @@ function resolveAlias(
 
 const RE_NAME_INST = /^(.*) \(([^(\[]+)\)$/; // `name (inst)`, expected to be machine-formatted
 /// Extract name-instrument mapping and strip instrument from the original string
-function instrumentalPreprocess(associable: [string, string][]): Record<string, string> {
+function instrumentalPreprocess(associable: [string, string][], relaNames: Record<string, Set<string>>): Record<string, string> {
     const instEntry = associable.find(([k, _]) => k === '乐器');
     if (!instEntry || !instEntry[1]) return {};
-    const frags = instEntry[1].split('、').map(x => x.trim().match(RE_NAME_INST));
-    if (!frags.every(x => x)) return {};
+    const instPersonNames = relaNames['乐器'];
+    const frags = instEntry[1].split('、').map(x => x.trim());
+    const fragMatches = frags.map(x => x.match(RE_NAME_INST));
     const name2inst: Record<string, string> = {};
     const despined: string[] = [];
-    frags.forEach(match => {
-        const [_, name, inst] = match!;
+    fragMatches.forEach((match, i) => {
+        if (!match) return despined.push(frags[i]); // just name
+        const [_, name, inst] = match;
+        if (instPersonNames.has(inst)) return despined.push(frags[i]); // alias(name)
+        // alias(name) (inst)  or  name (inst)
         name2inst[(name.match(RE_ALIAS_NAME)?.[1] ?? name).trim()] = inst;
         despined.push(name);
     });
