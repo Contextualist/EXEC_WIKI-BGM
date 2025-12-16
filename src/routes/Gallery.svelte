@@ -72,7 +72,7 @@
 	class="{class_} w-full flex flex-col flex-wrap-reverse flex-justify-start flex-content-start overflow-auto pl-5"
 	style="scrollbar-width: thin;"
 >
-	{#each relaEntries as { name, m, pfp } ([name, m])}
+	{#each relaEntries as { name, m, pfp } (name)}
 		{@const title =
 			m === Match.None ? `搜索「${name}」` : m !== Match.OK ? `「${name}」，有重名` : name}
 		<div class="static">

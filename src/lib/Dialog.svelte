@@ -14,10 +14,10 @@
 		class: class_ = '',
 		children
 	}: DialogProps = $props();
-	const [transitionFn, transitionOpts] =
-		transitionType === 'fly'
-			? [fly, { duration: 400, y: -100, opacity: 1 }]
-			: [fade, { duration: 50, delay: 150 }];
+	const transitionFn = $derived(transitionType === 'fly' ? fly : fade);
+	const transitionOpts = $derived(
+		transitionType === 'fly' ? { duration: 400, y: -100, opacity: 1 } : { duration: 50, delay: 150 }
+	);
 </script>
 
 {#if show}

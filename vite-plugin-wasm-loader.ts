@@ -8,8 +8,8 @@ export default function wasmLoader(): Plugin {
         name: 'wasm-loader',
         configureServer(server) {
             server.middlewares.use(async (req, res, next) => {
-                if (req.url?.endsWith('tree-sitter.wasm')) {
-                    const wasmPath = path.resolve('./node_modules/web-tree-sitter/tree-sitter.wasm');
+                if (req.url?.endsWith('web-tree-sitter.wasm')) {
+                    const wasmPath = path.resolve('./node_modules/web-tree-sitter/web-tree-sitter.wasm');
                     if (fs.existsSync(wasmPath)) {
                         const wasmBuffer = fs.readFileSync(wasmPath);
                         res.setHeader('Content-Type', 'application/wasm');

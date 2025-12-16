@@ -157,9 +157,9 @@
 		class: class_ = '',
 		...rest
 	}: InfoBoxProps = $props();
-	setContext('cell-config', {
+	setContext('cell-config', () => ({
 		keyClass: wideFormat ? 'flex-basis-[5.5rem]' : 'flex-basis-[3.5rem]'
-	});
+	}));
 	const update = debounce(() => {
 		value = JSON.stringify(valueWiki);
 		valueExport = value;
@@ -174,7 +174,9 @@
 	onMount(() => {
 		// For legacy compatibility
 		if (Array.isArray(metaTagsRecentCombosState.val)) {
-			metaTagsRecentCombosState.val = { 音乐: $state.snapshot(metaTagsRecentCombosState.val) };
+			metaTagsRecentCombosState.val = {
+				音乐: $state.snapshot(metaTagsRecentCombosState.val) as unknown as string[][]
+			};
 		}
 	});
 </script>

@@ -46,7 +46,7 @@
 	]);
 	const extensions = [
 		getLinter(),
-		partsTracksConverter(writeTrackInfoFromRelease),
+		partsTracksConverter((style) => writeTrackInfoFromRelease(style)),
 		getHighlightSpecialChars(),
 		getFullWidthMarker()
 	];

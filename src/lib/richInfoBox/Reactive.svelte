@@ -10,7 +10,7 @@
 		entryMod: Snippet;
 	}
 	let { unlinked = $bindable(), value = $bindable(), action, entryMod }: ReactiveProps = $props();
-	let { keyClass } = getContext<CellConfig>('cell-config');
+	let { keyClass } = getContext<() => CellConfig>('cell-config')();
 	function valueUpdate() {
 		// manual editting removes the reactivity of current field
 		unlinked = true;

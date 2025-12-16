@@ -16,6 +16,7 @@
 
 	//            ┌----> rawValueView
 	// (edit) > value <--rawValue < (edit)
+	// svelte-ignore state_referenced_locally
 	let rawValue: [string, string][] = $state(config.toRaw(value));
 	let rawValueView: [string, string][] = $derived(config.toRaw(value));
 	$effect(() => {

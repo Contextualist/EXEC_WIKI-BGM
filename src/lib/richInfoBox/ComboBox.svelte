@@ -13,7 +13,7 @@
 	let { value = $bindable(), action, entryMod }: ComboBoxProps = $props();
 	/* @ts-ignore */
 	let config: ComboConfig<V> = $derived(COMBO_CONFIG[value[0]]);
-	let { keyClass } = getContext<CellConfig>('cell-config');
+	let { keyClass } = getContext<() => CellConfig>('cell-config')();
 </script>
 
 <div class="flex relative">

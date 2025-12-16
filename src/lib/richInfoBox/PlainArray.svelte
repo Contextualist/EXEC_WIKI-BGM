@@ -16,7 +16,7 @@
 		entryMod: Snippet;
 	}
 	let { value = $bindable(), action, entryMod }: PlainArrayProps = $props();
-	let { keyClass } = getContext<CellConfig>('cell-config');
+	let { keyClass } = getContext<() => CellConfig>('cell-config')();
 	let actionWithLint = $derived.by(() => ({
 		...action,
 		...lintActions(value[0])
