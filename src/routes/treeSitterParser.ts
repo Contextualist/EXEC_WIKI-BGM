@@ -1,4 +1,4 @@
-import { Parser } from "web-tree-sitter";
+import { Parser, TreeCursor } from "web-tree-sitter";
 import * as lezer from "@lezer/common";
 
 interface LeafInfo {
@@ -51,7 +51,7 @@ export class TreeSitterParser extends lezer.Parser {
         ranges: readonly { from: number, to: number }[],
     ): lezer.PartialParse {
         const text = input.read(0, input.length);
-        const tree = this.tsp.parse(text);
+        const tree = this.tsp.parse(text)!;
         let cursor = tree.walk();
         const { root: rootNode, leaves } = this.traverse(cursor);
         this.onUpdate(rootNode);
@@ -75,7 +75,7 @@ export class TreeSitterParser extends lezer.Parser {
         return new TreeSitterPartialParse(root, input.length);
     }
 
-    private traverse(cursor: Parser.TreeCursor): { root: NodeInfo, leaves: LeafInfo[] } {
+    private traverse(cursor: TreeCursor): { root: NodeInfo, leaves: LeafInfo[] } {
         const self: NodeInfo = { type: cursor.currentFieldName || cursor.nodeType, text: cursor.nodeText, startIndex: cursor.startIndex, endIndex: cursor.endIndex, children: [] };
         const leaves = [];
         if (cursor.gotoFirstChild()) {
