@@ -135,7 +135,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import { setContext, onMount } from 'svelte';
 
 	import { toast } from './Toast.svelte';

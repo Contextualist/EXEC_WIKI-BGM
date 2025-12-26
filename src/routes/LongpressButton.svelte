@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 
 	interface ButtonProps extends HTMLButtonAttributes {
@@ -10,7 +9,7 @@
 	let { class: class_ = '', onclick, children, ...rest }: ButtonProps = $props();
 	let fill = $state(0);
 	let duration = $state(1100);
-	let holdTimer: number;
+	let holdTimer: NodeJS.Timeout;
 
 	function hold(event: MouseEvent) {
 		event.preventDefault();

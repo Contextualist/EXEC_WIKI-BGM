@@ -28,7 +28,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import { onMount } from 'svelte';
 	import { type HTMLAttributes } from 'svelte/elements';
 	import { isMac, isFirefox } from '../utils.ts';

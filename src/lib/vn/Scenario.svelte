@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import { setContext } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import Scene, { type VNSettings } from './Scene.svelte';

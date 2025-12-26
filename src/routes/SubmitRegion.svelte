@@ -1,6 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
-
 	interface SubmitRegionProps {
 		name: string[];
 		selected: boolean[];

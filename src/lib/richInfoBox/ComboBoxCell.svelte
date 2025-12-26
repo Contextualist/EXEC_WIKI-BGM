@@ -1,5 +1,4 @@
 <script lang="ts" generics="V">
-	import 'uno.css';
 	import createFuzzySearch from '@nozbe/microfuzz';
 
 	import Cell, { type CellActions } from './Cell.svelte';

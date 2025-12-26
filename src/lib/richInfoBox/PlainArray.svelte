@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import { flip } from 'svelte/animate';
 	import { type Snippet, getContext } from 'svelte';
 	import Cell, {

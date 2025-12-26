@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import { slide } from 'svelte/transition';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { type Staff } from '$lib/db';

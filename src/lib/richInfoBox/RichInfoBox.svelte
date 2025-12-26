@@ -67,7 +67,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import { flip } from 'svelte/animate';
 	import Plain from './Plain.svelte';
 	import PlainArray from './PlainArray.svelte';

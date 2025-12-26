@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	interface ButtonProps extends HTMLButtonAttributes {
 		class?: string;

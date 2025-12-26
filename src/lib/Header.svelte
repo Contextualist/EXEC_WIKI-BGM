@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	interface HeaderProps {
 		children?: () => any;
 		edgefade?: boolean;

@@ -36,7 +36,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import { db, type Staff } from '$lib/db';
 	import { searchPerson, getPerson } from '$lib/client';
 	import { importPersonCreated, importRelaHistory } from './relaDB.ts';

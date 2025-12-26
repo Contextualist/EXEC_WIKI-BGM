@@ -1,6 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
-
 	import {
 		submit as submitRequest,
 		trackDiff,

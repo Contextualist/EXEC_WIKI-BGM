@@ -1,5 +1,4 @@
 <script lang="ts" generics="V">
-	import 'uno.css';
 	import { type Snippet, getContext } from 'svelte';
 	import Cell, { type CellActions, type CellConfig } from './Cell.svelte';
 	import ComboBoxCell from './ComboBoxCell.svelte';

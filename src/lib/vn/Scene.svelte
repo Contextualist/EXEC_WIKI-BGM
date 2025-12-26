@@ -5,7 +5,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import { type Snippet, onMount, getContext } from 'svelte';
 	import { fade, slide } from 'svelte/transition';
 	import { linear } from 'svelte/easing';

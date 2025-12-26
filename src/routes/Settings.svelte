@@ -35,7 +35,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import RelaDb, * as relaDb from './RelaDB.svelte';
 	import Panel from './Panel.svelte';
 	import Button from './Button.svelte';

@@ -20,7 +20,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import { fade } from 'svelte/transition';
 	import type { AutoEditor } from '$lib/importSource/common.ts';
 	import type { ContentState } from './History.svelte';

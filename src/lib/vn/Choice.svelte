@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import LinkSvg from '$lib/LinkSvg.svelte';
 
 	interface ChoiceProps {

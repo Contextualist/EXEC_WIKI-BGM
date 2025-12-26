@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import CodeMirror, { HighlightStyle, tags } from './CodeMirror.svelte';
 	import {
 		partsTracksConverter,

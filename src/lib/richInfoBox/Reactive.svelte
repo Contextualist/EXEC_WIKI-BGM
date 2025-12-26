@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import { type Snippet, getContext } from 'svelte';
 	import Cell, { type CellActions, type CellConfig } from './Cell.svelte';
 

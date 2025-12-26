@@ -1,5 +1,5 @@
 import { type Extension, type EditorState } from "@codemirror/state"
-import { EditorView, ViewPlugin, ViewUpdate, Decoration, type DecorationSet, WidgetType, keymap } from "@codemirror/view"
+import { EditorView, ViewPlugin, type ViewUpdate, Decoration, type DecorationSet, WidgetType, keymap } from "@codemirror/view"
 import { syntaxTree } from "@codemirror/language"
 import { highlightSpecialChars, MatchDecorator } from "@codemirror/view"
 

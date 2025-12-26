@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import { fade, fly } from 'svelte/transition';
 
 	interface DialogProps {

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import { Release } from './postprocess';
 	import { Match, type ResolvedRelaMap } from './disambiguation';
 	import { orderedEntries } from '$lib/bangumiUtils';

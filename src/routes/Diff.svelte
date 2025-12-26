@@ -3,7 +3,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import { getPatch } from 'fast-array-diff';
 
 	interface DiffProps {

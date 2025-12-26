@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'uno.css';
 	import Dialog from '$lib/Dialog.svelte';
 	import type { ImportSource, AutoEditor } from '$lib/importSource';
 	import { Bangumi } from '$lib/importSource/bangumi';

@@ -29,7 +29,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import Dialog from '../Dialog.svelte';
 
 	interface MetaTagProps {

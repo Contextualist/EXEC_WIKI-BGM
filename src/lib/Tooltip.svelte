@@ -77,8 +77,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
-
 	interface TooltipProps {
 		title: string;
 		safeHTML?: boolean;

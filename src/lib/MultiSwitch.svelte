@@ -1,6 +1,4 @@
 <script lang="ts" generics="T">
-	import 'uno.css';
-
 	interface MultiSwitchProps {
 		choices: { [label: string]: T };
 		chosen: T;

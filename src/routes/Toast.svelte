@@ -27,7 +27,6 @@
 </script>
 
 <script lang="ts">
-	import 'uno.css';
 	import { fly, fade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 
