@@ -32,35 +32,47 @@
 		return Object.entries(d).map(([sk, kv]) => kv);
 	}
 
-	function formatName(name: string): string {
+	interface NameInfo {
+		name: string;
+		link?: { id: number; name: string };
+		isConflict: boolean;
+		character?: { name: string; cvMarker: string };
+	}
+	function representName(name: string): NameInfo {
 		const [staff, m] = name2staff.get(name)!;
-		let r: string;
-		if (m === Match.None) {
-			r = name;
-		} else if (m === Match.Conflict) {
-			r = `<span class="text-bgm-pink">${name}</span>`;
-		} else {
-			r = `<a href="https://bgm.tv/person/${staff.id}">${staff.name}</a>`;
-			if (name !== staff.name) {
-				r = `${name} (${r})`;
-			}
+		const r: NameInfo = { name, isConflict: m === Match.Conflict };
+		if (m !== Match.None && m !== Match.Conflict) {
+			r.link = { id: staff.id, name: staff.name };
+			if (name === staff.name) r.name = '';
 		}
 		const char = release.name2character.get(name);
 		if (char) {
-			const [cvMarker, char_] = char;
-			r = `${char_}(CV${cvMarker}${r})`;
+			r.character = { name: char[1], cvMarker: char[0] };
 		}
 		return r;
 	}
 </script>
 
+{#snippet formattedName(ni: NameInfo)}
+	{#if ni.character}{ni.character.name}(CV{ni.character.cvMarker}{/if}<!--
+ -->{#if ni.isConflict}
+		<span class="text-bgm-pink">{ni.name}</span>
+	{:else if ni.link}
+		{#if ni.name}{ni.name} ({/if}<a href="https://bgm.tv/person/{ni.link.id}">{ni.link.name}</a
+		>{#if ni.name}){/if}
+	{:else}
+		{ni.name}
+	{/if}<!--
+ -->{#if ni.character}){/if}
+{/snippet}
+
 {#snippet formattedCredits(c: [string, string[]][])}
 	{#each c as [roleID, staffs]}
 		{#if roleID}
 			<div class="font-size-xs">
-				<span class="color-bgm-darkgrey">&#x3000;&#x3000;&#x3000;&#x3000;{roleID}：</span>
-				{#each staffs as name, i}
-					{@html formatName(name)}{i === staffs.length - 1 ? '' : '、'}
+				<span class="color-bgm-darkgrey">&#x3000;&#x3000;&#x3000;&#x3000;{roleID}：</span
+				>{#each staffs as name, i}
+					{@render formattedName(representName(name))}{i === staffs.length - 1 ? '' : '、'}
 				{/each}
 			</div>
 		{/if}
