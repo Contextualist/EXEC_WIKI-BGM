@@ -30,25 +30,51 @@ export async function searchPerson(name: string): Promise<Staff[]> {
     if (name === '') {
         return [];
     }
+    const result = await searchPersonBGMAPI(name);
+    if (result.length === 0) {
+        return [];
+    }
+    const pids = result.map((r) => r.id);
+    const namePfpList = await getPersonPfpList(pids);
+    return result.map((r: any, i: number) => ({
+        id: r.id,
+        pfp: namePfpList[i].pfp,
+        name: r.name,
+        aliases: r.aliases
+    }));
+}
+
+async function searchPersonBGMR(name: string): Promise<{ id: number, name: string, aliases: string[] }[]> {
     const request = new Request(`${CORS_ENDPOINT}/graphql`, {
         method: 'POST',
-        // headers: { 'Content-Type': 'application/json' }, // seems like that we can make a CORS simple request here
         mode: 'cors',
         body: getBGMRGraphQLQuery(name),
     });
     const response = await FETCHERS.ChiiAi.dispatch(request);
     const result = (await response.json()).data.queryCelebritySearch.result;
-    if (result.length === 0) {
-        return [];
-    }
-    const pids = result.map((r: any) => parseInt(r.id.slice(7)));
-    const namePfpList = await getPersonPfpList(pids);
-    return result.map((r: any, i: number) => ({
-        id: pids[i],
-        pfp: namePfpList[i].pfp,
+    return result.map((r: any) => ({
+        id: parseInt(r.id.slice(7)),
         name: entityUnescape(r.name),
-        aliases: r.alias.map(entityUnescape)
+        aliases: r.alias.map(entityUnescape),
     }));
+}
+
+async function searchPersonBGMAPI(name: string): Promise<{ id: number, name: string, aliases: string[] }[]> {
+    const request = new Request(`${BGMAPI_ENDPOINT}/v0/search/persons`, {
+        method: 'POST',
+        mode: 'cors',
+        body: JSON.stringify({ keyword: name }),
+    });
+    const response = await FETCHERS.BGMAPI.dispatch(request);
+    const result = await response.json();
+    return result.data.map((r: any) => {
+        const aliasBlock = r.infobox.find((block: any) => block.key === '别名')?.value;
+        return {
+            id: r.id,
+            name: entityUnescape(r.name),
+            aliases: aliasBlock ? aliasBlock.map((a: any) => entityUnescape(a.v)) : [],
+        };
+    });
 }
 
 async function getPersonPfpList(pids: number[]): Promise<{ name: string, pfp: string }[]> {
