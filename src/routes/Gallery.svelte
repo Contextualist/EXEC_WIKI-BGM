@@ -23,7 +23,8 @@
 		Array.from(relaMap.keys()).map((name) => {
 			const [staff, m] = name2staff.get(name)!;
 			if (m === Match.None) {
-				return { name, m, pfp: placeHolderSVG(name.slice(0, 1)) };
+				const firstCodepoint = name[Symbol.iterator]().next().value ?? '';
+				return { name, m, pfp: placeHolderSVG(firstCodepoint) };
 			} else if (m === Match.Conflict) {
 				return { name, m, pfp: ambiguitySVG };
 			}
