@@ -2,7 +2,7 @@ import devtoolsJson from 'vite-plugin-devtools-json';
 import { defineConfig } from 'vite';
 import UnoCSS from 'unocss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import wasmLoader from './vite-plugin-wasm-loader';
+import wasmLoader from './vite-plugin-wasm-loader.ts';
 
 export default defineConfig({
 	build: { target: 'es2023' },
