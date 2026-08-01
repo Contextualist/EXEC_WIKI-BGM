@@ -34,6 +34,9 @@ export async function searchPerson(name: string): Promise<Staff[]> {
     if (result.length === 0) {
         return [];
     }
+    if (result[0].pfp) {
+        return result;
+    }
     const pids = result.map((r) => r.id);
     const namePfpList = await getPersonPfpList(pids);
     return result.map((r: any, i: number) => ({
@@ -59,7 +62,7 @@ async function searchPersonBGMR(name: string): Promise<{ id: number, name: strin
     }));
 }
 
-async function searchPersonBGMAPI(name: string): Promise<{ id: number, name: string, aliases: string[] }[]> {
+async function searchPersonBGMAPI(name: string): Promise<Staff[]> {
     const request = new Request(`${BGMAPI_ENDPOINT}/v0/search/persons`, {
         method: 'POST',
         mode: 'cors',
@@ -71,6 +74,7 @@ async function searchPersonBGMAPI(name: string): Promise<{ id: number, name: str
         const aliasBlock = r.infobox.find((block: any) => block.key === '别名')?.value;
         return {
             id: r.id,
+            pfp: normalizePfpUrl(r.images.large),
             name: entityUnescape(r.name),
             aliases: aliasBlock ? aliasBlock.map((a: any) => entityUnescape(a.v)) : [],
         };
